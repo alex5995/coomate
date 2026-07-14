@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Opening Lab · Trainer di repertorio",
-  description: "Allenati sulla Caro-Kann con il Nero e sul Jobava London con il Bianco.",
+  description: "Allenati sul Jobava col Bianco e su Caro-Kann e Slav universale col Nero.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

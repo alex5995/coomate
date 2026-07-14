@@ -1,6 +1,6 @@
 export type UciMove = `${string}${string}`;
 export type PlayerColor = "w" | "b";
-export type OpeningId = "caro-kann" | "jobava-london";
+export type OpeningId = "caro-kann" | "jobava-london" | "slav-universal";
 
 export interface RepertoireLine {
   id: string;
@@ -29,6 +29,7 @@ export interface OpeningRepertoire {
   name: string;
   shortName: string;
   description: string;
+  startMessage: string;
   playerColor: PlayerColor;
   lines: RepertoireLine[];
   variants: TrainerVariant[];

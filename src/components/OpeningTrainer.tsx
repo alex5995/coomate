@@ -10,11 +10,8 @@ import type { Feedback, OpeningId, OpeningRepertoire, TakebackSnapshot, TrainerS
 import { Logo } from "./Logo";
 
 const defaultFeedback = (opening: OpeningRepertoire | null): Feedback => {
-  if (opening?.playerColor === "w") {
-    return { kind: "info", title: "Tocca a te", message: "Gioca 1.d4 e costruisci il tuo Jobava London con il Bianco." };
-  }
-  if (opening?.playerColor === "b") {
-    return { kind: "info", title: "Preparati", message: "Il Bianco giocherà 1.e4. Rispondi costruendo la tua Caro-Kann." };
+  if (opening) {
+    return { kind: "info", title: opening.playerColor === "w" ? "Tocca a te" : "Preparati", message: opening.startMessage };
   }
   return { kind: "info", title: "Scegli il repertorio", message: "Decidi quale apertura vuoi allenare." };
 };

@@ -206,7 +206,9 @@ button { font: inherit; }
 }
 .opening-picker { padding: 0 18px 20px; display: flex; flex: 1; min-height: 0; flex-direction: column; }
 .opening-picker > p { margin: 0 7px 16px; color: var(--muted); font-size: 12px; line-height: 1.55; }
-.opening-list { display: grid; gap: 12px; }
+.opening-list { display: grid; flex: 1; align-content: start; gap: 12px; min-height: 0; overflow-y: auto; padding-right: 5px; scrollbar-color: rgba(167, 203, 133, .34) transparent; scrollbar-width: thin; }
+.opening-list::-webkit-scrollbar { width: 5px; }
+.opening-list::-webkit-scrollbar-thumb { border-radius: 6px; background: rgba(167, 203, 133, .3); }
 .opening-list button {
   width: 100%;
   min-height: 126px;

@@ -6,7 +6,8 @@ describe("selezione dei repertori", () => {
   it("assegna il Nero alla Caro-Kann e il Bianco al Jobava", () => {
     expect(openingById("caro-kann")?.playerColor).toBe("b");
     expect(openingById("jobava-london")?.playerColor).toBe("w");
-    expect(openings).toHaveLength(2);
+    expect(openingById("slav-universal")?.playerColor).toBe("b");
+    expect(openings).toHaveLength(3);
   });
 
   it("sceglie la variante casuale in modo uniforme, non in base alla frequenza mostrata", () => {
