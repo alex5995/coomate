@@ -1,14 +1,4 @@
-import type { RepertoireLine } from "@/lib/types";
-
-export interface TrainerVariant {
-  id: string;
-  family: RepertoireLine["family"];
-  lineIds?: string[];
-  label: string;
-  moves: string;
-  description: string;
-  probability: number;
-}
+import type { TrainerVariant } from "@/lib/types";
 
 // Frequenze volutamente orientative: servono a dare priorità allo studio
 // e sommano a 100, ma non rappresentano statistiche ufficiali.

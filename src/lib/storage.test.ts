@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyStats, loadStats, saveStats, STORAGE_KEY } from "./storage";
+import { emptyStats, LEGACY_STORAGE_KEY, loadStats, saveStats, STORAGE_KEY } from "./storage";
 
 describe("statistiche locali", () => {
   it("usa valori iniziali con dati mancanti o corrotti", () => {
@@ -13,6 +13,11 @@ describe("statistiche locali", () => {
     expect(loaded.completed).toBe(4);
     expect(loaded.errors).toBe(0);
     expect(loaded.linesSeen).toEqual({});
+  });
+
+  it("migra in lettura le statistiche del precedente Caro Lab", () => {
+    const loaded = loadStats({ getItem: (key) => key === LEGACY_STORAGE_KEY ? JSON.stringify({ version: 1, completed: 7 }) : null });
+    expect(loaded.completed).toBe(7);
   });
 
   it("salva lo schema versionato", () => {

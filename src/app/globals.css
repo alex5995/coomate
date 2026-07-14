@@ -124,6 +124,7 @@ button { font: inherit; }
 
 .white-avatar { color: #f7f5e9; background: #3a423e; }
 .black-avatar { color: #111512; background: var(--green); }
+.user-white-avatar { color: #fffdf2; background: var(--green); }
 .you { margin-top: 4px; }
 
 .turn-pill {
@@ -203,8 +204,37 @@ button { font: inherit; }
   display: flex;
   flex-direction: column;
 }
+.opening-picker { padding: 0 18px 20px; display: flex; flex: 1; min-height: 0; flex-direction: column; }
+.opening-picker > p { margin: 0 7px 16px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.opening-list { display: grid; gap: 12px; }
+.opening-list button {
+  width: 100%;
+  min-height: 126px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .025);
+  cursor: pointer;
+  transition: .18s ease;
+}
+.opening-list button:hover { border-color: rgba(167, 203, 133, .35); background: rgba(167, 203, 133, .07); transform: translateX(2px); }
+.opening-list button > span:nth-child(2) { display: grid; gap: 6px; }
+.opening-list strong { font-family: Georgia, serif; font-size: 18px; }
+.opening-list small { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.opening-list b { color: var(--green-bright); font-size: 10px; }
+.opening-list i { color: var(--green-bright); font-style: normal; font-size: 18px; }
+.opening-piece { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; color: #172018; background: var(--green-bright); font-size: 30px; }
 .variant-picker { padding: 0 13px 14px 18px; display: flex; flex: 1; min-height: 0; flex-direction: column; }
-.variant-picker > p { margin: 0 7px 16px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.picker-intro { margin: 0 5px 12px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.picker-intro p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.4; text-align: right; }
+.picker-intro button { flex: 0 0 auto; padding: 7px 9px; border: 1px solid var(--line); border-radius: 7px; color: #d7e7ca; background: transparent; font-size: 10px; cursor: pointer; }
+.picker-intro button:hover { background: rgba(167, 203, 133, .08); }
 .variant-list {
   display: grid;
   gap: 8px;

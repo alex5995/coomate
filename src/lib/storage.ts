@@ -1,6 +1,7 @@
 import type { TrainerStats } from "@/lib/types";
 
-export const STORAGE_KEY = "caro-lab:stats";
+export const STORAGE_KEY = "opening-lab:stats";
+export const LEGACY_STORAGE_KEY = "caro-lab:stats";
 
 export const emptyStats = (): TrainerStats => ({
   version: 1,
@@ -15,7 +16,7 @@ export const emptyStats = (): TrainerStats => ({
 export const loadStats = (storage?: Pick<Storage, "getItem">): TrainerStats => {
   if (!storage) return emptyStats();
   try {
-    const raw = storage.getItem(STORAGE_KEY);
+    const raw = storage.getItem(STORAGE_KEY) ?? storage.getItem(LEGACY_STORAGE_KEY);
     if (!raw) return emptyStats();
     const parsed = JSON.parse(raw) as Partial<TrainerStats>;
     if (parsed.version !== 1) return emptyStats();

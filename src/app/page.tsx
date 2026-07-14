@@ -1,5 +1,5 @@
-import { CaroTrainer } from "@/components/CaroTrainer";
+import { OpeningTrainer } from "@/components/OpeningTrainer";
 
 export default function Home() {
-  return <CaroTrainer />;
+  return <OpeningTrainer />;
 }
