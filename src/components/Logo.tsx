@@ -11,6 +11,7 @@ export function Logo() {
           width={92}
           height={92}
           priority
+          unoptimized
         />
       </span>
       <span className="brand-name"><span>Coo</span>Mate</span>
