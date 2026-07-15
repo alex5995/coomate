@@ -55,6 +55,11 @@ export function OpeningTrainer() {
     });
   }, []);
 
+  const resetStats = useCallback(() => {
+    if (!window.confirm("Azzerare tutte le statistiche salvate su questo dispositivo?")) return;
+    persistStats(() => emptyStats());
+  }, [persistStats]);
+
   useEffect(() => {
     const timer = window.setTimeout(() => setStats(loadStats(window.localStorage)), 0);
     return () => window.clearTimeout(timer);
@@ -364,7 +369,13 @@ export function OpeningTrainer() {
             </section>
 
             <section className="stats-section">
-              <div className="section-title"><h2>I tuoi progressi</h2><span>su questo dispositivo</span></div>
+              <div className="section-title">
+                <h2>I tuoi progressi</h2>
+                <div className="stats-title-actions">
+                  <span>su questo dispositivo</span>
+                  <button type="button" onClick={resetStats}>Azzera</button>
+                </div>
+              </div>
               <div className="stats-grid">
                 <div><strong>{stats.completed}</strong><span>Linee concluse</span></div>
                 <div><strong>{accuracy}%</strong><span>Precisione</span></div>
