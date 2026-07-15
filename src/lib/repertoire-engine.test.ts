@@ -4,23 +4,23 @@ import { repertoire } from "@/data/repertoire";
 import { candidatesFor, choicesFor, parseUci, weightedChoice } from "./repertoire-engine";
 import type { UciMove } from "./types";
 
-describe("repertorio Caro-Kann", () => {
-  it("contiene tutte le famiglie richieste", () => {
+describe("Caro-Kann repertoire", () => {
+  it("contains every required family", () => {
     expect(new Set(repertoire.map((line) => line.family))).toEqual(
       new Set(["Advance", "Classical", "Exchange", "Panov", "Fantasy", "Two Knights"]),
     );
   });
 
-  it.each(repertoire.map((line) => [line.id, line]))("la linea %s contiene solo mosse legali", (_, line) => {
+  it.each(repertoire.map((line) => [line.id, line]))("line %s contains only legal moves", (_, line) => {
     const chess = new Chess();
     for (const uci of line.moves) {
-      expect(() => chess.move(parseUci(uci)), `${line.id}: ${uci} dopo ${chess.fen()}`).not.toThrow();
+      expect(() => chess.move(parseUci(uci)), `${line.id}: ${uci} after ${chess.fen()}`).not.toThrow();
     }
     expect(line.moves.length).toBeGreaterThanOrEqual(16);
     expect(line.goal.plans.length).toBeGreaterThanOrEqual(3);
   });
 
-  it.each(repertoire.map((line) => [line.id, line]))("ogni turno nero di %s ha una risposta accettata", (_, line) => {
+  it.each(repertoire.map((line) => [line.id, line]))("every Black turn in %s has an accepted reply", (_, line) => {
     const history: UciMove[] = [];
     line.moves.forEach((move, index) => {
       if (index % 2 === 1) {
@@ -31,43 +31,43 @@ describe("repertorio Caro-Kann", () => {
     });
   });
 
-  it.each(repertoire.map((line) => [line.id, line]))("%s non gioca …e6 con l’alfiere ancora in c8", (_, line) => {
+  it.each(repertoire.map((line) => [line.id, line]))("%s does not play …e6 while the bishop is still on c8", (_, line) => {
     const chess = new Chess();
     for (const uci of line.moves) {
       if (uci === "e7e6") {
-        expect(chess.get("c8"), `${line.id}: …e6 rinchiude l’alfiere campochiaro`).not.toMatchObject({ type: "b", color: "b" });
+        expect(chess.get("c8"), `${line.id}: …e6 traps the light-squared bishop`).not.toMatchObject({ type: "b", color: "b" });
       }
       chess.move(parseUci(uci));
     }
   });
 
-  it("aggrega le alternative teoriche senza duplicati", () => {
+  it("aggregates theoretical alternatives without duplicates", () => {
     const afterAdvance = ["e2e4", "c7c6", "d2d4", "d7d5", "e4e5"] as UciMove[];
     const choices = choicesFor(afterAdvance);
     expect(choices.map((choice) => choice.uci).sort()).toEqual(["c6c5", "c8f5"]);
     expect(choices.find((choice) => choice.uci === "c8f5")?.lineIds.length).toBe(5);
   });
 
-  it("propone la Tartakower come prima scelta nella Classica", () => {
+  it("offers the Tartakower as the first Classical choice", () => {
     const afterNxe4 = ["e2e4", "c7c6", "d2d4", "d7d5", "b1c3", "d5e4", "c3e4"] as UciMove[];
     const classicalLines = repertoire.filter((line) => line.family === "Classical");
     expect(choicesFor(afterNxe4, classicalLines)[0].uci).toBe("g8f6");
     expect(choicesFor(afterNxe4, classicalLines).map((choice) => choice.uci)).toContain("c8f5");
   });
 
-  it("nell’Advance con …Nc6 e dxc5 propone l’inchiodatura, non …e6", () => {
+  it("offers the pin instead of …e6 in the Advance with …Nc6 and dxc5", () => {
     const position = ["e2e4", "c7c6", "d2d4", "d7d5", "e4e5", "c6c5", "g1f3", "b8c6", "d4c5"] as UciMove[];
     const line = repertoire.filter((candidate) => candidate.id === "advance-c5-nf3-nc6");
     expect(choicesFor(position, line).map((choice) => choice.uci)).toEqual(["c8g4"]);
   });
 
-  it("porta entrambe le linee Exchange oltre il cambio degli alfieri", () => {
+  it("takes both Exchange lines beyond the bishop exchange", () => {
     const exchangeLines = repertoire.filter((line) => line.family === "Exchange");
     expect(exchangeLines.every((line) => line.moves.length >= 22)).toBe(true);
     expect(exchangeLines.every((line) => line.moves.includes("f4d6"))).toBe(true);
   });
 
-  it("limita le scelte alla famiglia selezionata", () => {
+  it("limits choices to the selected family", () => {
     const afterTwoMoves = ["e2e4", "c7c6", "d2d4", "d7d5"] as UciMove[];
     const fantasyLines = repertoire.filter((line) => line.family === "Fantasy");
     const advanceLines = repertoire.filter((line) => line.family === "Advance");
@@ -75,7 +75,7 @@ describe("repertorio Caro-Kann", () => {
     expect(choicesFor(afterTwoMoves, advanceLines).map((choice) => choice.uci)).toEqual(["e4e5"]);
   });
 
-  it("separa l’Advance tra presa in c5 e difesa con c3", () => {
+  it("separates the Advance between taking on c5 and defending with c3", () => {
     const afterC5 = ["e2e4", "c7c6", "d2d4", "d7d5", "e4e5", "c6c5"] as UciMove[];
     const takes = repertoire.filter((line) => line.id === "advance-botvinnik");
     const defends = repertoire.filter((line) => ["advance-c5-c3-main", "advance-c5-c3-early"].includes(line.id));
@@ -83,7 +83,7 @@ describe("repertorio Caro-Kann", () => {
     expect(choicesFor(afterC5, defends).map((choice) => choice.uci)).toEqual(["c2c3"]);
   });
 
-  it("mantiene le risposte nere come alternative dentro le linee bianche", () => {
+  it("keeps Black replies as alternatives inside White's lines", () => {
     const afterAdvance = ["e2e4", "c7c6", "d2d4", "d7d5", "e4e5"] as UciMove[];
     const nf3Advance = repertoire.filter((line) => ["advance-main", "advance-c5-nf3-capture", "advance-c5-nf3-nc6", "advance-c5-nf3-bg4"].includes(line.id));
     expect(choicesFor(afterAdvance, nf3Advance).map((choice) => choice.uci).sort()).toEqual(["c6c5", "c8f5"]);
@@ -101,7 +101,7 @@ describe("repertorio Caro-Kann", () => {
     expect(choicesFor(afterTwoKnights, twoKnights).map((choice) => choice.uci).sort()).toEqual(["c8g4", "g8f6"]);
   });
 
-  it("effettua una selezione pesata deterministica ai bordi", () => {
+  it("performs deterministic weighted selection at the boundaries", () => {
     const choices = [
       { uci: "e2e4" as UciMove, weight: 9, lineIds: ["a"] },
       { uci: "d2d4" as UciMove, weight: 1, lineIds: ["b"] },

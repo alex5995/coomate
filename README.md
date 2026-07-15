@@ -1,38 +1,38 @@
-# Opening Lab
+# CooMate
 
-Mini trainer di repertorio in italiano per allenare tre repertori con ruoli fissi:
+A compact chess repertoire trainer covering three fixed-role repertoires:
 
-- **Caro-Kann:** giochi sempre con il Nero contro le principali scelte del Bianco.
-- **Jobava London:** giochi sempre con il Bianco contro le principali risposte del Nero.
-- **Slav universale:** giochi sempre con il Nero contro `1.d4`, Inglese, Réti e aperture di fianco; il computer non inizia mai con `1.e4`.
+- **Caro-Kann:** always play Black against White's main choices.
+- **Jobava London:** always play White against Black's main replies.
+- **Universal Slav:** always play Black against `1.d4`, the English, the Réti and flank openings; the computer never begins with `1.e4`.
 
-La schermata iniziale permette di scegliere il repertorio; la scacchiera cambia automaticamente orientamento e lato controllato.
+The home screen lets you choose a repertoire. Board orientation and the controlled side update automatically.
 
-## Avvio
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Apri [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-## Controlli
+## Controls and behaviour
 
-- Muovi i pezzi trascinandoli oppure selezionando casella di partenza e arrivo.
-- Prima di ogni esercizio scegli una linea avversaria esplicita. Nella Caro-Kann l’Advance distingue `dxc5`, `c3`, `Nf3`, `Nc3` e `h4`; sono presenti anche Classica `Nc3/Nd2`, Exchange `Bd3/Nf3`, Panov, Fantasy e Due Cavalli.
-- Nel Jobava puoi allenarti contro `…e6`, `…Bf5`, `…c5`, `…c6`, `…g6`, `…a6`, `…Nc6`, `…Nbd7` e l’impostazione Indiana di Re. Il Bianco segue piani pratici con `Nc3`, `Bf4`, `e3/e4`, attacco sul lato di Re o pressione su `c7` secondo la posizione.
-- Nel repertorio Slav il computer può iniziare con `1.d4`, `1.c4`, `1.Nf3`, `1.b3` o `1.g3`. Sono presenti 30 linee su Slav principale, London, Jobava, Colle/Zukertort, Veresov, Inglese, Réti e sistemi di fianco.
-- Nelle linee nere Slav, `…e6` non viene proposta prima di avere sviluppato o cambiato l’alfiere campochiaro in `c8`.
-- All’interno della linea avversaria selezionata, tutte le continuazioni curate per il tuo colore restano alternative liberamente giocabili.
-- Le schede sono ordinate per frequenza orientativa; “Variante casuale” sceglie invece uniformemente fra tutte le schede.
-- Su desktop la scacchiera si ridimensiona sull’altezza disponibile e il menu usa uno scorrimento interno, senza far scorrere l’intera pagina.
-- Una mossa legale fuori repertorio viene annullata: al primo errore ricevi un indizio, al secondo le continuazioni vengono mostrate sulla scacchiera.
-- Quando esistono più risposte teoriche, puoi tornare alla posizione precedente e provare un’alternativa.
-- Dopo una mossa corretta, un unico feedback mostra esito, alternative teoriche e risposta automatica dell’avversario.
-- I progressi sono salvati esclusivamente nel `localStorage` del browser; le statistiche create con la precedente versione Caro Lab vengono conservate.
+- Move pieces by dragging them or by selecting the source and destination squares.
+- Choose an explicit opponent variation before every exercise. Caro-Kann Advance training distinguishes `dxc5`, `c3`, `Nf3`, `Nc3` and `h4`; Classical `Nc3/Nd2`, Exchange `Bd3/Nf3`, Panov, Fantasy and Two Knights are included too.
+- Jobava training covers `…e6`, `…Bf5`, `…c5`, `…c6`, `…g6`, `…a6`, `…Nc6`, `…Nbd7` and an Indian setup. White follows practical plans with `Nc3`, `Bf4`, `e3/e4`, kingside attacks or pressure on `c7` according to the position.
+- The Universal Slav repertoire can begin with `1.d4`, `1.c4`, `1.Nf3`, `1.b3` or `1.g3`. It contains 30 lines covering the Main Slav, London, Jobava, Colle/Zukertort, Veresov, English, Réti and flank systems.
+- In the Black Slav lines, `…e6` is never suggested before the light-squared bishop has developed or been exchanged.
+- Every curated continuation for your side remains playable inside the selected opponent line.
+- Variation cards are ordered by approximate frequency. Random variation selection remains uniformly distributed across all cards.
+- On desktop, the board fits the available height and long menus scroll internally without moving the whole page.
+- A legal move outside the repertoire is immediately undone. The first error gives a hint; the second reveals the accepted continuations on the board.
+- When several theoretical replies exist, you can return to the previous position and try another one.
+- After a correct move, one consolidated message shows the result, theoretical alternatives and the opponent's automatic reply.
+- Progress is saved only in browser `localStorage`. Statistics from the previous Caro Lab version are migrated automatically.
 
-## Verifica
+## Verification
 
 ```bash
 npm test
