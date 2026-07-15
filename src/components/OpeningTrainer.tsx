@@ -334,7 +334,7 @@ export function OpeningTrainer() {
                 ))}
               </div>
             </section>
-          ) : <>
+          ) : <div className="training-content">
             <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
             <div className="progress-copy"><span>Verso il middlegame</span><strong>{progress}%</strong></div>
 
@@ -368,21 +368,22 @@ export function OpeningTrainer() {
               </div>
             </section>
 
-            <section className="stats-section">
-              <div className="section-title">
-                <h2>I tuoi progressi</h2>
-                <div className="stats-title-actions">
-                  <span>su questo dispositivo</span>
-                  <button type="button" onClick={resetStats}>Azzera</button>
-                </div>
+          </div>}
+
+          <section className="stats-section">
+            <div className="section-title">
+              <h2>I tuoi progressi</h2>
+              <div className="stats-title-actions">
+                <span>su questo dispositivo</span>
+                <button type="button" onClick={resetStats}>Azzera</button>
               </div>
-              <div className="stats-grid">
-                <div><strong>{stats.completed}</strong><span>Linee concluse</span></div>
-                <div><strong>{accuracy}%</strong><span>Precisione</span></div>
-                <div><strong>{stats.errors}</strong><span>Errori teorici</span></div>
-              </div>
-            </section>
-          </>}
+            </div>
+            <div className="stats-grid">
+              <div><strong>{stats.completed}</strong><span>Linee concluse</span></div>
+              <div><strong>{accuracy}%</strong><span>Precisione</span></div>
+              <div><strong>{stats.errors}</strong><span>Errori teorici</span></div>
+            </div>
+          </section>
         </aside>
       </section>
     </main>

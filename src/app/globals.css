@@ -154,6 +154,8 @@ button { font: inherit; }
 
 .panel {
   max-height: calc(100dvh - 106px);
+  display: flex;
+  flex-direction: column;
   background: rgba(37, 43, 40, .94);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -162,12 +164,23 @@ button { font: inherit; }
 }
 
 .panel-head {
+  flex: 0 0 auto;
   padding: 25px 25px 17px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 15px;
 }
+
+.training-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-color: rgba(167, 203, 133, .34) transparent;
+  scrollbar-width: thin;
+}
+.training-content::-webkit-scrollbar { width: 5px; }
+.training-content::-webkit-scrollbar-thumb { border-radius: 6px; background: rgba(167, 203, 133, .3); }
 
 .eyebrow {
   display: block;
@@ -345,6 +358,7 @@ button { font: inherit; }
 .secondary-action:hover { background: rgba(167, 203, 133, .08); }
 
 .moves-section, .stats-section { border-top: 1px solid var(--line); padding: 18px 25px; }
+.panel > .stats-section { flex: 0 0 auto; }
 .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
 .section-title h2 { font-size: 12px; margin: 0; letter-spacing: .15px; }
 .section-title > span { color: #7f8881; font-size: 10px; }
