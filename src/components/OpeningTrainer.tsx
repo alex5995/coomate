@@ -31,6 +31,7 @@ export function OpeningTrainer() {
   const [completed, setCompleted] = useState(false);
   const [takeback, setTakeback] = useState<TakebackSnapshot | null>(null);
   const [stats, setStats] = useState<TrainerStats>(emptyStats);
+  const mobileSummaryRef = useRef<HTMLDivElement | null>(null);
   const pendingSuccessRef = useRef<{ playedSan: string; explanation: string; alternativeSans: string[] } | null>(null);
 
   const opening = useMemo(() => openingById(selectedOpening), [selectedOpening]);
@@ -254,6 +255,28 @@ export function OpeningTrainer() {
   const finalGoalContent = finalGoal && opening ? trainingGoalFor(opening.id, finalGoal.id) : null;
   const pickerMode = !selectedOpening || !selectedVariant;
 
+  useEffect(() => {
+    if (!selectedVariant || !window.matchMedia("(max-width: 960px)").matches) return;
+    const frame = window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [selectedVariant]);
+
+  useEffect(() => {
+    if (!completed || !window.matchMedia("(max-width: 960px)").matches) return;
+    const frame = window.requestAnimationFrame(() => {
+      mobileSummaryRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "nearest",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [completed]);
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -296,6 +319,29 @@ export function OpeningTrainer() {
               {!selectedOpening ? "Choose repertoire" : !selectedVariant ? "Choose variation" : completed ? "Line complete" : isUserTurn ? "Your move" : "Waiting"}
             </span>
           </div>
+
+          {selectedVariant && (
+            <div className="mobile-session-summary" ref={mobileSummaryRef}>
+              <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
+              <div className="progress-copy"><span>On the way to the middlegame</span><strong>{progress}%</strong></div>
+
+              <div className={`feedback ${feedback.kind}`} role="status">
+                <span className="feedback-icon">{feedback.kind === "success" ? "✓" : feedback.kind === "hint" ? "✦" : feedback.kind === "error" ? "!" : playerColor === "w" ? "♙" : "♟"}</span>
+                <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong><p>{keepCompoundWordsTogether(feedback.message)}</p></div>
+              </div>
+
+              {takeback && takeback.alternatives.length > 0 && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
+
+              {completed && finalGoalContent && (
+                <div className="goal-card">
+                  <span className="eyebrow">TARGET POSITION</span>
+                  <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
+                  <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
+                  <button className="primary-action" onClick={newExercise}>New exercise <span>→</span></button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <aside className={`panel ${pickerMode ? "picker-panel" : ""}`}>
