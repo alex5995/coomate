@@ -1,0 +1,77 @@
+import type { TrainerVariant } from "@/lib/types";
+
+// Approximate frequencies, ordered and normalised to 100.
+export const londonVariants: TrainerVariant[] = [
+  {
+    id: "london-classical",
+    family: "Classical …e6/…Bd6",
+    label: "Classical · …e6 and …Bd6",
+    moves: "1.d4 d5 2.Nf3 Nf6 3.Bf4 e6 4.e3 Bd6",
+    description: "Build the standard London and choose whether to retreat, exchange or welcome ...Bxf4 with exf4.",
+    probability: 28,
+  },
+  {
+    id: "london-c5-qb6",
+    family: "Early …c5/…Qb6",
+    label: "Early pressure · …c5 and …Qb6",
+    moves: "1.d4 d5 2.Nf3 Nf6 3.Bf4 c5 4.e3 Qb6",
+    description: "Meet immediate pressure on d4 and b2 without losing the London setup.",
+    probability: 19,
+  },
+  {
+    id: "london-g6",
+    family: "Fianchetto …g6",
+    label: "Fianchetto · …g6",
+    moves: "1.d4 Nf6 2.Nf3 g6 3.Bf4 Bg7",
+    description: "Claim central space and build practical play against the kingside fianchetto.",
+    probability: 14,
+  },
+  {
+    id: "london-c6",
+    family: "Slav …c6",
+    label: "Slav setup · …c6",
+    moves: "1.d4 d5 2.Nf3 Nf6 3.Bf4 c6",
+    description: "Develop smoothly and prepare the thematic e4 break against Black's solid centre.",
+    probability: 11,
+  },
+  {
+    id: "london-bf5",
+    family: "Mirror …Bf5",
+    label: "Mirror · …Bf5",
+    moves: "1.d4 d5 2.Nf3 Nf6 3.Bf4 Bf5",
+    description: "Handle the mirrored bishop while keeping pressure on the queenside and centre.",
+    probability: 10,
+  },
+  {
+    id: "london-b6",
+    family: "Queen's Indian …b6",
+    label: "Queen's Indian · …b6",
+    moves: "1.d4 Nf6 2.Nf3 e6 3.Bf4 b6",
+    description: "Complete the London setup before challenging Black's queenside fianchetto.",
+    probability: 7,
+  },
+  {
+    id: "london-nc6",
+    family: "Chigorin …Nc6",
+    label: "Chigorin · …Nc6",
+    moves: "1.d4 d5 2.Nf3 Nc6 3.Bf4",
+    description: "Support the centre and exploit the knight's commitment in front of the c-pawn.",
+    probability: 5,
+  },
+  {
+    id: "london-bg4",
+    family: "Pin …Bg4",
+    label: "Pin · …Bg4",
+    moves: "1.d4 d5 2.Nf3 Nf6 3.Bf4 Bg4",
+    description: "Question or neutralise the pin while preserving a coherent London structure.",
+    probability: 4,
+  },
+  {
+    id: "london-nh5",
+    family: "Bishop hunt …Nh5",
+    label: "Bishop hunt · …Nh5",
+    moves: "1.d4 d5 2.Nf3 Nf6 3.Bf4 Nh5",
+    description: "Choose the right bishop retreat and use Black's misplaced knight for useful tempi.",
+    probability: 2,
+  },
+];

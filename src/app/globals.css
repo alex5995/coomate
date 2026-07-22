@@ -106,6 +106,10 @@ button { font: inherit; }
   width: 100%;
   aspect-ratio: 1;
   position: relative;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .board-frame::before {
@@ -269,7 +273,8 @@ button { font: inherit; }
 .picker-intro button { flex: 0 0 auto; padding: 7px 9px; border: 1px solid var(--line); border-radius: 7px; color: #d8edf3; background: transparent; font-size: 10px; cursor: pointer; }
 .picker-intro button:hover { background: rgba(167, 203, 133, .08); }
 .variant-list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
   min-height: 0;
   overflow-y: auto;
@@ -280,13 +285,19 @@ button { font: inherit; }
 .variant-list::-webkit-scrollbar { width: 5px; }
 .variant-list::-webkit-scrollbar-thumb { border-radius: 6px; background: rgba(167, 203, 133, .3); }
 .variant-list button {
+  flex: 0 0 auto;
   width: 100%;
-  min-height: 72px;
-  padding: 12px 13px;
+  min-height: 0;
+  padding: 10px 12px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 20px;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  grid-template-areas:
+    "copy arrow"
+    "meta arrow";
   align-items: center;
-  gap: 10px;
+  column-gap: 10px;
+  row-gap: 6px;
+  overflow: hidden;
   text-align: left;
   color: var(--text);
   border: 1px solid var(--line);
@@ -296,8 +307,8 @@ button { font: inherit; }
   transition: .18s ease;
 }
 .variant-list button:hover { border-color: rgba(155, 203, 220, .4); background: rgba(109, 157, 180, .1); transform: translateX(2px); }
-.variant-copy { min-width: 0; display: grid; gap: 4px; }
-.variant-copy strong { font-size: 13px; line-height: 1.25; }
+.variant-copy { grid-area: copy; min-width: 0; display: grid; gap: 4px; }
+.variant-copy strong { min-width: 0; overflow-wrap: anywhere; font-size: 13px; line-height: 1.25; }
 .variant-copy small {
   display: -webkit-box;
   overflow: hidden;
@@ -307,10 +318,10 @@ button { font: inherit; }
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-.variant-meta { display: grid; justify-items: end; gap: 5px; }
-.variant-frequency { color: var(--gold); font-size: 10px; font-weight: 850; letter-spacing: .2px; }
-.variant-moves { padding: 5px 8px; color: #d9edf3; background: rgba(109, 157, 180, .14); border-radius: 6px; font-family: Georgia, serif; font-size: 11px; white-space: nowrap; }
-.variant-arrow { color: var(--green-bright); font-size: 17px; text-align: right; }
+.variant-meta { grid-area: meta; min-width: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.variant-frequency { flex: 0 0 auto; color: var(--gold); font-size: 10px; font-weight: 850; letter-spacing: .2px; }
+.variant-moves { min-width: 0; max-width: 100%; padding: 5px 8px; overflow-wrap: anywhere; color: #d9edf3; background: rgba(109, 157, 180, .14); border-radius: 6px; font-family: Georgia, serif; font-size: 11px; line-height: 1.25; text-align: right; white-space: normal; }
+.variant-arrow { grid-area: arrow; align-self: center; color: var(--green-bright); font-size: 17px; text-align: right; }
 
 .random-variant {
   flex: 0 0 auto;
@@ -458,6 +469,11 @@ button { font: inherit; }
   .panel-head, .moves-section, .stats-section { padding-left: 18px; padding-right: 18px; }
   .progress-track { margin: 0 18px; }
   .progress-copy { padding-left: 18px; padding-right: 18px; }
+}
+
+@media (max-width: 380px) {
+  .variant-meta { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .variant-moves { text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {

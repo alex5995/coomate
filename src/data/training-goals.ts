@@ -32,22 +32,46 @@ const caroGoals: Record<string, TrainingGoal> = {
   },
 };
 
-const jobavaGoals: Record<string, TrainingGoal> = {
-  bf5: {
-    title: "A kingside initiative against …Bf5",
-    plans: ["Use f3 to support e4 and prepare g4 with tempo.", "Gain space with g4–g5 and h4–h5 while the bishop retreats.", "Open the centre only after your pieces can join the attack."],
+const londonGoals: Record<string, TrainingGoal> = {
+  classical: {
+    title: "The complete London setup",
+    plans: ["Finish with c3, Nbd2, Bd3 and kingside castling.", "Use Ne5 as a stable outpost when Black cannot dislodge it profitably.", "After …Bxf4, exf4 is healthy: the doubled pawn controls e5 and gives White a semi-open e-file for central pressure."],
   },
   g6: {
-    title: "Attack the fianchetto",
-    plans: ["Coordinate Qd2 and Bh6 to exchange Black's key defender.", "Use h4–h5 to create entry points around the king.", "Castle long when the centre makes opposite-side attacks practical."],
+    title: "A sound London against the fianchetto",
+    plans: ["Complete development with Be2, Nbd2 and kingside castling.", "Use h3 to preserve the London bishop when …Nh5 is possible.", "Choose between Ne5 and a well-prepared c4 break."],
   },
   c5: {
-    title: "Active play against …c5",
-    plans: ["Consider the thematic e4 break while development gives you momentum.", "Use Nb5 to keep pressure on c7.", "Choose the moment to open the centre with king safety in mind."],
+    title: "Meet early queenside pressure",
+    plans: ["Protect b2 against …Qb6 without abandoning the London structure.", "Support d4 with c3 or choose c4 when the position calls for active play.", "Complete development before opening the centre."],
+  },
+  mirror: {
+    title: "A purposeful mirrored structure",
+    plans: ["Challenge Black's active bishop with Bd3 and welcome a useful exchange.", "Keep c3, Nbd2 and kingside castling as the stable base.", "Use Ne5 and a later e4 break to avoid passive symmetry."],
+  },
+  c6: {
+    title: "A flexible London against the Slav",
+    plans: ["Secure d4 with c3 before committing the centre.", "Use a bishop exchange to improve queen coordination when it is offered.", "Build toward Ne5 or e4 after completing development."],
+  },
+  b6: {
+    title: "Meet the queenside fianchetto",
+    plans: ["Keep d4 firm while Black develops on the long diagonal.", "Coordinate Nbd2 and Ne5 to increase central and kingside pressure.", "Castle before deciding between c4 and e4."],
+  },
+  nc6: {
+    title: "Exploit the committed c6 knight",
+    plans: ["Reinforce d4 because Black cannot support it with the c-pawn.", "Complete development and resolve the central break without tactics on your king.", "Use c3 and Nbd2 to keep the London structure coordinated."],
+  },
+  bg4: {
+    title: "Neutralise the bishop pin",
+    plans: ["Break the pin through Be2 or Bd3 and safe castling.", "Use h3 only when it improves the bishop or knight decision.", "Occupy e5 once the f3 knight can move with purpose."],
+  },
+  nh5: {
+    title: "Preserve the London bishop",
+    plans: ["Choose Bg5, Bg3 or a sound exchange according to Black's pawn moves.", "Use an h-pawn recapture to open the rook file when Black exchanges on g3.", "Return to c3, Nbd2 and kingside castling before opening the centre."],
   },
   default: {
-    title: "Jobava pieces ready for action",
-    plans: ["Keep the d4–Nc3–Bf4 setup coordinated.", "Look for Nb5, Ne5 and the central e4 break.", "When …Bf5 appears, keep f3–g4 available as a practical attacking plan."],
+    title: "A flexible London middlegame",
+    plans: ["Keep the d4, Nf3, Bf4 and e3 core coordinated.", "Develop with c3, Nbd2, Bd3 or Be2, then castle kingside.", "Use Ne5, c4 or e4 according to Black's setup rather than forcing an attack."],
   },
 };
 
@@ -80,11 +104,17 @@ export const trainingGoalFor = (openingId: OpeningId, lineId: string): TrainingG
     return caroGoals.two;
   }
 
-  if (openingId === "jobava-london") {
-    if (lineId.includes("bf5") || lineId.includes("c6-attack") || lineId.includes("nc6-f3")) return jobavaGoals.bf5;
-    if (lineId.includes("g6") || lineId.includes("kid")) return jobavaGoals.g6;
-    if (lineId.includes("c5")) return jobavaGoals.c5;
-    return jobavaGoals.default;
+  if (openingId === "london-system") {
+    if (lineId.includes("classical") || lineId.includes("e6")) return londonGoals.classical;
+    if (lineId.includes("g6")) return londonGoals.g6;
+    if (lineId.includes("c5") || lineId.includes("qb6")) return londonGoals.c5;
+    if (lineId.includes("bf5") || lineId.includes("mirror")) return londonGoals.mirror;
+    if (lineId.includes("nc6")) return londonGoals.nc6;
+    if (lineId.includes("c6")) return londonGoals.c6;
+    if (lineId.includes("b6")) return londonGoals.b6;
+    if (lineId.includes("bg4")) return londonGoals.bg4;
+    if (lineId.includes("nh5")) return londonGoals.nh5;
+    return londonGoals.default;
   }
 
   if (lineId.includes("london")) return slavGoals.london;

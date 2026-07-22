@@ -5,7 +5,7 @@ import { Chessboard } from "react-chessboard";
 import type { Square } from "chess.js";
 import { openingById, openings, pickUniformVariant } from "@/data/openings";
 import { trainingGoalFor } from "@/data/training-goals";
-import { candidatesFor, chessFromHistory, choicesFor, sanFor, weightedChoice } from "@/lib/repertoire-engine";
+import { chessFromHistory, createTrainingSession, sanFor, sessionChoices, sessionTarget, weightedChoice } from "@/lib/repertoire-engine";
 import { emptyStats, loadStats, saveStats } from "@/lib/storage";
 import type { Feedback, OpeningId, OpeningRepertoire, TakebackSnapshot, TrainerStats, UciMove } from "@/lib/types";
 import { Logo } from "./Logo";
@@ -29,9 +29,14 @@ export function OpeningTrainer() {
   const [reveal, setReveal] = useState(false);
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [completedLineId, setCompletedLineId] = useState<string | null>(null);
   const [takeback, setTakeback] = useState<TakebackSnapshot | null>(null);
   const [stats, setStats] = useState<TrainerStats>(emptyStats);
   const mobileSummaryRef = useRef<HTMLDivElement | null>(null);
+  const selectedSquareRef = useRef<Square | null>(null);
+  const draggingSourceRef = useRef<Square | null>(null);
+  const dragStartSelectionRef = useRef<Square | null>(null);
+  const suppressSquareClickRef = useRef(false);
   const pendingSuccessRef = useRef<{ playedSan: string; explanation: string; alternativeSans: string[] } | null>(null);
 
   const opening = useMemo(() => openingById(selectedOpening), [selectedOpening]);
@@ -40,15 +45,19 @@ export function OpeningTrainer() {
     () => opening?.variants.find((variant) => variant.id === selectedVariant) ?? null,
     [opening, selectedVariant],
   );
-  const sessionLines = useMemo(() => selectedVariantConfig && opening
-    ? opening.lines.filter((line) => selectedVariantConfig.lineIds?.includes(line.id) ?? line.family === selectedVariantConfig.family)
+  const opponentLines = useMemo(() => selectedVariantConfig && opening
+    ? opening.lines.filter((line) => selectedVariantConfig.opponentLineIds?.includes(line.id) ?? line.family === selectedVariantConfig.family)
     : [], [opening, selectedVariantConfig]);
-  const candidates = useMemo(() => candidatesFor(history, sessionLines), [history, sessionLines]);
-  const choices = useMemo(() => choicesFor(history, sessionLines), [history, sessionLines]);
   const playerColor = opening?.playerColor ?? "w";
+  const session = useMemo(() => opening && selectedVariantConfig
+    ? createTrainingSession(opening.lines, opponentLines, opening.playerColor, opening.moveOrderMoves)
+    : null, [opening, opponentLines, selectedVariantConfig]);
+  const choices = useMemo(() => session ? sessionChoices(session, history) : [], [history, session]);
+  const targetLine = useMemo(() => session ? sessionTarget(session, history) : null, [history, session]);
   const opponentColor = playerColor === "w" ? "b" : "w";
   const isUserTurn = game.turn() === playerColor;
-  const thinking = Boolean(selectedVariant) && !completed && !isUserTurn;
+  const atTarget = Boolean(targetLine);
+  const thinking = Boolean(selectedVariant) && !completed && !atTarget && !isUserTurn;
 
   const persistStats = useCallback((updater: (current: TrainerStats) => TrainerStats) => {
     setStats((current) => {
@@ -69,23 +78,28 @@ export function OpeningTrainer() {
   }, []);
 
   useEffect(() => {
-    if (!opening || !selectedVariant || completed) return;
+    selectedSquareRef.current = selectedSquare;
+  }, [selectedSquare]);
 
-    if (!choices.length) {
-      const finalLine = opening.lines.find((line) => line.moves.length === history.length && candidates.includes(line));
-      if (!finalLine) return;
+  useEffect(() => {
+    if (!opening || !selectedVariant || !session || completed) return;
+
+    if (targetLine) {
       const completionTimer = window.setTimeout(() => {
         setCompleted(true);
-        setFeedback({ kind: "success", title: "Target position reached", message: trainingGoalFor(opening.id, finalLine.id).title });
+        setCompletedLineId(targetLine.id);
+        pendingSuccessRef.current = null;
+        setFeedback({ kind: "success", title: "Target position reached", message: trainingGoalFor(opening.id, targetLine.id).title });
         persistStats((current) => ({
           ...current,
           completed: current.completed + 1,
-          linesSeen: { ...current.linesSeen, [finalLine.id]: (current.linesSeen[finalLine.id] ?? 0) + 1 },
+          linesSeen: { ...current.linesSeen, [targetLine.id]: (current.linesSeen[targetLine.id] ?? 0) + 1 },
         }));
       }, 0);
       return () => window.clearTimeout(completionTimer);
     }
 
+    if (!choices.length) return;
     if (isUserTurn) return;
     const timer = window.setTimeout(() => {
       const choice = weightedChoice(choices);
@@ -110,7 +124,7 @@ export function OpeningTrainer() {
       persistStats((current) => ({ ...current, positionsSeen: current.positionsSeen + 1 }));
     }, history.length === 0 ? 420 : 650);
     return () => window.clearTimeout(timer);
-  }, [candidates, choices, completed, history, isUserTurn, opening, opponentColor, persistStats, playerColor, selectedVariant]);
+  }, [choices, completed, history, isUserTurn, opening, opponentColor, persistStats, playerColor, selectedVariant, session, targetLine]);
 
   const acceptedSans = useMemo(
     () => choices.map((choice) => ({ uci: choice.uci, san: sanFor(game, choice.uci) })),
@@ -118,13 +132,14 @@ export function OpeningTrainer() {
   );
 
   const playUserMove = useCallback((from: string, to: string) => {
-    if (!opening || !isUserTurn || thinking || completed) return false;
+    if (!opening || !selectedVariant || !isUserTurn || thinking || completed || atTarget) return false;
     let playedUci: UciMove;
     try {
       const probe = chessFromHistory(history);
       const move = probe.move({ from, to, promotion: "q" });
       playedUci = `${move.from}${move.to}${move.promotion ?? ""}` as UciMove;
     } catch {
+      setSelectedSquare(from as Square);
       setFeedback({ kind: "error", title: "Illegal move", message: "That move is not legal in this position." });
       return false;
     }
@@ -139,12 +154,12 @@ export function OpeningTrainer() {
         ? { kind: "hint", title: "Here are the continuations", message: `Try one of these: ${acceptedSans.map((item) => item.san).join(", ")}.` }
         : { kind: "hint", title: "Not quite - try again", message: guide.hint });
       persistStats((current) => ({ ...current, errors: current.errors + 1 }));
-      setSelectedSquare(null);
+      setSelectedSquare(from as Square);
       return false;
     }
 
     const alternatives = accepted.filter((uci) => uci !== playedUci);
-    setTakeback({ history, candidateIds: candidates.map((line) => line.id), alternatives });
+    setTakeback({ history, alternatives });
     setHistory([...history, playedUci]);
     setAttempts(0);
     setReveal(false);
@@ -160,19 +175,69 @@ export function OpeningTrainer() {
       message: alternatives.length ? `${explanation} ${alternativeSans.join(" or ")} ${alternativeSans.length > 1 ? "were" : "was"} theoretical too.` : explanation,
     });
     return true;
-  }, [acceptedSans, attempts, candidates, choices, completed, game, history, isUserTurn, opening, persistStats, thinking]);
+  }, [acceptedSans, atTarget, attempts, choices, completed, game, history, isUserTurn, opening, persistStats, selectedVariant, thinking]);
 
   const handleSquareClick = useCallback(({ square }: { square: string }) => {
+    if (suppressSquareClickRef.current) {
+      suppressSquareClickRef.current = false;
+      return;
+    }
     const clicked = square as Square;
-    if (!isUserTurn || thinking || completed) return;
+    if (!selectedVariant || !isUserTurn || thinking || completed || atTarget) return;
     const piece = game.get(clicked);
     if (selectedSquare) {
+      if (clicked === selectedSquare) {
+        setSelectedSquare(null);
+        return;
+      }
       if (piece?.color === playerColor) setSelectedSquare(clicked);
       else playUserMove(selectedSquare, clicked);
       return;
     }
     if (piece?.color === playerColor) setSelectedSquare(clicked);
-  }, [completed, game, isUserTurn, playUserMove, playerColor, selectedSquare, thinking]);
+  }, [atTarget, completed, game, isUserTurn, playUserMove, playerColor, selectedSquare, selectedVariant, thinking]);
+
+  const handlePieceDrag = useCallback((square: string | null) => {
+    if (!square) return;
+    suppressSquareClickRef.current = true;
+    draggingSourceRef.current = square as Square;
+    dragStartSelectionRef.current = selectedSquareRef.current;
+    setSelectedSquare(square as Square);
+  }, []);
+
+  const releaseSquareClickSuppression = useCallback(() => {
+    window.setTimeout(() => {
+      suppressSquareClickRef.current = false;
+    }, 0);
+  }, []);
+
+  const handlePieceDrop = useCallback((sourceSquare: string, targetSquare: string | null) => {
+    const source = sourceSquare as Square;
+    draggingSourceRef.current = null;
+    releaseSquareClickSuppression();
+    if (!targetSquare) {
+      setSelectedSquare(dragStartSelectionRef.current);
+      dragStartSelectionRef.current = null;
+      return false;
+    }
+    if (sourceSquare === targetSquare) {
+      const wasSelectedBeforeDrag = dragStartSelectionRef.current === source;
+      dragStartSelectionRef.current = null;
+      setSelectedSquare(wasSelectedBeforeDrag ? null : source);
+      return false;
+    }
+
+    dragStartSelectionRef.current = null;
+    return playUserMove(sourceSquare, targetSquare);
+  }, [playUserMove, releaseSquareClickSuppression]);
+
+  const handlePieceDragCancel = useCallback(() => {
+    if (!draggingSourceRef.current) return;
+    draggingSourceRef.current = null;
+    setSelectedSquare(dragStartSelectionRef.current);
+    dragStartSelectionRef.current = null;
+    releaseSquareClickSuppression();
+  }, [releaseSquareClickSuppression]);
 
   const legalTargets = useMemo(() => selectedSquare
     ? game.moves({ square: selectedSquare, verbose: true }).map((move) => move.to)
@@ -204,7 +269,11 @@ export function OpeningTrainer() {
     setReveal(false);
     setSelectedSquare(null);
     setCompleted(false);
+    setCompletedLineId(null);
     setTakeback(null);
+    draggingSourceRef.current = null;
+    dragStartSelectionRef.current = null;
+    suppressSquareClickRef.current = false;
     pendingSuccessRef.current = null;
   }, [opening]);
 
@@ -236,6 +305,7 @@ export function OpeningTrainer() {
     if (!takeback) return;
     setHistory(takeback.history);
     setCompleted(false);
+    setCompletedLineId(null);
     pendingSuccessRef.current = null;
     setAttempts(0);
     setReveal(false);
@@ -244,13 +314,13 @@ export function OpeningTrainer() {
     setTakeback(null);
   };
 
-  const maxLength = Math.max(...candidates.map((line) => line.moves.length), history.length || 1);
-  const progress = Math.min(100, Math.round((history.length / maxLength) * 100));
+  const maxLength = session?.maxTargetLength ?? Math.max(1, history.length);
+  const progress = atTarget || completed ? 100 : Math.min(100, Math.round((history.length / maxLength) * 100));
   const moveHistory = game.history();
   const accuracyBase = stats.correctMoves + stats.errors;
   const accuracy = accuracyBase ? Math.round((stats.correctMoves / accuracyBase) * 100) : 100;
   const finalGoal = completed && opening
-    ? opening.lines.find((line) => line.moves.length === history.length && history.every((move, index) => line.moves[index] === move))
+    ? opening.lines.find((line) => line.id === completedLineId)
     : null;
   const finalGoalContent = finalGoal && opening ? trainingGoalFor(opening.id, finalGoal.id) : null;
   const pickerMode = !selectedOpening || !selectedVariant;
@@ -292,7 +362,16 @@ export function OpeningTrainer() {
             {thinking && <span className="thinking"><i /><i /><i /></span>}
           </div>
 
-          <div className="board-frame" aria-label={`Chessboard oriented from ${colorName(playerColor)}'s side`}>
+          <div
+            className="board-frame"
+            aria-label={`Chessboard oriented from ${colorName(playerColor)}'s side`}
+            onContextMenuCapture={handlePieceDragCancel}
+            onKeyDownCapture={(event) => {
+              if (event.key === "Escape") handlePieceDragCancel();
+            }}
+            onPointerCancelCapture={handlePieceDragCancel}
+            onTouchCancelCapture={handlePieceDragCancel}
+          >
             <Chessboard options={{
               id: "coomate-board",
               position: game.fen(),
@@ -304,10 +383,13 @@ export function OpeningTrainer() {
               darkSquareNotationStyle: { color: "rgba(239, 248, 251, .72)", fontWeight: 800 },
               lightSquareNotationStyle: { color: "rgba(31, 74, 96, .66)", fontWeight: 800 },
               squareStyles,
+              allowDragOffBoard: false,
               allowDrawingArrows: false,
+              dragActivationDistance: 8,
               arrows: reveal ? acceptedSans.map(({ uci }) => ({ startSquare: uci.slice(0, 2), endSquare: uci.slice(2, 4), color: "rgba(255, 178, 122, .92)" })) : [],
-              canDragPiece: ({ piece }) => Boolean(selectedVariant) && isUserTurn && !thinking && !completed && piece.pieceType.startsWith(playerColor),
-              onPieceDrop: ({ sourceSquare, targetSquare }) => targetSquare ? playUserMove(sourceSquare, targetSquare) : false,
+              canDragPiece: ({ piece }) => Boolean(selectedVariant) && isUserTurn && !thinking && !completed && !atTarget && piece.pieceType.startsWith(playerColor),
+              onPieceDrag: ({ square }) => handlePieceDrag(square),
+              onPieceDrop: ({ sourceSquare, targetSquare }) => handlePieceDrop(sourceSquare, targetSquare),
               onSquareClick: handleSquareClick,
             }} />
           </div>
@@ -315,8 +397,8 @@ export function OpeningTrainer() {
           <div className="player-row you">
             <div className={`avatar ${playerColor === "w" ? "white-avatar user-white-avatar" : "black-avatar"}`}>{playerColor === "w" ? "♙" : "♟"}</div>
             <div><strong>You</strong><span>{colorName(playerColor)}{opening ? ` · ${keepCompoundWordsTogether(opening.shortName)}` : ""}</span></div>
-            <span className={`turn-pill ${isUserTurn && selectedVariant && !completed ? "active" : ""}`}>
-              {!selectedOpening ? "Choose repertoire" : !selectedVariant ? "Choose variation" : completed ? "Line complete" : isUserTurn ? "Your move" : "Waiting"}
+            <span className={`turn-pill ${isUserTurn && selectedVariant && !completed && !atTarget ? "active" : ""}`}>
+              {!selectedOpening ? "Choose repertoire" : !selectedVariant ? "Choose variation" : completed || atTarget ? "Line complete" : isUserTurn ? "Your move" : "Waiting"}
             </span>
           </div>
 

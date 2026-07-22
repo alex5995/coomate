@@ -1,6 +1,6 @@
 export type UciMove = `${string}${string}`;
 export type PlayerColor = "w" | "b";
-export type OpeningId = "caro-kann" | "jobava-london" | "slav-universal";
+export type OpeningId = "caro-kann" | "london-system" | "slav-universal";
 
 export interface RepertoireLine {
   id: string;
@@ -17,7 +17,7 @@ export interface RepertoireLine {
 export interface TrainerVariant {
   id: string;
   family: string;
-  lineIds?: string[];
+  opponentLineIds?: string[];
   label: string;
   moves: string;
   description: string;
@@ -33,6 +33,7 @@ export interface OpeningRepertoire {
   playerColor: PlayerColor;
   lines: RepertoireLine[];
   variants: TrainerVariant[];
+  moveOrderMoves: UciMove[];
   guidanceFor: (moves: UciMove[]) => { hint: string; explanation: string };
 }
 
@@ -60,6 +61,5 @@ export interface Feedback {
 
 export interface TakebackSnapshot {
   history: UciMove[];
-  candidateIds: string[];
   alternatives: UciMove[];
 }

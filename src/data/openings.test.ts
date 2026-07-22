@@ -1,24 +1,35 @@
 import { describe, expect, it } from "vitest";
-import { jobavaVariants } from "./jobava-variants";
+import { londonVariants } from "./london-variants";
 import { openingById, openings, pickUniformVariant } from "./openings";
 
 describe("repertoire selection", () => {
-  it("assigns Black to the Caro-Kann and White to the Jobava", () => {
+  it("assigns Black to the Caro-Kann and White to the London System", () => {
     expect(openingById("caro-kann")?.playerColor).toBe("b");
-    expect(openingById("jobava-london")?.playerColor).toBe("w");
+    expect(openingById("london-system")?.playerColor).toBe("w");
     expect(openingById("slav-universal")?.playerColor).toBe("b");
     expect(openings).toHaveLength(3);
+    expect(openingById("caro-kann")?.variants).toHaveLength(12);
+    expect(openingById("london-system")?.variants).toHaveLength(9);
+    expect(openingById("slav-universal")?.variants).toHaveLength(10);
+  });
+
+  it("keeps each finite menu ordered and normalised", () => {
+    for (const opening of openings) {
+      const probabilities = opening.variants.map((variant) => variant.probability);
+      expect(probabilities).toEqual([...probabilities].sort((a, b) => b - a));
+      expect(probabilities.reduce((sum, probability) => sum + probability, 0)).toBe(100);
+    }
   });
 
   it("selects random variations uniformly rather than using displayed frequency", () => {
-    const step = 1 / jobavaVariants.length;
+    const step = 1 / londonVariants.length;
 
-    jobavaVariants.forEach((variant, index) => {
-      expect(pickUniformVariant(jobavaVariants, () => index * step + step / 2)).toEqual(variant);
+    londonVariants.forEach((variant, index) => {
+      expect(pickUniformVariant(londonVariants, () => index * step + step / 2)).toEqual(variant);
     });
   });
 
   it("keeps the final item at the random generator's upper boundary", () => {
-    expect(pickUniformVariant(jobavaVariants, () => 1)).toEqual(jobavaVariants.at(-1));
+    expect(pickUniformVariant(londonVariants, () => 1)).toEqual(londonVariants.at(-1));
   });
 });

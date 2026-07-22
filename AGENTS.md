@@ -13,7 +13,7 @@ CooMate is an English-language chess opening trainer built with Next.js App Rout
 The app contains three fixed-role repertoires:
 
 - Caro-Kann Defence: the user always plays Black and the computer always plays White.
-- Jobava London: the user always plays White and the computer always plays Black.
+- London System: the user always plays White and the computer always plays Black.
 - Universal Slav System: the user always plays Black against non-`1.e4` openings. White may begin with `1.d4`, `1.c4`, `1.Nf3`, `1.b3`, or `1.g3`, but never `1.e4`.
 
 The goal is practical opening training through curated middlegame positions, not engine analysis.
@@ -22,10 +22,13 @@ The goal is practical opening training through curated middlegame positions, not
 
 - Use `chess.js` as the source of truth for legal moves, FEN, SAN, history, and undo behavior.
 - Use `react-chessboard` for board interaction. Support drag-and-drop, square selection, mouse, and touch.
+- Keep tap-to-move and drag-to-move equivalent on pointer and touch devices. Tapping a selected piece deselects it; same-square, off-board, and cancelled drops must not show an error or count as an attempt, while rejected moves leave the source selected for an immediate retry.
 - Repertoire data must remain separate from the UI. Extend the typed repertoire and variant data instead of hardcoding chess knowledge in components.
 - The computer may only choose moves present in the selected curated repertoire. Do not add Stockfish, free move generation, a backend, accounts, or external runtime calls.
 - The home flow first asks which repertoire to train, then which explicit opponent variation to practise.
 - Opponent variations must be visible as separate menu entries. Multiple theoretical moves for the user's side remain accepted alternatives inside a variation.
+- Match repertoire continuations by the first four FEN fields so equivalent positions share theory across move-order transpositions. Build user choices from the full opening graph, restrict computer choices to the selected opponent variation, and prune any branch that cannot still reach one of that variation's curated targets.
+- Accept adjacent curated setup moves in either order when both player moves are allowlisted for that opening, the opponent reply remains fixed, and `chess.js` confirms the complete reordered line is legal and reaches the same target position. Keep captures and tactical moves outside this automatic flexibility.
 - Display approximate variation frequencies and order variations from most common to least common.
 - Random variation selection must be uniform across the displayed variations. Do not weight random mode by the displayed frequencies.
 - Computer choices inside a line may use curated weights that favor common continuations.
@@ -43,7 +46,9 @@ The goal is practical opening training through curated middlegame positions, not
 - In Black repertoires, do not trap the light-squared bishop behind an early `...e6`. Develop or exchange that bishop first unless a specifically curated exception is deliberately documented.
 - Caro-Kann Advance coverage must include common White choices such as `c3`, `Nf3`, `Nc3`, `h4`, and `dxc5`, including both defended-center and capture lines.
 - Caro-Kann Classical coverage should retain the practical `...Nf6` knight-development and exchange proposal as well as curated bishop-development alternatives.
-- Jobava lines must include its aggressive ideas. In particular, when Black develops the light-squared bishop to `f5`, relevant `f3` and `g4` pawn-expansion plans must not be rejected merely because a quieter line is also theoretical.
+- London System lines must support both `Bf4` before `Nf3` and `Nf3` before `Bf4` where the position permits. Preserve the normal `d4`, `Nf3`, `Bf4`, `e3`, `c3`, `Bd3` or `Be2`, `Nbd2`, kingside castling and `Ne5` plans; use `Nc3` only in specifically curated tactical positions.
+- London System lines may welcome `...Bxf4` followed by `exf4`. Treat the doubled f-pawns as a healthy thematic structure when the f4 pawn reinforces e5 and the semi-open e-file supports central play; keep the capture and recapture explicit in curated paths rather than move-order generation.
+- Universal Slav Anti-Jobava coverage remains distinct from the White London System repertoire and must include practical answers to White's `f3` and `g4` expansion.
 - Universal Slav lines must cover the major `1.d4`, English, Reti, and flank-opening families while preserving the light-squared-bishop rule above.
 - Any repertoire expansion must update or add legality tests so every complete path is legal and reaches a target position.
 
@@ -59,6 +64,7 @@ The goal is practical opening training through curated middlegame positions, not
 - The header logo must blend seamlessly with the banner. Preserve real transparency and verify it in a browser. The header image is intentionally served with Next Image optimization disabled to avoid stale opaque optimizer output.
 - Keep the favicon artwork close to the canvas edges so it remains legible at browser-tab size.
 - Desktop should fit the board, header, and active panel within the viewport. Long repertoire menus scroll inside their panel instead of expanding the page.
+- Variation-card copy, frequency and notation must stay inside the card at every width. Give notation its own wrapping row when a single-row layout would squeeze or overlap the descriptive copy.
 - At single-column breakpoints, starting a variation must return the page to the board. Progress, move feedback, alternatives, and the completion summary must appear immediately below the board rather than being hidden below the full side panel.
 - On mobile completion, automatically bring the target summary and new-exercise action into view. Keep move history and statistics available below.
 - Preserve essential keyboard accessibility, visible status messaging, and reduced-motion behavior.
@@ -66,10 +72,10 @@ The goal is practical opening training through curated middlegame positions, not
 ## Architecture map
 
 - `src/components/OpeningTrainer.tsx`: session orchestration and responsive trainer UI.
-- `src/data/*-repertoire.ts`: curated move trees.
+- `src/data/*-repertoire.ts`: curated move trees, including the White London System repertoire.
 - `src/data/*-variants.ts` and `src/data/trainer-variants.ts`: user-selectable opponent variations and displayed frequencies.
 - `src/data/training-goals.ts`: target-position teaching content.
-- `src/lib/repertoire-engine.ts`: repertoire traversal, candidate selection, SAN helpers, and weighted computer choices.
+- `src/lib/repertoire-engine.ts`: FEN-position repertoire graphs, live-path filtering, SAN helpers, and weighted computer choices.
 - `src/lib/storage.ts`: versioned local statistics and migrations.
 - `src/lib/types.ts`: shared domain types.
 - `src/app/globals.css`: application theme and responsive layout.

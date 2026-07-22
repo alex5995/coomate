@@ -25,10 +25,34 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 g1f3 e7e6 f1e2 c6c5 c2c3 b8c6 e1g1 c5d4 c3d4 g8e7 b1c3 e7c8",
   ),
   line(
+    "advance-nf3-bf5-nd7",
+    "Advance",
+    13,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 g1f3 b8d7 f1e2 e7e6 e1g1 g8e7 c2c4 d5c4 e2c4 e7d5 b1c3 d7b6 c4d3 f5d3 d1d3",
+  ),
+  line(
+    "advance-nf3-bf5-qb6",
+    "Advance",
+    11,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 g1f3 d8b6 f1d3 f5d3 d1d3 e7e6 e1g1 c6c5 d4c5 f8c5 b1c3 b8c6 c3a4 b6a5",
+  ),
+  line(
     "advance-shirov",
     "Advance",
     11,
     "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 b1c3 e7e6 g1e2 c6c5 c1e3 b8c6 d4c5 g8e7 e2d4 c6d4 e3d4 e7c6",
+  ),
+  line(
+    "advance-nc3-qb6",
+    "Advance",
+    9,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 b1c3 d8b6 g1f3 e7e6 f1e2 c6c5 e1g1 b8c6 c3a4 b6a5 c2c3 c5d4 c3d4",
+  ),
+  line(
+    "advance-nc3-g4",
+    "Advance",
+    8,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 b1c3 e7e6 g2g4 f5g6 h2h4 h7h5 g1e2 h5g4 e2f4 g6f5 f1d3 f5d3 d1d3",
   ),
   line(
     "advance-c3-main",
@@ -43,16 +67,46 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 c2c3 e7e6 f1e2 c6c5 g1f3 b8c6 e1g1 c5d4 c3d4 g8e7 b1c3 f5g4",
   ),
   line(
+    "advance-c3-bf5-c5",
+    "Advance",
+    13,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 c2c3 c6c5 g1f3 b8c6 f1e2 e7e6 e1g1 c5d4 c3d4 g8e7 b1c3 f5g4 c1e3 e7f5",
+  ),
+  line(
     "advance-tal",
     "Advance",
     13,
     "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 h2h4 h7h5 f1d3 f5d3 d1d3 e7e6 g1f3 d8a5 c1d2 a5a6",
   ),
   line(
+    "advance-tal-h6",
+    "Advance",
+    10,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 h2h4 h7h6 g2g4 f5h7 e5e6 g8f6 f1d3 h7d3 d1d3 d8c8 e6f7 e8f7",
+  ),
+  line(
+    "advance-tal-e6",
+    "Advance",
+    8,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c8f5 h2h4 e7e6 g2g4 f5g6 h4h5 g6e4 f2f3 e4c2 d1c2 c6c5 d4c5 b8c6",
+  ),
+  line(
     "advance-botvinnik",
     "Advance",
     8,
     "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 d4c5 b8c6 g1f3 c8g4 f1e2 e7e6 e1g1 f8c5 c2c4 g8e7",
+  ),
+  line(
+    "advance-takes-bf5",
+    "Advance",
+    7,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 d4c5 c8f5 c1e3 b8d7 g1f3 e7e6 b2b4 g8e7 f1d3 f5d3 d1d3 e7g6",
+  ),
+  line(
+    "advance-takes-nd7",
+    "Advance",
+    6,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 d4c5 b8d7 g1f3 d7c5 c1e3 c8g4 f1e2 e7e6 e1g1 g8e7 b1d2 e7g6",
   ),
   line(
     "advance-c5-c3-main",
@@ -65,6 +119,18 @@ export const repertoire: RepertoireLine[] = [
     "Advance",
     12,
     "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 c2c3 c5d4 c3d4 b8c6 g1f3 c8f5 b1c3 e7e6 f1e2 g8e7 e1g1 e7g6 c1e3 f8e7",
+  ),
+  line(
+    "advance-c5-c3-nc6-bg4",
+    "Advance",
+    11,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 c2c3 b8c6 g1f3 c8g4 f1e2 e7e6 e1g1 c5d4 c3d4 g8e7 b1d2 e7f5",
+  ),
+  line(
+    "advance-c5-c3-capture-bg4",
+    "Advance",
+    9,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 c2c3 c5d4 c3d4 c8g4 f1e2 e7e6 g1f3 b8c6 e1g1 g8e7 b1c3 e7f5 c1e3 f8e7",
   ),
   line(
     "advance-c5-nf3-capture",
@@ -85,10 +151,34 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 g1f3 c8g4 f1e2 e7e6 e1g1 b8c6 c2c3 g8e7 b1d2 e7g6 f1e1 f8e7",
   ),
   line(
+    "advance-c5-nf3-bf5",
+    "Advance",
+    13,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 g1f3 c8f5 d4c5 e7e6 c1e3 b8c6 f1b5 g8e7 e1g1 a7a6 b5a4 f5g4",
+  ),
+  line(
+    "advance-c5-nf3-capture-bf5",
+    "Advance",
+    10,
+    "e2e4 c7c6 d2d4 d7d5 e4e5 c6c5 g1f3 c5d4 f3d4 c8f5 f1d3 f5d3 d1d3 e7e6 e1g1 b8d7 f1e1 g8e7 b1d2 e7g6",
+  ),
+  line(
     "classical-main",
     "Classical",
     10,
     "e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5 e4g3 f5g6 h2h4 h7h6 g1f3 b8d7 h4h5 g6h7 f1d3 h7d3 d1d3 e7e6",
+  ),
+  line(
+    "classical-bf5-h5",
+    "Classical",
+    9,
+    "e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5 e4g3 f5g6 h2h4 h7h5 g1f3 b8d7 f1d3 g6d3 d1d3 e7e6 e1g1 g8f6",
+  ),
+  line(
+    "classical-bf5-be4",
+    "Classical",
+    8,
+    "e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 c8f5 e4g3 f5g6 h2h4 h7h6 g1f3 b8d7 h4h5 g6e4 g3e4 g8f6 f1d3 e7e6 e1g1",
   ),
   line(
     "classical-tartakower",
@@ -97,10 +187,22 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 g8f6 e4f6 e7f6 g1f3 f8d6 f1d3 e8g8 e1g1 f8e8 c2c3 b8d7 d1c2 d7f8 c1e3 c8e6 f1e1 d8d7",
   ),
   line(
+    "classical-tartakower-bf5",
+    "Classical",
+    18,
+    "e2e4 c7c6 d2d4 d7d5 b1c3 d5e4 c3e4 g8f6 e4f6 e7f6 g1f3 c8f5 f1d3 f5d3 d1d3 f8d6 e1g1 e8g8 f1e1 b8d7 c2c3 f8e8",
+  ),
+  line(
     "classical-nd2",
     "Classical",
     10,
     "e2e4 c7c6 d2d4 d7d5 b1d2 d5e4 d2e4 c8f5 e4g3 f5g6 g1f3 b8d7 f1d3 g6d3 d1d3 e7e6 e1g1 g8f6",
+  ),
+  line(
+    "classical-nd2-bf5-h5",
+    "Classical",
+    8,
+    "e2e4 c7c6 d2d4 d7d5 b1d2 d5e4 d2e4 c8f5 e4g3 f5g6 h2h4 h7h5 g1f3 b8d7 f1e2 e7e6 e1g1 g8f6",
   ),
   line(
     "classical-nd2-tartakower",
@@ -109,10 +211,28 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 b1d2 d5e4 d2e4 g8f6 e4f6 e7f6 g1f3 f8d6 f1d3 e8g8 e1g1 f8e8 c2c3 b8d7 d1c2 d7f8",
   ),
   line(
+    "classical-nd2-tartakower-bf5",
+    "Classical",
+    12,
+    "e2e4 c7c6 d2d4 d7d5 b1d2 d5e4 d2e4 g8f6 e4f6 e7f6 g1f3 c8f5 f1d3 f5d3 d1d3 f8d6 e1g1 e8g8 c2c3 b8d7",
+  ),
+  line(
     "exchange-main",
     "Exchange",
     13,
     "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 f1d3 b8c6 c2c3 g8f6 c1f4 c8g4 d1b3 d8d7 b1d2 e7e6 g1f3 f8d6 f4d6 d7d6 b3b7 a8b8 b7a6 e8g8",
+  ),
+  line(
+    "exchange-bd3-bf5",
+    "Exchange",
+    11,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 f1d3 b8c6 c2c3 g8f6 c1f4 c8f5 g1f3 e7e6 e1g1 f8d6 f4d6 d8d6 f1e1 e8g8 b1d2 a8e8",
+  ),
+  line(
+    "exchange-bd3-qc7",
+    "Exchange",
+    9,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 f1d3 d8c7 c2c3 b8c6 g1e2 c8g4 f2f3 g4d7 c1f4 e7e6 e1g1 f8d6 f4d6 c7d6 b1d2 g8e7",
   ),
   line(
     "exchange-nf6",
@@ -121,10 +241,28 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 f1d3 g8f6 c2c3 b8c6 c1f4 c8g4 g1f3 e7e6 b1d2 f8d6 f4d6 d8d6 e1g1 e8g8 f1e1 a8b8",
   ),
   line(
+    "exchange-bd3-early-bg4",
+    "Exchange",
+    10,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 f1d3 g8f6 c2c3 c8g4 d1b3 d8d7 c1f4 b8c6 b1d2 e7e6 g1f3 f8d6 f4d6 d7d6 e1g1 e8g8",
+  ),
+  line(
     "exchange-white-nf3-nc6",
     "Exchange",
     14,
     "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3 b8c6 f1d3 c8g4 c2c3 e7e6 c1f4 f8d6 f4d6 d8d6 b1d2 g8f6 e1g1 e8g8 f1e1 a8b8",
+  ),
+  line(
+    "exchange-nf3-nc6-bf5",
+    "Exchange",
+    11,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3 b8c6 f1d3 c8f5 c1f4 e7e6 e1g1 f8d6 f4d6 d8d6 c2c3 g8e7 f1e1 e8g8 b1d2 a8b8",
+  ),
+  line(
+    "exchange-nf3-bg4",
+    "Exchange",
+    10,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3 c8g4 f1e2 b8c6 e1g1 e7e6 c1f4 f8d6 f4d6 d8d6 c2c3 g8f6 b1d2 e8g8 f1e1 a8b8",
   ),
   line(
     "exchange-white-nf3-nf6",
@@ -133,10 +271,28 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3 g8f6 f1d3 b8c6 e1g1 c8g4 c2c3 e7e6 c1f4 f8d6 f4d6 d8d6 b1d2 e8g8 f1e1 a8b8",
   ),
   line(
+    "exchange-nf3-nf6-bf5",
+    "Exchange",
+    9,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3 g8f6 f1d3 c8f5 c1f4 e7e6 e1g1 f8d6 f4d6 d8d6 c2c3 e8g8 f1e1 b8c6 b1d2 a8b8",
+  ),
+  line(
     "panov-main",
     "Panov",
     14,
     "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 b8c6 g1f3 c8g4 c4d5 f6d5 f1e2 e7e6 e1g1 f8e7",
+  ),
+  line(
+    "panov-nf6-bg4",
+    "Panov",
+    11,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 c8g4 f1e2 e7e6 g1f3 f8e7 e1g1 e8g8 c4d5 e6d5",
+  ),
+  line(
+    "panov-nf6-dxc4",
+    "Panov",
+    9,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 g8f6 b1c3 d5c4 f1c4 c8f5 g1f3 e7e6 e1g1 f8e7 d1e2 e8g8",
   ),
   line(
     "panov-nc6",
@@ -145,10 +301,28 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 b8c6 g1f3 g8f6 b1c3 c8g4 c4d5 f6d5 f1e2 e7e6 e1g1 f8e7",
   ),
   line(
+    "panov-bf5",
+    "Panov",
+    7,
+    "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 c2c4 c8f5 b1c3 e7e6 g1f3 g8f6 d1b3 b8c6 c4d5 e6d5 c1g5 f8e7",
+  ),
+  line(
     "fantasy-main",
     "Fantasy",
     10,
     "e2e4 c7c6 d2d4 d7d5 f2f3 d5e4 f3e4 e7e5 g1f3 e5d4 f1c4 g8f6 e1g1 f8e7 e4e5 f6d5 d1d4 c8e6",
+  ),
+  line(
+    "fantasy-g6",
+    "Fantasy",
+    8,
+    "e2e4 c7c6 d2d4 d7d5 f2f3 g7g6 b1c3 f8g7 c1e3 c8f5 d1d2 e7e6 e1c1 g8e7 h2h4 h7h5 g1h3 b8d7",
+  ),
+  line(
+    "fantasy-dxe4-nf6",
+    "Fantasy",
+    8,
+    "e2e4 c7c6 d2d4 d7d5 f2f3 d5e4 f3e4 g8f6 b1c3 e7e5 d4e5 d8d1 c3d1 f6e4 f1d3 e4c5 g1f3 c5d3",
   ),
   line(
     "fantasy-e6",
@@ -157,16 +331,46 @@ export const repertoire: RepertoireLine[] = [
     "e2e4 c7c6 d2d4 d7d5 f2f3 d8b6 b1c3 d5e4 f3e4 e7e5 g1f3 e5d4 d1d4 b6d4 f3d4 g8f6",
   ),
   line(
+    "fantasy-qb6-c3",
+    "Fantasy",
+    7,
+    "e2e4 c7c6 d2d4 d7d5 f2f3 d8b6 c2c3 e7e5 d4e5 f8c5 g1h3 c8h3 g2h3 b8d7 f3f4 e8c8",
+  ),
+  line(
     "two-knights-bg4",
     "Two Knights",
     15,
     "e2e4 c7c6 b1c3 d7d5 g1f3 c8g4 h2h3 g4f3 d1f3 e7e6 d2d4 g8f6 f1d3 d5e4 c3e4 b8d7 e1g1 f8e7",
   ),
   line(
+    "two-knights-bg4-bh5",
+    "Two Knights",
+    11,
+    "e2e4 c7c6 b1c3 d7d5 g1f3 c8g4 h2h3 g4h5 e4d5 c6d5 f1b5 b8c6 d2d4 e7e6 g2g4 h5g6 f3e5 g8e7",
+  ),
+  line(
+    "two-knights-bg4-gxf3",
+    "Two Knights",
+    9,
+    "e2e4 c7c6 b1c3 d7d5 g1f3 c8g4 h2h3 g4f3 g2f3 e7e6 d2d4 g8f6 h1g1 g7g6 c1f4 f8g7 d1d2 e8g8",
+  ),
+  line(
     "two-knights-nf6",
     "Two Knights",
     10,
     "e2e4 c7c6 b1c3 d7d5 g1f3 g8f6 e4e5 f6e4 c3e2 c8g4 f3d4 g4e2 d1e2 e7e6 d2d3 b8d7 f2f3 e4c5",
+  ),
+  line(
+    "two-knights-nf6-bf5",
+    "Two Knights",
+    9,
+    "e2e4 c7c6 b1c3 d7d5 g1f3 g8f6 e4e5 f6e4 c3e2 c8f5 d2d3 e4c5 e2g3 f5g6 c1e3 e7e6 f1e2 b8d7",
+  ),
+  line(
+    "two-knights-nf6-exchange",
+    "Two Knights",
+    8,
+    "e2e4 c7c6 b1c3 d7d5 g1f3 g8f6 e4d5 c6d5 d2d4 b8c6 f1b5 c8f5 e1g1 e7e6 f3e5 a8c8 f1e1 f8e7",
   ),
 ];
 
@@ -182,6 +386,11 @@ export const blackMoveGuidance: Record<string, { hint: string; explanation: stri
   h7h6: { hint: "Create a retreat square for the bishop without weakening the king too much.", explanation: "…h6 prepares …Bh7 in the Classical line." },
   h7h5: { hint: "Stop the h-pawn while keeping your bishop active.", explanation: "…h5 is the thematic response to the Tal Variation." },
   b8c6: { hint: "Develop with direct pressure on d4.", explanation: "…Nc6 increases pressure on White's centre." },
+  b8d7: { hint: "Develop the queenside knight while keeping flexible pressure on e5 and c5.", explanation: "…Nd7 supports the thematic central breaks without obstructing the c-pawn." },
+  d8b6: { hint: "Increase the pressure on both d4 and b2 before White completes development.", explanation: "…Qb6 creates useful queenside pressure while the centre is still stable." },
+  d8c7: { hint: "Coordinate the queen with the central files and prepare active development.", explanation: "…Qc7 supports flexible play against the Exchange structure." },
+  g7g6: { hint: "Prepare a safe kingside fianchetto, then activate the other bishop before closing the centre.", explanation: "…g6 gives the Fantasy centre a flexible fianchetto treatment." },
+  d5c4: { hint: "Release the central tension and make White spend a tempo recovering the pawn.", explanation: "…dxc4 temporarily deflects White's bishop before Black completes development." },
   e7e5: { hint: "React energetically while White's centre is still fragile.", explanation: "…e5 is the main break against the Fantasy Variation." },
 };
 

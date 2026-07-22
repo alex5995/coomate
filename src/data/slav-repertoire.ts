@@ -48,6 +48,12 @@ export const slavRepertoire: RepertoireLine[] = [
     10,
     "d2d4 d7d5 c2c4 c7c6 b1c3 g8f6 e2e3 c8f5 d1b3 d8b6 g1f3 e7e6 c4c5 b6b3 a2b3 b8d7 b3b4 f8e7",
   ),
+  line(
+    "slav-main-early-bf5",
+    "Slav · Queen's Gambit",
+    15,
+    "d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 c8f5 c4d5 c6d5 c1f4 b8c6 e2e3 e7e6 f1b5 f8d6 e1g1 e8g8",
+  ),
 
   line(
     "slav-london-mirror",
@@ -72,6 +78,12 @@ export const slavRepertoire: RepertoireLine[] = [
     "London",
     11,
     "d2d4 d7d5 c1f4 g8f6 e2e3 c7c6 g1f3 c8f5 f1d3 f5d3 d1d3 e7e6 e1g1 f8e7 c2c4 e8g8 b1c3 b8d7",
+  ),
+  line(
+    "slav-london-bg4",
+    "London",
+    14,
+    "d2d4 d7d5 g1f3 g8f6 c1f4 c7c6 e2e3 c8g4 f1e2 e7e6 e1g1 f8d6 f4g3 e8g8 c2c4 d8e7 b1d2 b8d7",
   ),
 
   line(
@@ -98,6 +110,12 @@ export const slavRepertoire: RepertoireLine[] = [
     10,
     "c2c4 c7c6 b1c3 d7d5 e2e3 g8f6 g1f3 c8f5 d2d4 e7e6 f1d3 f5d3 d1d3 f8e7 e1g1 e8g8",
   ),
+  line(
+    "slav-english-g3-bf5-first",
+    "English · setup Slav",
+    14,
+    "c2c4 c7c6 g1f3 d7d5 g2g3 c8f5 f1g2 g8f6 e1g1 e7e6 d2d3 f8e7 d1c2 e8g8 b1d2 b8d7 b2b3 h7h6",
+  ),
 
   line(
     "slav-reti-c4-main",
@@ -116,6 +134,12 @@ export const slavRepertoire: RepertoireLine[] = [
     "Réti · c4",
     11,
     "g1f3 d7d5 c2c4 c7c6 g2g3 g8f6 f1g2 c8f5 e1g1 e7e6 d2d3 f8e7 b1d2 e8g8 b2b3 b8d7",
+  ),
+  line(
+    "slav-reti-c4-early-capture",
+    "Réti · c4",
+    15,
+    "g1f3 d7d5 c2c4 c7c6 d2d4 d5c4 e2e3 c8f5 f1c4 e7e6 e1g1 g8f6 b1c3 f8d6 d1e2 e8g8",
   ),
 
   line(
@@ -136,6 +160,12 @@ export const slavRepertoire: RepertoireLine[] = [
     10,
     "d2d4 d7d5 b1c3 g8f6 c1f4 a7a6 e2e3 c8f5 g2g4 f5g6 h2h4 h7h6 h4h5 g6h7 f1d3 h7d3 d1d3 e7e6",
   ),
+  line(
+    "slav-jobava-c6-a6",
+    "Anti-Jobava",
+    12,
+    "d2d4 d7d5 b1c3 g8f6 c1f4 c7c6 e2e3 a7a6 h2h3 c8f5 g1f3 e7e6 f1d3 f5d3 d1d3 f8d6 e1g1 e8g8",
+  ),
 
   line(
     "slav-colle-main",
@@ -155,6 +185,12 @@ export const slavRepertoire: RepertoireLine[] = [
     9,
     "d2d4 d7d5 e2e3 g8f6 f1d3 c7c6 f2f4 c8g4 g1f3 e7e6 e1g1 b8d7 b1d2 f8d6 d1e1 e8g8",
   ),
+  line(
+    "slav-colle-early-bg4",
+    "Colle and Zukertort",
+    13,
+    "d2d4 d7d5 g1f3 g8f6 e2e3 c8g4 f1e2 e7e6 e1g1 f8d6 c2c4 c7c6 b1c3 b8d7 b2b3 e8g8 c1b2 d8e7 h2h3 g4h5",
+  ),
 
   line(
     "slav-reti-kia",
@@ -167,6 +203,12 @@ export const slavRepertoire: RepertoireLine[] = [
     "Réti · Fianchetto",
     12,
     "g1f3 d7d5 b2b3 g8f6 c1b2 c7c6 e2e3 c8f5 f1e2 e7e6 e1g1 f8e7 d2d3 e8g8 b1d2 b8d7",
+  ),
+  line(
+    "slav-reti-kia-bg4",
+    "Réti · Fianchetto",
+    13,
+    "g1f3 d7d5 g2g3 c7c6 f1g2 c8g4 e1g1 b8d7 d2d3 e7e6 b1d2 f8d6 e2e4 g8e7 h2h3 g4h5 d1e2 e8g8",
   ),
 
   line(
@@ -181,6 +223,18 @@ export const slavRepertoire: RepertoireLine[] = [
     10,
     "c2c4 c7c6 e2e4 d7d5 e4e5 c8f5 d2d4 e7e6 b1c3 g8e7 g1f3 b8d7 f1e2 d5c4 e2c4 e7d5 e1g1 f8e7",
   ),
+  line(
+    "slav-english-e4-queen-recapture",
+    "English · Early e4",
+    13,
+    "c2c4 c7c6 e2e4 d7d5 e4d5 c6d5 c4d5 d8d5 b1c3 d5d8 g1f3 g8f6 d2d4 c8f5 f1e2 e7e6 e1g1 f8e7 c1f4 e8g8",
+  ),
+  line(
+    "slav-english-e5-h5",
+    "English · Early e4",
+    12,
+    "c2c4 c7c6 e2e4 d7d5 e4e5 c8f5 d2d4 h7h5 b1c3 e7e6 g1f3 b8d7 f1e2 g8e7 e1g1 d5c4 e2c4 d7b6 c4b3 e7d5",
+  ),
 
   line(
     "slav-veresov",
@@ -194,6 +248,18 @@ export const slavRepertoire: RepertoireLine[] = [
     10,
     "d2d4 d7d5 e2e4 d5e4 b1c3 g8f6 f2f3 e4f3 g1f3 c7c6 f1c4 c8f5 e1g1 e7e6 f3e5 f5g6 h2h4 b8d7 d1e2 d7e5",
   ),
+  line(
+    "slav-veresov-c6",
+    "Veresov and Gambits",
+    13,
+    "d2d4 d7d5 b1c3 c7c6 e2e4 d5e4 c3e4 c8f5 e4g3 f5g6 h2h4 h7h6 g1f3 b8d7 f1d3 g6d3 d1d3 e7e6 e1g1 g8f6",
+  ),
+  line(
+    "slav-blackmar-diemer-c6",
+    "Veresov and Gambits",
+    12,
+    "d2d4 d7d5 e2e4 d5e4 b1c3 g8f6 f2f3 c7c6 f1c4 e4f3 g1f3 c8f5 e1g1 e7e6 f3e5 b8d7 d1e2 f8e7 c1f4 e8g8",
+  ),
 
   line(
     "slav-larsen-b3",
@@ -206,6 +272,18 @@ export const slavRepertoire: RepertoireLine[] = [
     "Flank Openings",
     10,
     "g2g3 d7d5 f1g2 c7c6 g1f3 c8f5 d2d3 g8f6 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 e8g8",
+  ),
+  line(
+    "slav-larsen-c6-first",
+    "Flank Openings",
+    12,
+    "b2b3 c7c6 c1b2 d7d5 g1f3 g8f6 e2e3 c8f5 f1e2 e7e6 e1g1 f8e7 d2d3 e8g8 b1d2 b8d7",
+  ),
+  line(
+    "slav-g3-c6-first",
+    "Flank Openings",
+    11,
+    "g2g3 c7c6 f1g2 d7d5 g1f3 g8f6 d2d3 c8f5 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 e8g8",
   ),
 ];
 
@@ -221,7 +299,9 @@ const guidance: Record<string, { hint: string; explanation: string }> = {
   e7e6: { hint: "Now that the c8 bishop is outside, consolidate the centre.", explanation: "…e6 supports d5 without trapping the light-squared bishop." },
   c7c5: { hint: "Challenge White's centre before the setup becomes automatic.", explanation: "…c5 is the most direct break against the London and other slow structures." },
   d8b6: { hint: "Put queen pressure on b2 and d4.", explanation: "…Qb6 exploits the weakened diagonal in systems with Bf4." },
+  d8d5: { hint: "Recover the central pawn before White consolidates it.", explanation: "…Qxd5 restores material in the Panov structure while keeping development flexible." },
   a7a6: { hint: "Stop Nb5 and prepare queenside expansion.", explanation: "…a6 is a flexible move against the Jobava and in Chebanenko structures." },
+  h7h5: { hint: "Give the active bishop a retreat square before completing development.", explanation: "…h5 is a practical Advance setup that preserves the bishop on f5 and restrains White's kingside pawns." },
   f5d3: { hint: "Exchange White's most active bishop.", explanation: "…Bxd3 reduces White's attack and prevents the bishop from permanently targeting h7." },
 };
 
