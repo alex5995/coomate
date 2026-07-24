@@ -489,7 +489,7 @@ export function OpeningTrainer() {
             <section className="moves-section">
               <div className="section-title"><h2>Move history</h2><span>{Math.ceil(history.length / 2)} moves</span></div>
               <div className="move-list">
-                {!moveHistory.length && <p className="empty-moves">{playerColor === "w" ? "Your move: play 1.d4." : "The game will begin in a moment…"}</p>}
+                {!moveHistory.length && <p className="empty-moves">{playerColor === "w" ? `Your move: play ${acceptedSans[0]?.san ?? "the opening move"}.` : "The game will begin in a moment…"}</p>}
                 {Array.from({ length: Math.ceil(moveHistory.length / 2) }, (_, index) => (
                   <div className="move-row" key={index}>
                     <span className="move-number">{index + 1}.</span>

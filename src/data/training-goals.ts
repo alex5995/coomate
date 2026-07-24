@@ -94,6 +94,36 @@ const slavGoals: Record<string, TrainingGoal> = {
   },
 };
 
+const nimzoLarsenWhiteGoals: Record<string, TrainingGoal> = {
+  exchange: {
+    title: "The e5 clamp after the bishop trade",
+    plans: ["Use Bb5 and Bxc6 to remove a knight that supports e5.", "Coordinate f4 and Nf3 against the key central square.", "Castle before turning the positional bind into a kingside attack."],
+  },
+  attack: {
+    title: "The complete Nimzo-Larsen attacking setup",
+    plans: ["Keep the b2 bishop aimed at e5.", "Build with e3, f4, Nf3 and kingside castling.", "Bring the remaining pieces into the attack before advancing more pawns."],
+  },
+  adaptive: {
+    title: "Adapt the Nimzo-Larsen setup",
+    plans: ["Keep b3, Bb2 and e3 as the stable core.", "Omit Bb5 or f4 when Black's setup makes that plan unavailable.", "Complete development and challenge e5 with the pieces or a prepared central break."],
+  },
+};
+
+const nimzoLarsenBlackGoals: Record<string, TrainingGoal> = {
+  exchange: {
+    title: "Remove White's central knight",
+    plans: ["Use ...Bb4 and ...Bxc3 to remove a defender of e4.", "Play ...f5 when the pawn advance is tactically safe.", "Complete ...Nf6 and O-O before increasing the pressure."],
+  },
+  centre: {
+    title: "Pressure White's centre from the long diagonal",
+    plans: ["Develop ...b6, ...Bb7 and ...e6 in that order.", "Target e4 with ...Nf6 and choose ...f5, ...c5 or ...d5 from White's setup.", "Castle before opening the centre."],
+  },
+  adaptive: {
+    title: "The reversed Nimzo-Larsen setup",
+    plans: ["Keep ...b6, ...Bb7 and ...e6 as the stable core.", "If ...Bb4 or ...f5 is unavailable, challenge the centre with ...c5 or ...d5.", "Develop ...Nf6 and castle before expanding."],
+  },
+};
+
 export const trainingGoalFor = (openingId: OpeningId, lineId: string): TrainingGoal => {
   if (openingId === "caro-kann") {
     if (lineId.startsWith("advance")) return caroGoals.advance;
@@ -117,8 +147,28 @@ export const trainingGoalFor = (openingId: OpeningId, lineId: string): TrainingG
     return londonGoals.default;
   }
 
-  if (lineId.includes("london")) return slavGoals.london;
-  if (lineId.includes("jobava")) return slavGoals.jobava;
-  if (lineId.includes("english") || lineId.includes("reti") || lineId.includes("larsen") || lineId.includes("grob")) return slavGoals.flank;
+  if (openingId === "slav-universal") {
+    if (lineId.includes("london")) return slavGoals.london;
+    if (lineId.includes("jobava")) return slavGoals.jobava;
+    if (lineId.includes("english") || lineId.includes("reti") || lineId.includes("larsen") || lineId.includes("grob")) return slavGoals.flank;
+    return slavGoals.default;
+  }
+
+  if (openingId === "nimzo-larsen-white") {
+    if (lineId.includes("exchange") || lineId.includes("classical")) return nimzoLarsenWhiteGoals.exchange;
+    if (lineId.includes("c6") || lineId.includes("dutch") || lineId.includes("mirror") || lineId.includes("kid")) {
+      return nimzoLarsenWhiteGoals.adaptive;
+    }
+    return nimzoLarsenWhiteGoals.attack;
+  }
+
+  if (openingId === "nimzo-larsen-black") {
+    if (lineId.includes("bb4") || lineId.includes("jobava")) return nimzoLarsenBlackGoals.exchange;
+    if (lineId.includes("e4") || lineId.includes("qg") || lineId.includes("london") || lineId.includes("colle")) {
+      return nimzoLarsenBlackGoals.centre;
+    }
+    return nimzoLarsenBlackGoals.adaptive;
+  }
+
   return slavGoals.default;
 };

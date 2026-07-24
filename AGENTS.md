@@ -10,11 +10,13 @@ Keep it concise and current. Record final decisions only - do not append a chron
 
 CooMate is an English-language chess opening trainer built with Next.js App Router, React, and TypeScript.
 
-The app contains three fixed-role repertoires:
+The app contains five fixed-role repertoires:
 
 - Caro-Kann Defence: the user always plays Black and the computer always plays White.
 - London System: the user always plays White and the computer always plays Black.
 - Universal Slav System: the user always plays Black against non-`1.e4` openings. White may begin with `1.d4`, `1.c4`, `1.Nf3`, `1.b3`, or `1.g3`, but never `1.e4`.
+- Nimzo-Larsen System - White: the user always plays White beginning with `1.b3`, followed by `Bb2` and `e3`.
+- Nimzo-Larsen System - Black: the user always plays Black with the reversed `...b6`, `...Bb7`, and `...e6` setup.
 
 The goal is practical opening training through curated middlegame positions, not engine analysis.
 
@@ -50,6 +52,8 @@ The goal is practical opening training through curated middlegame positions, not
 - London System lines may welcome `...Bxf4` followed by `exf4`. Treat the doubled f-pawns as a healthy thematic structure when the f4 pawn reinforces e5 and the semi-open e-file supports central play; keep the capture and recapture explicit in curated paths rather than move-order generation.
 - Universal Slav Anti-Jobava coverage remains distinct from the White London System repertoire and must include practical answers to White's `f3` and `g4` expansion.
 - Universal Slav lines must cover the major `1.d4`, English, Reti, and flank-opening families while preserving the light-squared-bishop rule above.
+- Nimzo-Larsen White lines must begin with `1.b3` and preserve the `Bb2` and `e3` core. When available, use `Bb5` and `Bxc6` to remove a knight, then `f4`, `Nf3`, and kingside castling to control e5. If `Bb5` or `f4` is unavailable, adapt the setup without forcing the motif.
+- Nimzo-Larsen Black lines must reverse the same ideas with `...b6`, `...Bb7`, and `...e6`. When available, use `...Bb4` and `...Bxc3`, then `...f5`, `...Nf6`, and kingside castling to control e4. If the standard plan is unavailable, challenge the centre with `...c5` or `...d5`.
 - Any repertoire expansion must update or add legality tests so every complete path is legal and reaches a target position.
 
 ## UI and content rules

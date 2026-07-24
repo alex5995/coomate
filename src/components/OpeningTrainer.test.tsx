@@ -22,13 +22,13 @@ const boardOptions = () => {
 
 const startWhiteSession = () => {
   render(<OpeningTrainer />);
-  fireEvent.click(screen.getByRole("button", { name: /You always play White/ }));
+  fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
   fireEvent.click(screen.getByRole("button", { name: /Random variation/ }));
 };
 
 const chooseWhiteRepertoire = () => {
   render(<OpeningTrainer />);
-  fireEvent.click(screen.getByRole("button", { name: /You always play White/ }));
+  fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
 };
 
 const dragPiece = (square: string) => {
@@ -54,7 +54,7 @@ const dropPiece = (sourceSquare: string, targetSquare: string | null) => {
 describe("OpeningTrainer board interaction", () => {
   beforeEach(() => {
     chessboardMock.options = undefined;
-    window.localStorage.clear();
+    window.localStorage?.clear();
     Object.defineProperty(window, "matchMedia", {
       configurable: true,
       value: vi.fn().mockReturnValue({
@@ -89,6 +89,32 @@ describe("OpeningTrainer board interaction", () => {
     expect(screen.queryAllByText("Illegal move")).toHaveLength(0);
   });
 
+  it("offers the Nimzo-Larsen System as separate White and Black repertoires", () => {
+    render(<OpeningTrainer />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Nimzo.*Larsen System - White.*You always play White/ }));
+    expect(screen.getByRole("heading", { name: /Choose a variation · Nimzo.*Larsen White/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Classical · …d5 and …Nc6/ })).toBeInTheDocument();
+    expect(screen.getByLabelText("Chessboard oriented from White's side")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "← Change repertoire" }));
+    fireEvent.click(screen.getByRole("button", { name: /Nimzo.*Larsen System - Black.*You always play Black/ }));
+    expect(screen.getByRole("heading", { name: /Choose a variation · Nimzo.*Larsen Black/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /1.d4 · Queen's Gambit/ })).toBeInTheDocument();
+    expect(screen.getByLabelText("Chessboard oriented from Black's side")).toBeInTheDocument();
+  });
+
+  it("starts the White Nimzo-Larsen exercise with 1.b3", () => {
+    render(<OpeningTrainer />);
+    fireEvent.click(screen.getByRole("button", { name: /Nimzo.*Larsen System - White.*You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Classical · …d5 and …Nc6/ }));
+
+    expect(screen.getByText("Your move: play b3.")).toBeInTheDocument();
+    dragPiece("b2");
+    expect(dropPiece("b2", "b3")).toBe(true);
+    expect(screen.queryAllByText(/b3 is correct/).length).toBeGreaterThan(0);
+  });
+
   it("selects and deselects a piece with successive taps", () => {
     startWhiteSession();
 
@@ -116,7 +142,7 @@ describe("OpeningTrainer board interaction", () => {
   it("deselects with a stale drag-start callback retained by the board", () => {
     render(<OpeningTrainer />);
     const retainedDragStart = boardOptions().onPieceDrag;
-    fireEvent.click(screen.getByRole("button", { name: /You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
     fireEvent.click(screen.getByRole("button", { name: /Random variation/ }));
 
     act(() => boardOptions().onSquareClick?.({ piece: { pieceType: "wP" }, square: "e2" }));
@@ -210,7 +236,7 @@ describe("OpeningTrainer board interaction", () => {
   it("accepts the alternate London move order while Black follows the selected variation", () => {
     vi.useFakeTimers();
     render(<OpeningTrainer />);
-    fireEvent.click(screen.getByRole("button", { name: /You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
     fireEvent.click(screen.getByRole("button", { name: /Classical · …e6 and …Bd6/ }));
 
     dragPiece("d2");
@@ -245,7 +271,7 @@ describe("OpeningTrainer board interaction", () => {
     vi.useFakeTimers();
     vi.spyOn(Math, "random").mockReturnValue(0);
     render(<OpeningTrainer />);
-    fireEvent.click(screen.getByRole("button", { name: /You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
     fireEvent.click(screen.getByRole("button", { name: /Classical · …e6 and …Bd6/ }));
 
     plannedHistory.forEach((move, index) => {

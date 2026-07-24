@@ -1,10 +1,12 @@
 # CooMate
 
-A compact chess repertoire trainer covering three fixed-role repertoires:
+A compact chess repertoire trainer covering five fixed-role repertoires:
 
 - **Caro-Kann:** always play Black against White's main choices.
 - **London System:** always play White against Black's main replies.
 - **Universal Slav:** always play Black against `1.d4`, the English, the Réti and flank openings; the computer never begins with `1.e4`.
+- **Nimzo-Larsen System - White:** always play White beginning with `1.b3`, followed by `Bb2` and `e3`.
+- **Nimzo-Larsen System - Black:** always play Black with the reversed `...b6`, `...Bb7` and `...e6` setup.
 
 The home screen lets you choose a repertoire. Board orientation and the controlled side update automatically.
 
@@ -24,6 +26,8 @@ Open [http://localhost:3000](http://localhost:3000).
 - London System training covers classical `…e6/…Bd6`, early `…c5/…Qb6`, `…g6`, `…c6`, mirrored `…Bf5`, `…b6`, `…Nc6`, `…Bg4` and `…Nh5`. White keeps a flexible d4, Nf3, Bf4 and e3 core with c3, Nbd2, natural development and kingside castling.
 - The Universal Slav repertoire can begin with `1.d4`, `1.c4`, `1.Nf3`, `1.b3` or `1.g3`. It contains 43 lines covering the Main Slav, London, Jobava, Colle/Zukertort, Veresov, English, Réti and flank systems.
 - In the Black Slav lines, `…e6` is never suggested before the light-squared bishop has developed or been exchanged.
+- The Nimzo-Larsen White repertoire follows the video's `b3`, `Bb2` and `e3` core. When available, White uses `Bb5` and `Bxc6` to remove a knight, then `f4`, `Nf3` and castling to control e5. If `Bb5` or `f4` is unavailable, the setup adapts without forcing the motif.
+- The Nimzo-Larsen Black repertoire reverses the same ideas with `...b6`, `...Bb7` and `...e6`. Black may use `...Bb4` and `...Bxc3`, then `...f5`, `...Nf6` and castling to control e4, or challenge the centre with `...c5` and `...d5` when the standard plan is unavailable.
 - Equivalent positions share curated continuations across move-order transpositions. Compatible moves for your side come from the full opening repertoire, while the computer remains inside the opponent variation you selected.
 - Variation cards are ordered by approximate frequency. Random variation selection remains uniformly distributed across all cards.
 - On desktop, the board fits the available height and long menus scroll internally without moving the whole page.
