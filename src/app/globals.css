@@ -67,6 +67,8 @@ button { font: inherit; }
 
 .brand-logo-image {
   display: block;
+  width: 92px;
+  height: 92px;
   max-width: none;
   transform: translate(-21px, -10px);
 }
@@ -381,6 +383,21 @@ button { font: inherit; }
 .feedback strong { font-size: 13px; }
 .feedback p { color: var(--muted); font-size: 12px; line-height: 1.48; margin: 4px 0 0; }
 
+.static-evaluation {
+  margin: 0 18px 14px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 12px;
+  border: 1px solid rgba(155, 203, 220, .2);
+  border-radius: 9px;
+  background: rgba(5, 21, 30, .28);
+}
+.static-evaluation span { color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.static-evaluation strong { grid-row: span 2; color: #dceff4; font-family: Georgia, serif; font-size: 20px; }
+.static-evaluation small { color: #778c94; font-size: 9px; }
+
 .secondary-action {
   display: block;
   width: calc(100% - 36px);
@@ -422,7 +439,10 @@ button { font: inherit; }
 }
 .move-row { display: grid; grid-template-columns: 36px 1fr 1fr; min-height: 32px; align-items: center; font-size: 12px; }
 .move-row:nth-child(even) { background: rgba(255,255,255,.018); }
-.move-row span { padding: 0 8px; }
+.move-row > span { padding: 0 8px; }
+.move-cell { display: flex; align-items: baseline; justify-content: space-between; gap: 5px; min-width: 0; padding: 0 8px; }
+.move-cell span { overflow: hidden; text-overflow: ellipsis; }
+.move-cell small { flex: 0 0 auto; color: #8fb4c0; font-size: 9px; font-variant-numeric: tabular-nums; }
 .move-number { color: #737c76; }
 .empty-moves { margin: 0; padding: 17px; color: #778079; font-size: 11px; text-align: center; }
 
@@ -447,9 +467,10 @@ button { font: inherit; }
   .mobile-session-summary .progress-track { margin: 0 3px; }
   .mobile-session-summary .progress-copy { padding: 8px 3px 10px; }
   .mobile-session-summary .feedback { margin: 0 0 10px; }
+  .mobile-session-summary .static-evaluation { margin: 0 0 10px; }
   .mobile-session-summary .secondary-action { width: 100%; margin: 0 0 10px; }
   .mobile-session-summary .goal-card { margin: 0 0 8px; }
-  .panel:not(.picker-panel) .training-content > :is(.progress-track, .progress-copy, .feedback, .secondary-action, .goal-card) { display: none; }
+  .panel:not(.picker-panel) .training-content > :is(.progress-track, .progress-copy, .feedback, .static-evaluation, .secondary-action, .goal-card) { display: none; }
 }
 
 @media (min-width: 961px) {
@@ -460,7 +481,7 @@ button { font: inherit; }
   .topbar { height: 64px; padding: 0 16px; }
   .brand { font-size: 19px; }
   .brand-mark { width: 44px; height: 44px; flex-basis: 44px; }
-  .brand-logo-image { transform: translate(-24px, -13px); }
+  .brand-logo-image { width: 78px; height: 78px; transform: translate(-18px, -8px); }
   .header-note { font-size: 0; }
   .trainer-layout { width: 100%; padding: 10px 10px 30px; gap: 14px; }
   .player-row { height: 50px; padding: 0 3px; }

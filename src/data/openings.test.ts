@@ -36,4 +36,17 @@ describe("repertoire selection", () => {
   it("keeps the final item at the random generator's upper boundary", () => {
     expect(pickUniformVariant(londonVariants, () => 1)).toEqual(londonVariants.at(-1));
   });
+
+  it("keeps every recorded position within one pawn for the trained side", () => {
+    for (const opening of openings) {
+      expect(opening.evaluation).toBeDefined();
+      for (const line of opening.lines) {
+        expect(line.evaluations, line.id).toHaveLength(line.moves.length + 1);
+        for (const whiteScore of line.evaluations ?? []) {
+          const userScore = opening.playerColor === "w" ? whiteScore : -whiteScore;
+          expect(userScore, line.id).toBeGreaterThanOrEqual(-100);
+        }
+      }
+    }
+  });
 });

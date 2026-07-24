@@ -56,6 +56,13 @@ describe("Nimzo-Larsen Black repertoire", () => {
     );
   });
 
+  it.each(nimzoLarsenBlackRepertoire.map((line) => [line.id, line]))("%s has a complete static evaluation and never drops below -1.00 for Black", (_, line) => {
+    expect(line.evaluations).toHaveLength(line.moves.length + 1);
+    line.evaluations?.forEach((whiteScore, index) => {
+      expect(-whiteScore, `${line.id}: static evaluation after ply ${index}`).toBeGreaterThanOrEqual(-100);
+    });
+  });
+
   it.each(nimzoLarsenBlackRepertoire.map((line) => [line.id, line]))("%s never leaves Black down a piece after Black's move", (_, line) => {
     const chess = new Chess();
     line.moves.forEach((move, index) => {

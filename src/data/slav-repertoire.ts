@@ -1,4 +1,5 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
+import { slavEvaluations } from "./slav-evaluations";
 
 const line = (
   id: string,
@@ -11,6 +12,7 @@ const line = (
   family,
   weight,
   moves: moves.split(" ") as UciMove[],
+  evaluations: slavEvaluations[id],
   goal: {
     title: "Middlegame setup",
     plans: ["Complete development.", "Coordinate the pieces.", "Prepare the thematic pawn break."],
@@ -41,12 +43,6 @@ export const slavRepertoire: RepertoireLine[] = [
     "Slav · Queen's Gambit",
     11,
     "d2d4 d7d5 c2c4 c7c6 g1f3 g8f6 b1c3 a7a6 c4c5 c8f5 c1f4 b8d7 e2e3 e7e6 f1e2 f8e7 e1g1 e8g8",
-  ),
-  line(
-    "slav-early-nc3",
-    "Slav · Queen's Gambit",
-    10,
-    "d2d4 d7d5 c2c4 c7c6 b1c3 g8f6 e2e3 c8f5 d1b3 d8b6 g1f3 e7e6 c4c5 b6b3 a2b3 b8d7 b3b4 f8e7",
   ),
   line(
     "slav-main-early-bf5",
@@ -135,24 +131,12 @@ export const slavRepertoire: RepertoireLine[] = [
     11,
     "g1f3 d7d5 c2c4 c7c6 g2g3 g8f6 f1g2 c8f5 e1g1 e7e6 d2d3 f8e7 b1d2 e8g8 b2b3 b8d7",
   ),
-  line(
-    "slav-reti-c4-early-capture",
-    "Réti · c4",
-    15,
-    "g1f3 d7d5 c2c4 c7c6 d2d4 d5c4 e2e3 c8f5 f1c4 e7e6 e1g1 g8f6 b1c3 f8d6 d1e2 e8g8",
-  ),
 
   line(
     "slav-jobava-c6",
     "Anti-Jobava",
     19,
     "d2d4 d7d5 b1c3 g8f6 c1f4 c7c6 e2e3 c8f5 f2f3 e7e6 g2g4 f5g6 h2h4 h7h6 h4h5 g6h7 f1d3 h7d3 d1d3 b8d7",
-  ),
-  line(
-    "slav-jobava-mirror",
-    "Anti-Jobava",
-    15,
-    "d2d4 d7d5 b1c3 g8f6 c1f4 c8f5 f2f3 c7c5 e2e4 d5e4 d4d5 e4f3 d1f3 d8c8 e1c1 e7e6 f1b5 b8d7",
   ),
   line(
     "slav-jobava-a6",
@@ -196,7 +180,7 @@ export const slavRepertoire: RepertoireLine[] = [
     "slav-reti-kia",
     "Réti · Fianchetto",
     17,
-    "g1f3 d7d5 g2g3 c7c6 f1g2 c8f5 d2d3 g8f6 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 e8g8",
+    "g1f3 d7d5 g2g3 c7c6 f1g2 c8f5 d2d3 g8f6 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 f6d7",
   ),
   line(
     "slav-reti-b3",
@@ -224,12 +208,6 @@ export const slavRepertoire: RepertoireLine[] = [
     "c2c4 c7c6 e2e4 d7d5 e4e5 c8f5 d2d4 e7e6 b1c3 g8e7 g1f3 b8d7 f1e2 d5c4 e2c4 e7d5 e1g1 f8e7",
   ),
   line(
-    "slav-english-e4-queen-recapture",
-    "English · Early e4",
-    13,
-    "c2c4 c7c6 e2e4 d7d5 e4d5 c6d5 c4d5 d8d5 b1c3 d5d8 g1f3 g8f6 d2d4 c8f5 f1e2 e7e6 e1g1 f8e7 c1f4 e8g8",
-  ),
-  line(
     "slav-english-e5-h5",
     "English · Early e4",
     12,
@@ -254,12 +232,6 @@ export const slavRepertoire: RepertoireLine[] = [
     13,
     "d2d4 d7d5 b1c3 c7c6 e2e4 d5e4 c3e4 c8f5 e4g3 f5g6 h2h4 h7h6 g1f3 b8d7 f1d3 g6d3 d1d3 e7e6 e1g1 g8f6",
   ),
-  line(
-    "slav-blackmar-diemer-c6",
-    "Veresov and Gambits",
-    12,
-    "d2d4 d7d5 e2e4 d5e4 b1c3 g8f6 f2f3 c7c6 f1c4 e4f3 g1f3 c8f5 e1g1 e7e6 f3e5 b8d7 d1e2 f8e7 c1f4 e8g8",
-  ),
 
   line(
     "slav-larsen-b3",
@@ -271,7 +243,7 @@ export const slavRepertoire: RepertoireLine[] = [
     "slav-grob-g3",
     "Flank Openings",
     10,
-    "g2g3 d7d5 f1g2 c7c6 g1f3 c8f5 d2d3 g8f6 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 e8g8",
+    "g2g3 d7d5 f1g2 c7c6 g1f3 c8f5 d2d3 g8f6 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 f6d7",
   ),
   line(
     "slav-larsen-c6-first",
@@ -283,7 +255,7 @@ export const slavRepertoire: RepertoireLine[] = [
     "slav-g3-c6-first",
     "Flank Openings",
     11,
-    "g2g3 c7c6 f1g2 d7d5 g1f3 g8f6 d2d3 c8f5 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 e8g8",
+    "g2g3 c7c6 f1g2 d7d5 g1f3 g8f6 d2d3 c8f5 e1g1 e7e6 b1d2 f8e7 e2e4 f5g6 d1e2 f6d7",
   ),
 ];
 

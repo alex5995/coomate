@@ -53,10 +53,9 @@ describe("London System repertoire", () => {
     }
   });
 
-  it("keeps Nc3 for the one concrete Qb6 tactic", () => {
+  it("does not force Nc3 against the early Qb6 pressure", () => {
     const nc3Lines = londonRepertoire.filter((line) => line.moves.includes("b1c3"));
-    expect(nc3Lines.map((line) => line.id)).toEqual(["london-c5-nc3-tactical"]);
-    expect(nc3Lines[0].moves).toContain("c3b5");
+    expect(nc3Lines).toHaveLength(0);
   });
 
   it("trains both the e4 break and a King's Indian setup with …d6", () => {

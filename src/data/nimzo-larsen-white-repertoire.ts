@@ -1,4 +1,5 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
+import { nimzoLarsenEvaluations } from "./nimzo-larsen-evaluations";
 
 const familyGoals: Record<string, RepertoireLine["goal"]> = {
   "Classical …d5/…Nc6": {
@@ -70,6 +71,7 @@ const line = (
   family,
   weight,
   moves: moves.split(" ") as UciMove[],
+  evaluations: nimzoLarsenEvaluations[id],
   goal: familyGoals[family],
 });
 
@@ -78,39 +80,39 @@ export const nimzoLarsenWhiteRepertoire: RepertoireLine[] = [
     "nl-white-classical-f4",
     "Classical …d5/…Nc6",
     24,
-    "b2b3 d7d5 c1b2 b8c6 e2e3 e7e5 f1b5 f8d6 b5c6 b7c6 f2f4 d8e7 g1f3 f7f6 e1g1 g8h6 f4e5 f6e5 d2d3 e7e6 b1d2 d6e7 d1e2 e8g8 e3e4 d5d4",
+    "b2b3 d7d5 c1b2 b8c6 e2e3 e7e5 f1b5 f8d6 b5c6 b7c6 f2f4 d8e7 f4e5 d6e5 b2e5 e7e5 b1c3 g8f6 g1f3 e5d6 e1g1 e8g8 d1e1",
   ),
   line(
     "nl-white-classical-d3",
     "Classical …d5/…Nc6",
     20,
-    "b2b3 d7d5 c1b2 b8c6 e2e3 e7e5 f1b5 f8d6 b5c6 b7c6 d2d3 g8f6 g1f3 d8e7 e1g1 e8g8 b1d2 c8g4 d1e1 e5e4 d3e4 d5e4 f3d4",
+    "b2b3 d7d5 c1b2 b8c6 e2e3 e7e5 f1b5 f8d6 b5c6 b7c6 d2d3 g8h6 g1f3 d8e7 b1d2 e8g8 c2c4 e5e4 d3e4 d5e4 f3d4 c8g4 d1c2 c6c5 d4b5",
   ),
 
   line(
     "nl-white-kid-f4",
     "King's Indian …Nf6/…g6",
     21,
-    "b2b3 g8f6 c1b2 g7g6 e2e3 f8g7 f2f4 e8g8 g1f3 d7d6 f1e2 c7c5 e1g1 b8c6 d2d3 e7e5 f4e5 f6g4 d1d2 g4e5 f3e5 c6e5",
+    "b2b3 g8f6 c1b2 g7g6 e2e3 f8g7 f2f4 e8g8 g1f3 d7d6 f1e2 f8e8 e1g1 b8c6 e2b5 c8d7 d1e2 a7a6 b5c6",
   ),
   line(
     "nl-white-kid-quiet",
     "King's Indian …Nf6/…g6",
     17,
-    "b2b3 g8f6 c1b2 g7g6 e2e3 f8g7 g1f3 e8g8 f1e2 d7d6 e1g1 e7e5 d2d3 b8c6 b1d2 f8e8 c2c4 a7a5 a2a3",
+    "b2b3 g8f6 c1b2 g7g6 e2e3 f8g7 g1f3 c7c5 c2c4 e8g8 f1e2 d7d5 c4d5 d8d5 e1g1 b8c6 b1c3 d5f5 a1c1",
   ),
 
   line(
     "nl-white-e5-exchange",
     "…e5 and …Nc6",
     20,
-    "b2b3 e7e5 c1b2 b8c6 e2e3 g8f6 f1b5 f8d6 b5c6 d7c6 f2f4 e5f4 g1f3 e8g8 e1g1 f4e3 d2e3 f8e8 d1d3",
+    "b2b3 e7e5 c1b2 b8c6 e2e3 g8f6 f1b5 f8d6 b1a3 e5e4 a3c4 d6e7 b5c6 b7c6 g1e2 a7a5 d2d3 a5a4 d3e4 f6e4 e2g3 e4g3 h2g3",
   ),
   line(
-    "nl-white-e5-f4",
+    "nl-white-e5-central",
     "…e5 and …Nc6",
     17,
-    "b2b3 e7e5 c1b2 b8c6 e2e3 g8f6 f2f4 d7d6 f1b5 c8d7 g1f3 e5e4 f3g5 d6d5 e1g1 h7h6 g5h3 f8d6 d2d3 e8g8 b5c6 b7c6",
+    "b2b3 e7e5 c1b2 b8c6 e2e3 g8f6 d2d4 e5d4 e3d4 d7d5 g1f3 f8d6 f1e2 c6e7 e1g1 e8g8 c2c4 c7c6 f1e1",
   ),
 
   line(
@@ -127,42 +129,42 @@ export const nimzoLarsenWhiteRepertoire: RepertoireLine[] = [
   ),
 
   line(
-    "nl-white-c6-f4",
+    "nl-white-c6-be2",
     "…c6 blocks Bb5",
     16,
-    "b2b3 d7d5 c1b2 c7c6 e2e3 g8f6 f2f4 c8f5 g1f3 e7e6 f1e2 f8d6 e1g1 e8g8 d2d3 h7h6 b1d2 f5h7 d1e1",
+    "b2b3 d7d5 c1b2 c7c6 e2e3 g8f6 f1e2 c8f5 g1f3 e7e6 f3h4 f5g6 e1g1 f8d6 c2c4 e8g8 d2d3 b8d7 b1d2",
   ),
   line(
     "nl-white-c6-quiet",
     "…c6 blocks Bb5",
     14,
-    "b2b3 d7d5 c1b2 c7c6 e2e3 g8f6 g1f3 c8f5 f1e2 e7e6 e1g1 f8d6 d2d3 e8g8 b1d2 b8d7 d1e1 f8e8 h2h3",
+    "b2b3 d7d5 c1b2 c7c6 e2e3 g8f6 g1f3 c8f5 f3h4 f5g4 f1e2 g4e2 d1e2 g7g6 c2c4 d5c4 b3c4 b8d7 e1g1",
   ),
 
   line(
     "nl-white-dutch-central",
     "Dutch …f5",
     14,
-    "b2b3 f7f5 c1b2 g8f6 e2e3 e7e6 c2c4 f8e7 g1f3 e8g8 f1e2 d7d6 e1g1 d8e8 d2d3 b8c6 b1d2 e6e5",
+    "b2b3 f7f5 c1b2 g8f6 e2e3 e7e6 f1e2 d7d5 c2c4 f8d6 g1f3 e8g8 e1g1 d8e7 d1c2 c8d7 c4d5 f6d5 f3e5",
   ),
   line(
     "nl-white-dutch-quiet",
     "Dutch …f5",
     12,
-    "b2b3 f7f5 c1b2 g8f6 e2e3 e7e6 g1f3 d7d5 f1e2 f8d6 e1g1 e8g8 d2d3 c7c5 b1d2 b8c6 d1e1 d8c7 f3e5",
+    "b2b3 f7f5 c1b2 g8f6 e2e3 e7e6 c2c4 b7b6 g1h3 c8b7 b1c3 c7c5 c3b5 b8c6 f1e2 f8e7 e1g1 e8g8 d2d4",
   ),
 
   line(
-    "nl-white-mirror-f4",
+    "nl-white-mirror-nf3",
     "Mirror …b6",
     13,
-    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 f2f4 g8f6 g1f3 f8e7 f1e2 e8g8 e1g1 d7d5 d2d3 c7c5 b1d2 b8c6 f3e5",
+    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 g1f3 g8f6 c2c4 f8e7 b1c3 e8g8 d2d4 d7d5 a1c1 c7c5 c4d5 f6d5 c3d5 d8d5 f1c4",
   ),
   line(
     "nl-white-mirror-quiet",
     "Mirror …b6",
     11,
-    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 g1f3 g8f6 f1e2 f8e7 e1g1 e8g8 d2d3 d7d5 b1d2 c7c5 d1e1 b8c6 f3e5",
+    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 c2c4 g8f6 g1f3 f8e7 b1c3 e8g8 d2d4 d7d5 a1c1 c7c5 c4d5 f6d5 c3d5 d8d5 d4c5",
   ),
 ];
 

@@ -110,9 +110,12 @@ describe("OpeningTrainer board interaction", () => {
     fireEvent.click(screen.getByRole("button", { name: /Classical · …d5 and …Nc6/ }));
 
     expect(screen.getByText("Your move: play b3.")).toBeInTheDocument();
+    expect(screen.queryAllByLabelText("Static evaluation +0.37 pawns for your side").length).toBeGreaterThan(0);
     dragPiece("b2");
     expect(dropPiece("b2", "b3")).toBe(true);
     expect(screen.queryAllByText(/b3 is correct/).length).toBeGreaterThan(0);
+    expect(screen.queryAllByLabelText("Static evaluation -0.23 pawns for your side").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Evaluation after b3: -0.23")).toBeInTheDocument();
   });
 
   it("selects and deselects a piece with successive taps", () => {

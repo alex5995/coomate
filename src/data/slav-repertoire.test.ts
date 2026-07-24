@@ -61,6 +61,6 @@ describe("Universal Slav repertoire", () => {
 
     const afterJobava = "d2d4 d7d5 b1c3 g8f6 c1f4".split(" ") as UciMove[];
     const jobavaLines = slavRepertoire.filter((line) => line.family === "Anti-Jobava");
-    expect(choicesFor(afterJobava, jobavaLines).map((choice) => choice.uci).sort()).toEqual(["a7a6", "c7c6", "c8f5"]);
+    expect(choicesFor(afterJobava, jobavaLines).map((choice) => choice.uci).sort()).toEqual(["a7a6", "c7c6"]);
   });
 });

@@ -1,4 +1,5 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
+import { londonEvaluations } from "./london-evaluations";
 
 const familyGoals: Record<string, RepertoireLine["goal"]> = {
   "Classical …e6/…Bd6": {
@@ -86,21 +87,22 @@ const line = (
   family,
   weight,
   moves: moves.split(" ") as UciMove[],
+  evaluations: londonEvaluations[id],
   goal: familyGoals[family],
 });
 
 export const londonRepertoire: RepertoireLine[] = [
   line(
-    "london-classical-main",
-    "Classical …e6/…Bd6",
-    24,
-    "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 f8d6 f4g3 e8g8 f1d3 c7c5 c2c3 b8c6 b1d2 d8c7 e1g1 b7b6 f3e5 c8b7 d1e2 f8e8 e3e4 d5e4 d2e4 f6e4 d3e4",
-  ),
-  line(
     "london-classical-be2",
     "Classical …e6/…Bd6",
     17,
     "d2d4 d7d5 c1f4 g8f6 g1f3 e7e6 e2e3 f8d6 f4g3 e8g8 f1e2 c7c5 c2c3 b8c6 b1d2 b7b6 e1g1 c8b7 f3e5 a8c8",
+  ),
+  line(
+    "london-classical-e4",
+    "Classical …e6/…Bd6",
+    16,
+    "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 f8d6 f4g3 e8g8 f1d3 c7c5 c2c3 b8c6 b1d2 d8c7 e1g1 b7b6 e3e4 d6g3 f2g3 c5d4 c3d4",
   ),
   line(
     "london-classical-exchange",
@@ -126,12 +128,6 @@ export const londonRepertoire: RepertoireLine[] = [
     "Early …c5/…Qb6",
     22,
     "d2d4 d7d5 g1f3 g8f6 c1f4 c7c5 e2e3 d8b6 d1c1 b8c6 c2c3 c8f5 b1d2 e7e6 f1e2 f8e7 e1g1 e8g8 f3e5 a8c8",
-  ),
-  line(
-    "london-c5-nc3-tactical",
-    "Early …c5/…Qb6",
-    12,
-    "d2d4 d7d5 g1f3 g8f6 c1f4 c7c5 e2e3 d8b6 b1c3 b8c6 f1e2 c5d4 e3d4 c8f5 e1g1 e7e6 c3b5 a8c8 c2c3 f8e7 f3e5 e8g8",
   ),
   line(
     "london-c5-queen-trade",
@@ -166,16 +162,10 @@ export const londonRepertoire: RepertoireLine[] = [
     "d2d4 d7d5 g1f3 g8f6 c1f4 c7c6 e2e3 c8f5 f1d3 f5d3 d1d3 e7e6 b1d2 f8d6 e1g1 e8g8 c2c3 d8c7 f3e5 b8d7",
   ),
   line(
-    "london-c6-be2",
-    "Slav …c6",
-    16,
-    "d2d4 d7d5 c1f4 c7c6 g1f3 g8f6 e2e3 c8f5 f1e2 e7e6 e1g1 f8d6 f4d6 d8d6 c2c3 b8d7 b1d2 e8g8 f3e5 f8e8",
-  ),
-  line(
     "london-c6-bxf4",
     "Slav …c6",
     10,
-    "d2d4 d7d5 g1f3 g8f6 c1f4 c7c6 e2e3 c8f5 f1d3 f5d3 d1d3 e7e6 b1d2 f8d6 e1g1 d6f4 e3f4 e8g8 c2c3 d8c7 f3e5 b8d7",
+    "d2d4 d7d5 c1f4 c7c6 g1f3 g8f6 e2e3 c8f5 f1d3 f5d3 d1d3 e7e6 b1d2 f8d6 e1g1 d6f4 e3f4 e8g8 c2c3 d8c7 f3e5 b8d7",
   ),
 
   line(
@@ -189,12 +179,6 @@ export const londonRepertoire: RepertoireLine[] = [
     "Mirror …Bf5",
     14,
     "d2d4 d7d5 c1f4 g8f6 g1f3 c8f5 e2e3 e7e6 c2c3 f8d6 f4g3 e8g8 f1d3 f5d3 d1d3 d6g3 h2g3 c7c5 b1d2 b8c6 e1g1 d8c7",
-  ),
-  line(
-    "london-mirror-be2",
-    "Mirror …Bf5",
-    17,
-    "d2d4 d7d5 g1f3 g8f6 c1f4 c8f5 e2e3 e7e6 f1e2 f8d6 f4d6 d8d6 e1g1 b8d7 c2c3 e8g8 b1d2 c7c5 f3e5 f8e8",
   ),
   line(
     "london-mirror-bxf4",
@@ -217,12 +201,6 @@ export const londonRepertoire: RepertoireLine[] = [
   ),
 
   line(
-    "london-nc6-classical",
-    "Chigorin …Nc6",
-    18,
-    "d2d4 d7d5 g1f3 b8c6 c1f4 c8f5 e2e3 e7e6 c2c3 f8d6 f4g3 g8f6 f1d3 d6g3 h2g3 e8g8 b1d2 f8e8 e1g1 e6e5 d4e5 c6e5 f3e5 e8e5",
-  ),
-  line(
     "london-nc6-pin",
     "Chigorin …Nc6",
     13,
@@ -235,12 +213,6 @@ export const londonRepertoire: RepertoireLine[] = [
     "d2d4 d7d5 g1f3 b8c6 c1f4 c8f5 e2e3 e7e6 c2c3 f8d6 f1e2 d6f4 e3f4 g8f6 e1g1 e8g8 b1d2 f8e8 f3e5 d8d6",
   ),
 
-  line(
-    "london-bg4-be2",
-    "Pin …Bg4",
-    18,
-    "d2d4 d7d5 g1f3 g8f6 c1f4 c8g4 e2e3 e7e6 f1e2 f8d6 f4g3 e8g8 e1g1 d6g3 h2g3 b8d7 c2c3 c7c5 b1d2 d8c7 f3e5 g4e2 d1e2 d7e5 d4e5 f6d7",
-  ),
   line(
     "london-bg4-bd3",
     "Pin …Bg4",
@@ -261,10 +233,10 @@ export const londonRepertoire: RepertoireLine[] = [
     "d2d4 d7d5 g1f3 g8f6 c1f4 f6h5 f4g5 h7h6 g5h4 g7g5 h4g3 h5g3 h2g3 f8g7 e2e3 c7c5 c2c3 b8c6 b1d2 e7e5 d4e5 c6e5 f3e5 g7e5 f1d3 e8g8 e1g1",
   ),
   line(
-    "london-nh5-simple-exchange",
+    "london-nh5-bishop-hunt-bf4-first",
     "Bishop hunt …Nh5",
     14,
-    "d2d4 d7d5 c1f4 g8f6 g1f3 f6h5 f4g3 h5g3 h2g3 c7c5 e2e3 b8c6 c2c3 e7e6 f1d3 f8d6 b1d2 h7h6 e1g1 e8g8 f3e5 d8c7",
+    "d2d4 d7d5 c1f4 g8f6 g1f3 f6h5 f4g5 h7h6 g5h4 g7g5 h4g3 h5g3 h2g3 f8g7 e2e3 c7c5 c2c3 b8c6 b1d2 e7e5 d4e5 c6e5 f3e5 g7e5 f1d3 e8g8 e1g1",
   ),
 ];
 

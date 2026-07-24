@@ -26,7 +26,7 @@ The goal is practical opening training through curated middlegame positions, not
 - Use `react-chessboard` for board interaction. Support drag-and-drop, square selection, mouse, and touch.
 - Keep tap-to-move and drag-to-move equivalent on pointer and touch devices. Tapping a selected piece deselects it; same-square, off-board, and cancelled drops must not show an error or count as an attempt, while rejected moves leave the source selected for an immediate retry.
 - Repertoire data must remain separate from the UI. Extend the typed repertoire and variant data instead of hardcoding chess knowledge in components.
-- The computer may only choose moves present in the selected curated repertoire. Do not add Stockfish, free move generation, a backend, accounts, or external runtime calls.
+- The computer may only choose moves present in the selected curated repertoire. Do not add live Stockfish analysis, free move generation, a backend, accounts, or external runtime calls. Stockfish may be used offline during repertoire authoring to generate committed static evaluations.
 - The home flow first asks which repertoire to train, then which explicit opponent variation to practise.
 - Opponent variations must be visible as separate menu entries. Multiple theoretical moves for the user's side remain accepted alternatives inside a variation.
 - Match repertoire continuations by the first four FEN fields so equivalent positions share theory across move-order transpositions. Build user choices from the full opening graph, restrict computer choices to the selected opponent variation, and prune any branch that cannot still reach one of that variation's curated targets.
@@ -46,6 +46,7 @@ The goal is practical opening training through curated middlegame positions, not
 
 - Prefer practical, coherent plans over a theoretically best move that conflicts with the repertoire's intended style.
 - In Black repertoires, do not trap the light-squared bishop behind an early `...e6`. Develop or exchange that bishop first unless a specifically curated exception is deliberately documented.
+- The Caro-Kann Advance `dxc5` branch may use the documented `...e6`, `...Bxc5`, and later `...b6`/`...Bb7` exception to recover the c5 pawn without forcing an inferior bishop move.
 - Caro-Kann Advance coverage must include common White choices such as `c3`, `Nf3`, `Nc3`, `h4`, and `dxc5`, including both defended-center and capture lines.
 - Caro-Kann Classical coverage should retain the practical `...Nf6` knight-development and exchange proposal as well as curated bishop-development alternatives.
 - London System lines must support both `Bf4` before `Nf3` and `Nf3` before `Bf4` where the position permits. Preserve the normal `d4`, `Nf3`, `Bf4`, `e3`, `c3`, `Bd3` or `Be2`, `Nbd2`, kingside castling and `Ne5` plans; use `Nc3` only in specifically curated tactical positions.
@@ -54,6 +55,7 @@ The goal is practical opening training through curated middlegame positions, not
 - Universal Slav lines must cover the major `1.d4`, English, Reti, and flank-opening families while preserving the light-squared-bishop rule above.
 - Nimzo-Larsen White lines must begin with `1.b3` and preserve the `Bb2` and `e3` core. When available, use `Bb5` and `Bxc6` to remove a knight, then `f4`, `Nf3`, and kingside castling to control e5. If `Bb5` or `f4` is unavailable, adapt the setup without forcing the motif.
 - Nimzo-Larsen Black lines must reverse the same ideas with `...b6`, `...Bb7`, and `...e6`. When available, use `...Bb4` and `...Bxc3`, then `...f5`, `...Nf6`, and kingside castling to control e4. If the standard plan is unavailable, challenge the centre with `...c5` or `...d5`.
+- Every curated position in every repertoire must have a committed static Stockfish evaluation. Store centipawns from White's perspective and display them from the user's perspective, both in the current-position card and beside every White and Black move in history. Every recorded or automatically reordered position, including positions after the opponent's move and the target, must evaluate to at least `-1.00` for the trained side. The current evaluation baseline is Stockfish 18 at depth 18. Automatically generated move-order paths that fail this threshold must be pruned.
 - Any repertoire expansion must update or add legality tests so every complete path is legal and reaches a target position.
 
 ## UI and content rules
@@ -79,6 +81,8 @@ The goal is practical opening training through curated middlegame positions, not
 - `src/data/*-repertoire.ts`: curated move trees, including the White London System repertoire.
 - `src/data/*-variants.ts` and `src/data/trainer-variants.ts`: user-selectable opponent variations and displayed frequencies.
 - `src/data/training-goals.ts`: target-position teaching content.
+- `src/data/stockfish-evaluation.ts`: shared static-evaluation metadata.
+- `src/data/*-evaluations.ts`: opening-specific committed Stockfish line arrays and FEN-position evaluations.
 - `src/lib/repertoire-engine.ts`: FEN-position repertoire graphs, live-path filtering, SAN helpers, and weighted computer choices.
 - `src/lib/storage.ts`: versioned local statistics and migrations.
 - `src/lib/types.ts`: shared domain types.
@@ -104,3 +108,15 @@ git diff --check
 ```
 
 For UI changes, also verify the affected state in a real browser at both desktop and mobile widths. For training-flow changes, test at least one correct move, one legal move outside the repertoire, and line completion when relevant.
+
+When any repertoire changes, also run the relevant offline audit with an official Stockfish binary. Use `--group=core` for Caro-Kann, London, and Universal Slav, `--group=nimzo` for both Nimzo-Larsen repertoires, or `--group=all` for every repertoire:
+
+```bash
+node scripts/audit-repertoires.mjs /path/to/stockfish 18 --group=all --summary
+```
+
+If allowlisted move-order generation changes, audit its additional positions too:
+
+```bash
+node scripts/audit-repertoires.mjs /path/to/stockfish 18 --group=all --reordered-only
+```

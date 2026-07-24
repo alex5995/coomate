@@ -44,6 +44,13 @@ describe("Nimzo-Larsen White repertoire", () => {
     expect(new Set(nimzoLarsenWhiteRepertoire.map((line) => line.moves[0]))).toEqual(new Set(["b2b3"]));
   });
 
+  it.each(nimzoLarsenWhiteRepertoire.map((line) => [line.id, line]))("%s has a complete static evaluation and never drops below -1.00 for White", (_, line) => {
+    expect(line.evaluations).toHaveLength(line.moves.length + 1);
+    line.evaluations?.forEach((score, index) => {
+      expect(score, `${line.id}: static evaluation after ply ${index}`).toBeGreaterThanOrEqual(-100);
+    });
+  });
+
   it.each(nimzoLarsenWhiteRepertoire.map((line) => [line.id, line]))("%s never leaves White down a piece after White's move", (_, line) => {
     const chess = new Chess();
     line.moves.forEach((move, index) => {

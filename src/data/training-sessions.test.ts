@@ -12,7 +12,7 @@ describe("training session policies", () => {
           variant.opponentLineIds?.includes(line.id) ?? line.family === variant.family,
         );
         const opponentLineIds = new Set(opponentLines.map((line) => line.id));
-        const session = createTrainingSession(opening.lines, opponentLines, opening.playerColor, opening.moveOrderMoves);
+        const session = createTrainingSession(opening.lines, opponentLines, opening.playerColor, opening.moveOrderMoves, opening.positionEvaluations);
         const startKey = positionKey(new Chess().fen());
         const pending = [startKey];
         const visited = new Set<string>();
@@ -75,6 +75,15 @@ describe("training session policies", () => {
               continue;
             }
             if (reorderedKey !== positionKey(chessFromHistory(line.moves).fen())) continue;
+            if (opening.positionEvaluations) {
+              const safe = reordered.every((_, moveIndex) => {
+                const key = positionKey(chessFromHistory(reordered.slice(0, moveIndex + 1)).fen());
+                const whiteScore = opening.positionEvaluations?.[key];
+                const userScore = opening.playerColor === "w" ? whiteScore : whiteScore === undefined ? undefined : -whiteScore;
+                return userScore !== undefined && userScore >= -100;
+              });
+              if (!safe) continue;
+            }
 
             const prefix = line.moves.slice(0, index);
             expect(sessionChoices(session, prefix).map((choice) => choice.uci), `${line.id}: accept ${secondMove} first`).toContain(secondMove);
@@ -92,16 +101,14 @@ describe("training session policies", () => {
     const opening = openings.find((candidate) => candidate.id === "caro-kann");
     const opponentLines = opening?.lines.filter((line) => [
       "exchange-white-nf3-nc6",
-      "exchange-nf3-nc6-bf5",
       "exchange-nf3-bg4",
       "exchange-white-nf3-nf6",
-      "exchange-nf3-nf6-bf5",
     ].includes(line.id)) ?? [];
     const session = createTrainingSession(opening?.lines ?? [], opponentLines, "b", opening?.moveOrderMoves ?? []);
     const history = "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3".split(" ") as UciMove[];
 
-    expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("c8f5");
-    history.push("c8f5", "f1d3");
+    expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("c8g4");
+    history.push("c8g4", "f1e2");
     expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("b8c6");
   });
 

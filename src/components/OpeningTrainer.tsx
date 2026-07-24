@@ -5,9 +5,9 @@ import { Chessboard } from "react-chessboard";
 import type { Square } from "chess.js";
 import { openingById, openings, pickUniformVariant } from "@/data/openings";
 import { trainingGoalFor } from "@/data/training-goals";
-import { chessFromHistory, createTrainingSession, sanFor, sessionChoices, sessionTarget, weightedChoice } from "@/lib/repertoire-engine";
+import { chessFromHistory, createTrainingSession, sanFor, sessionChoices, sessionTarget, staticEvaluationFor, weightedChoice } from "@/lib/repertoire-engine";
 import { emptyStats, loadStats, saveStats } from "@/lib/storage";
-import type { Feedback, OpeningId, OpeningRepertoire, TakebackSnapshot, TrainerStats, UciMove } from "@/lib/types";
+import type { Feedback, OpeningId, OpeningRepertoire, StaticEvaluationMeta, TakebackSnapshot, TrainerStats, UciMove } from "@/lib/types";
 import { Logo } from "./Logo";
 
 const defaultFeedback = (opening: OpeningRepertoire | null): Feedback => {
@@ -19,6 +19,32 @@ const defaultFeedback = (opening: OpeningRepertoire | null): Feedback => {
 
 const colorName = (color: "w" | "b") => color === "w" ? "White" : "Black";
 const keepCompoundWordsTogether = (text: string) => text.replace(/(?<=\p{L})-(?=\p{L})/gu, "\u2060-\u2060");
+const formatEvaluation = (centipawns: number) => {
+  const pawns = centipawns / 100;
+  return `${pawns >= 0 ? "+" : ""}${pawns.toFixed(2)}`;
+};
+
+const StaticEvaluation = ({ centipawns, meta }: { centipawns: number; meta: StaticEvaluationMeta }) => {
+  const formatted = formatEvaluation(centipawns);
+  return (
+    <div className="static-evaluation" aria-label={`Static evaluation ${formatted} pawns for your side`}>
+      <span>STATIC EVALUATION</span>
+      <strong>{formatted}</strong>
+      <small>{meta.engine} - depth {meta.depth} - your perspective</small>
+    </div>
+  );
+};
+
+const MoveCell = ({ san, evaluation }: { san: string; evaluation?: number | null }) => (
+  <div className="move-cell">
+    <span>{san}</span>
+    {evaluation !== null && evaluation !== undefined && (
+      <small aria-label={`Evaluation after ${san}: ${formatEvaluation(evaluation)}`}>
+        {formatEvaluation(evaluation)}
+      </small>
+    )}
+  </div>
+);
 
 export function OpeningTrainer() {
   const [history, setHistory] = useState<UciMove[]>([]);
@@ -50,11 +76,15 @@ export function OpeningTrainer() {
     : [], [opening, selectedVariantConfig]);
   const playerColor = opening?.playerColor ?? "w";
   const session = useMemo(() => opening && selectedVariantConfig
-    ? createTrainingSession(opening.lines, opponentLines, opening.playerColor, opening.moveOrderMoves)
+    ? createTrainingSession(opening.lines, opponentLines, opening.playerColor, opening.moveOrderMoves, opening.positionEvaluations)
     : null, [opening, opponentLines, selectedVariantConfig]);
   const choices = useMemo(() => session ? sessionChoices(session, history) : [], [history, session]);
   const targetLine = useMemo(() => session ? sessionTarget(session, history) : null, [history, session]);
   const opponentColor = playerColor === "w" ? "b" : "w";
+  const positionEvaluation = useMemo(
+    () => opening?.evaluation ? staticEvaluationFor(history, opening.lines, playerColor, opening.positionEvaluations) : null,
+    [history, opening, playerColor],
+  );
   const isUserTurn = game.turn() === playerColor;
   const atTarget = Boolean(targetLine);
   const thinking = Boolean(selectedVariant) && !completed && !atTarget && !isUserTurn;
@@ -317,6 +347,9 @@ export function OpeningTrainer() {
   const maxLength = session?.maxTargetLength ?? Math.max(1, history.length);
   const progress = atTarget || completed ? 100 : Math.min(100, Math.round((history.length / maxLength) * 100));
   const moveHistory = game.history();
+  const moveEvaluations = opening?.evaluation
+    ? history.map((_, index) => staticEvaluationFor(history.slice(0, index + 1), opening.lines, playerColor, opening.positionEvaluations))
+    : [];
   const accuracyBase = stats.correctMoves + stats.errors;
   const accuracy = accuracyBase ? Math.round((stats.correctMoves / accuracyBase) * 100) : 100;
   const finalGoal = completed && opening
@@ -412,6 +445,10 @@ export function OpeningTrainer() {
                 <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong><p>{keepCompoundWordsTogether(feedback.message)}</p></div>
               </div>
 
+              {opening?.evaluation && positionEvaluation !== null && (
+                <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
+              )}
+
               {takeback && takeback.alternatives.length > 0 && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
 
               {completed && finalGoalContent && (
@@ -475,6 +512,10 @@ export function OpeningTrainer() {
               <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong><p>{keepCompoundWordsTogether(feedback.message)}</p></div>
             </div>
 
+            {opening.evaluation && positionEvaluation !== null && (
+              <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
+            )}
+
             {takeback && takeback.alternatives.length > 0 && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
 
             {completed && finalGoalContent && (
@@ -493,8 +534,11 @@ export function OpeningTrainer() {
                 {Array.from({ length: Math.ceil(moveHistory.length / 2) }, (_, index) => (
                   <div className="move-row" key={index}>
                     <span className="move-number">{index + 1}.</span>
-                    <span>{moveHistory[index * 2] ?? ""}</span>
-                    <span>{moveHistory[index * 2 + 1] ?? (thinking && index === Math.floor(history.length / 2) ? "…" : "")}</span>
+                    <MoveCell san={moveHistory[index * 2] ?? ""} evaluation={moveEvaluations[index * 2]} />
+                    <MoveCell
+                      san={moveHistory[index * 2 + 1] ?? (thinking && index === Math.floor(history.length / 2) ? "…" : "")}
+                      evaluation={moveEvaluations[index * 2 + 1]}
+                    />
                   </div>
                 ))}
               </div>

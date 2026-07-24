@@ -13,10 +13,17 @@ export interface RepertoireLine {
   family: string;
   weight: number;
   moves: UciMove[];
+  evaluations?: number[];
   goal: {
     title: string;
     plans: string[];
   };
+}
+
+export interface StaticEvaluationMeta {
+  engine: string;
+  depth: number;
+  threshold: number;
 }
 
 export interface TrainerVariant {
@@ -39,6 +46,8 @@ export interface OpeningRepertoire {
   lines: RepertoireLine[];
   variants: TrainerVariant[];
   moveOrderMoves: UciMove[];
+  evaluation?: StaticEvaluationMeta;
+  positionEvaluations?: Record<string, number>;
   guidanceFor: (moves: UciMove[]) => { hint: string; explanation: string };
 }
 

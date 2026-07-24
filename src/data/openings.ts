@@ -1,13 +1,17 @@
+import { caroKannPositionEvaluations } from "./caro-kann-evaluations";
+import { londonPositionEvaluations } from "./london-evaluations";
 import { londonGuidanceFor, londonRepertoire } from "./london-repertoire";
 import { londonVariants } from "./london-variants";
 import { guidanceFor, repertoire } from "./repertoire";
-import { slavGuidanceFor, slavRepertoire } from "./slav-repertoire";
-import { slavVariants } from "./slav-variants";
-import { trainerVariants } from "./trainer-variants";
 import { nimzoLarsenBlackGuidanceFor, nimzoLarsenBlackRepertoire } from "./nimzo-larsen-black-repertoire";
 import { nimzoLarsenBlackVariants } from "./nimzo-larsen-black-variants";
 import { nimzoLarsenWhiteGuidanceFor, nimzoLarsenWhiteRepertoire } from "./nimzo-larsen-white-repertoire";
 import { nimzoLarsenWhiteVariants } from "./nimzo-larsen-white-variants";
+import { slavPositionEvaluations } from "./slav-evaluations";
+import { slavGuidanceFor, slavRepertoire } from "./slav-repertoire";
+import { slavVariants } from "./slav-variants";
+import { stockfishEvaluationMeta } from "./stockfish-evaluation";
+import { trainerVariants } from "./trainer-variants";
 import type { OpeningId, OpeningRepertoire, TrainerVariant } from "@/lib/types";
 
 export const openings: OpeningRepertoire[] = [
@@ -21,6 +25,8 @@ export const openings: OpeningRepertoire[] = [
     lines: repertoire,
     variants: trainerVariants,
     moveOrderMoves: ["c8f5", "c8g4", "g8f6", "g8e7", "b8c6", "b8d7", "e7e6", "f8e7", "f8d6", "f8c5", "e8g8"],
+    evaluation: stockfishEvaluationMeta,
+    positionEvaluations: caroKannPositionEvaluations,
     guidanceFor,
   },
   {
@@ -33,6 +39,8 @@ export const openings: OpeningRepertoire[] = [
     lines: londonRepertoire,
     variants: londonVariants,
     moveOrderMoves: ["c1f4", "g1f3", "e2e3", "c2c3", "f1d3", "f1e2", "b1d2", "h2h3", "e1g1", "f3e5"],
+    evaluation: stockfishEvaluationMeta,
+    positionEvaluations: londonPositionEvaluations,
     guidanceFor: londonGuidanceFor,
   },
   {
@@ -45,6 +53,8 @@ export const openings: OpeningRepertoire[] = [
     lines: slavRepertoire,
     variants: slavVariants,
     moveOrderMoves: ["d7d5", "c7c6", "c8f5", "c8g4", "g8f6", "g8e7", "b8c6", "b8d7", "e7e6", "f8e7", "f8d6", "f8b4", "e8g8"],
+    evaluation: stockfishEvaluationMeta,
+    positionEvaluations: slavPositionEvaluations,
     guidanceFor: slavGuidanceFor,
   },
   {
@@ -56,7 +66,8 @@ export const openings: OpeningRepertoire[] = [
     playerColor: "w",
     lines: nimzoLarsenWhiteRepertoire,
     variants: nimzoLarsenWhiteVariants,
-    moveOrderMoves: ["c1b2", "f1b5", "f2f4", "g1f3", "f1e2", "d2d3", "b1d2", "e1g1", "f3e5"],
+    moveOrderMoves: [],
+    evaluation: stockfishEvaluationMeta,
     guidanceFor: nimzoLarsenWhiteGuidanceFor,
   },
   {
@@ -68,7 +79,8 @@ export const openings: OpeningRepertoire[] = [
     playerColor: "b",
     lines: nimzoLarsenBlackRepertoire,
     variants: nimzoLarsenBlackVariants,
-    moveOrderMoves: ["c8b7", "f8b4", "f7f5", "g8f6", "f8e7", "d7d6", "e8g8"],
+    moveOrderMoves: [],
+    evaluation: stockfishEvaluationMeta,
     guidanceFor: nimzoLarsenBlackGuidanceFor,
   },
 ];

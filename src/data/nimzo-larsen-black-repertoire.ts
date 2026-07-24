@@ -1,4 +1,5 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
+import { nimzoLarsenEvaluations } from "./nimzo-larsen-evaluations";
 
 const familyGoals: Record<string, RepertoireLine["goal"]> = {
   "Queen's Gambit": {
@@ -78,6 +79,7 @@ const line = (
   family,
   weight,
   moves: moves.split(" ") as UciMove[],
+  evaluations: nimzoLarsenEvaluations[id],
   goal: familyGoals[family],
 });
 
@@ -86,104 +88,104 @@ export const nimzoLarsenBlackRepertoire: RepertoireLine[] = [
     "nl-black-qg-bb4",
     "Queen's Gambit",
     23,
-    "d2d4 b7b6 c2c4 c8b7 b1c3 e7e6 e2e4 f8b4 f1d3 f7f5 d1e2 g8f6 f2f3 f5e4 f3e4 e8g8 g1f3 b4c3 b2c3 f6e4 d3e4 b7e4",
+    "d2d4 b7b6 c2c4 c8b7 b1c3 e7e6 e2e4 f8b4 f1d3 f7f5 f2f3 b8c6 a2a3 b4c3 b2c3 d8h4 g2g3 h4h5 e4f5 e8c8",
   ),
   line(
-    "nl-black-qg-nf6",
+    "nl-black-qg-qh4",
     "Queen's Gambit",
     19,
-    "d2d4 b7b6 c2c4 c8b7 b1c3 e7e6 e2e4 g8f6 f1d3 f8b4 g1e2 f6e4 e1g1 e4c3 b2c3 b4e7 e2g3 d7d6 f2f4 b8d7 f4f5",
+    "d2d4 b7b6 c2c4 c8b7 b1c3 e7e6 e2e4 f8b4 f1d3 f7f5 f2f3 d8h4 g2g3 h4h5 e4f5 g8f6 c1f4 e8g8 d1c2 b7f3",
   ),
 
   line(
-    "nl-black-e4-nf6",
+    "nl-black-e4-bb4",
     "King's pawn · e4",
     20,
-    "e2e4 b7b6 d2d4 c8b7 f1d3 e7e6 g1f3 g8f6 d1e2 c7c5 c2c3 f8e7 e1g1 e8g8 e4e5 f6d5 e2e4 g7g6 c1h6 f8e8",
+    "e2e4 b7b6 g1f3 c8b7 b1c3 e7e6 a2a3 g8f6 e4e5 f6d5 h2h4 c7c5 h4h5 h7h6 c3d5 b7d5 d2d4 b8c6 h1h3 c5d4",
   ),
   line(
-    "nl-black-e4-c5",
+    "nl-black-e4-be7",
     "King's pawn · e4",
     17,
-    "e2e4 b7b6 d2d4 c8b7 f1d3 e7e6 g1f3 c7c5 c2c3 g8f6 d1e2 f8e7 e1g1 e8g8 e4e5 f6d5 e2e4 g7g6 c1h6 f8e8",
+    "e2e4 b7b6 g1f3 c8b7 b1c3 e7e6 a2a3 d7d5 e4d5 e6d5 d2d4 f8e7 c1f4 g8f6 d1d2 e8g8 e1c1 c7c5 h2h4 c5c4",
   ),
 
   line(
     "nl-black-london-nf6",
     "Queen's pawn · London",
     18,
-    "d2d4 b7b6 g1f3 c8b7 c1f4 e7e6 e2e3 g8f6 f1d3 f8e7 e1g1 e8g8 h2h3 c7c5 b1d2 d7d5 c2c3 b8c6 f3e5",
+    "d2d4 b7b6 g1f3 c8b7 c1f4 e7e6 e2e3 g8f6 f1d3 c7c5 e1g1 b8c6 f1e1 f8e7 h2h3 c5d4 f3d4 d7d5 b1d2 e8g8",
   ),
   line(
     "nl-black-london-bb4",
     "Queen's pawn · London",
     15,
-    "d2d4 b7b6 g1f3 c8b7 c1f4 e7e6 e2e3 f8b4 c2c3 b4e7 f1d3 f7f5 b1d2 g8f6 e1g1 e8g8 f3e5 d7d6 e5f3",
+    "d2d4 b7b6 g1f3 c8b7 c1f4 e7e6 e2e3 f8e7 h2h3 g8f6 f1d3 c7c5 c2c3 e8g8 b1d2 d7d5 f3e5 b8c6 e5c6 b7c6",
   ),
 
   line(
     "nl-black-colle-f5",
     "Colle and Zukertort",
     17,
-    "d2d4 b7b6 g1f3 c8b7 e2e3 e7e6 f1d3 f7f5 e1g1 g8f6 c2c4 f8e7 b1c3 e8g8 b2b3 f6e4 c1b2 e4c3 b2c3",
+    "d2d4 b7b6 g1f3 c8b7 e2e3 e7e6 f1d3 d7d5 c2c4 g8f6 e1g1 f8d6 b2b3 e8g8 c1b2 b8d7 b1d2 f6e4 a1c1 a8c8",
   ),
   line(
     "nl-black-colle-nf6",
     "Colle and Zukertort",
     14,
-    "d2d4 b7b6 g1f3 c8b7 e2e3 e7e6 f1d3 g8f6 e1g1 f8e7 c2c4 e8g8 b1c3 d7d5 b2b3 b8d7 c1b2 c7c5 f3e5",
+    "d2d4 b7b6 g1f3 c8b7 e2e3 e7e6 f1d3 g8f6 e1g1 d7d5 c2c4 d5c4 d3c4 a7a6 d1e2 b8d7 a2a4 c7c5 b1c3 f8e7",
   ),
 
   line(
     "nl-black-english-bb4",
     "English",
     16,
-    "c2c4 b7b6 b1c3 c8b7 e2e4 e7e6 d2d3 f8b4 g1e2 f7f5 a2a3 b4c3 e2c3 g8f6 f1e2 e8g8 e1g1 f5e4 d3e4 f6e4",
+    "c2c4 b7b6 b1c3 c8b7 e2e4 e7e6 d2d3 f8b4 c1d2 b4c5 a2a3 a7a5 g1f3 b8c6 c3b5 e6e5 g2g3 g8e7 d2c3 d7d6",
   ),
   line(
     "nl-black-english-f5",
     "English",
     13,
-    "c2c4 b7b6 b1c3 c8b7 e2e4 e7e6 d2d3 f7f5 e4f5 g8f6 g1f3 e6f5 f1e2 f8e7 e1g1 e8g8 d3d4 f6e4 d1c2 e4c3 c2c3",
+    "c2c4 b7b6 b1c3 c8b7 e2e4 e7e6 d2d3 f7f5 e4f5 e6f5 d3d4 g8f6 g1e2 f8e7 e2g3 e8g8 f1d3 g7g6 d4d5 b8a6",
   ),
 
   line(
     "nl-black-reti-nf6",
     "Réti",
     14,
-    "g1f3 b7b6 g2g3 c8b7 f1g2 e7e6 e1g1 g8f6 d2d3 f8e7 e2e4 d7d5 b1d2 e8g8 e4e5 f6d7 f1e1 c7c5 d2f1 b8c6",
+    "g1f3 b7b6 g2g3 c8b7 f1g2 e7e6 e1g1 g8f6 c2c4 c7c5 d2d3 f8e7 e2e4 d7d6 b2b3 h7h6 b1c3 e8g8 c1b2 a7a6",
   ),
   line(
     "nl-black-reti-f5",
     "Réti",
     12,
-    "g1f3 b7b6 g2g3 c8b7 f1g2 e7e6 e1g1 f7f5 d2d3 g8f6 b1d2 f8e7 e2e4 f5e4 d3e4 e8g8 e4e5 f6g4 h2h3 g4h6",
+    "g1f3 b7b6 g2g3 c8b7 f1g2 e7e6 e1g1 c7c5 c2c4 g8f6 b1c3 f8e7 d2d4 c5d4 d1d4 e8g8 c1f4 b8c6 d4d2 e7b4",
   ),
 
   line(
     "nl-black-jobava-bb4",
     "Jobava and Veresov",
     13,
-    "d2d4 b7b6 b1c3 c8b7 e2e4 e7e6 c1f4 f8b4 f1d3 f7f5 d1e2 g8f6 f2f3 e8g8 g1h3 f5e4 f3e4 f6e4 e1g1 b4c3 b2c3 e4c3",
+    "d2d4 b7b6 b1c3 c8b7 e2e4 e7e6 c1f4 f8b4 f1d3 g8f6 f2f3 d7d5 e4e5 f6d7 a2a3 b4c3 b2c3 b7a6 h2h4 c7c5",
   ),
   line(
     "nl-black-jobava-nf6",
     "Jobava and Veresov",
     11,
-    "d2d4 b7b6 b1c3 c8b7 e2e4 e7e6 c1f4 g8f6 f1d3 f8b4 g1e2 d7d5 e4e5 f6e4 d3e4 d5e4 e1g1 b4c3 b2c3 e8g8",
+    "d2d4 b7b6 b1c3 c8b7 e2e4 e7e6 c1f4 g8f6 e4e5 f6e4 c3e4 b7e4 h2h4 h7h6 g1e2 e4b7 h1h3 d7d6 e2c3 d6e5",
   ),
 
   line(
     "nl-black-flank-nf6",
     "Flank openings",
     11,
-    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 g1f3 g8f6 f1e2 f8e7 e1g1 e8g8 d2d3 c7c5 b1d2 d7d5 f3e5 b8d7 f2f4",
+    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 g1f3 d7d5 g2g3 g8f6 c2c4 f8e7 c4d5 e6d5 f1g2 b8d7 b1c3 e8g8 e1g1 f8e8",
   ),
   line(
     "nl-black-flank-f5",
     "Flank openings",
     9,
-    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 g1f3 f7f5 f1e2 g8f6 e1g1 f8e7 d2d3 e8g8 b1d2 d7d5 f3e5 c7c5 f2f4",
+    "b2b3 b7b6 c1b2 c8b7 e2e3 e7e6 g1f3 g8f6 c2c4 f8e7 g2g3 e8g8 f1g2 c7c5 e1g1 d7d5 b1c3 d5c4 b3c4 f6e4",
   ),
 ];
 

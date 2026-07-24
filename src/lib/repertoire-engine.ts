@@ -99,6 +99,22 @@ export const terminalLinesFor = (history: UciMove[], lines = repertoire) => posi
   .filter(({ line, moveIndex }) => moveIndex === line.moves.length)
   .map(({ line }) => line);
 
+export const staticEvaluationFor = (
+  history: UciMove[],
+  lines: RepertoireLine[],
+  playerColor: PlayerColor,
+  positionEvaluations?: Record<string, number>,
+) => {
+  for (const { line, moveIndex } of positionCandidatesFor(history, lines)) {
+    const whiteCentipawns = line.evaluations?.[moveIndex];
+    if (whiteCentipawns === undefined) continue;
+    return playerColor === "w" ? whiteCentipawns : -whiteCentipawns;
+  }
+  const whiteCentipawns = positionEvaluations?.[positionKey(chessFromHistory(history).fen())];
+  if (whiteCentipawns !== undefined) return playerColor === "w" ? whiteCentipawns : -whiteCentipawns;
+  return null;
+};
+
 const emptyGraph = (): RepertoireGraph => ({
   edgesByPosition: new Map<string, RepertoireEdge[]>(),
   terminalsByPosition: new Map<string, RepertoireLine[]>(),
@@ -158,6 +174,7 @@ const moveOrderPathsFor = (
   line: RepertoireLine,
   playerColor: PlayerColor,
   reorderableMoves: Set<UciMove>,
+  positionEvaluations?: Record<string, number>,
 ) => {
   const paths = [line.moves];
   const terminalKey = terminalKeyFor(line.moves);
@@ -171,7 +188,16 @@ const moveOrderPathsFor = (
     const reordered = [...line.moves];
     reordered[index] = secondMove;
     reordered[index + 2] = firstMove;
-    if (terminalKeyFor(reordered) === terminalKey) paths.push(reordered);
+    if (terminalKeyFor(reordered) !== terminalKey) continue;
+    if (positionEvaluations) {
+      const safe = reordered.every((_, moveIndex) => {
+        const key = positionKey(chessFromHistory(reordered.slice(0, moveIndex + 1)).fen());
+        const whiteScore = positionEvaluations[key];
+        return whiteScore !== undefined && (playerColor === "w" ? whiteScore : -whiteScore) >= -100;
+      });
+      if (!safe) continue;
+    }
+    paths.push(reordered);
   }
 
   return paths;
@@ -181,16 +207,17 @@ export const buildMoveOrderGraph = (
   lines: RepertoireLine[],
   playerColor: PlayerColor,
   moveOrderMoves: UciMove[],
+  positionEvaluations?: Record<string, number>,
 ): RepertoireGraph => {
   if (!moveOrderMoves.length) return buildRepertoireGraph(lines);
-  const cacheKey = `${playerColor}:${[...new Set(moveOrderMoves)].sort().join(",")}`;
+  const cacheKey = `${playerColor}:${positionEvaluations ? "evaluated:" : ""}${[...new Set(moveOrderMoves)].sort().join(",")}`;
   const cached = moveOrderGraphIndex.get(lines)?.get(cacheKey);
   if (cached) return cached;
 
   const graph = emptyGraph();
   const reorderableMoves = new Set(moveOrderMoves);
   for (const line of lines) {
-    for (const moves of moveOrderPathsFor(line, playerColor, reorderableMoves)) {
+    for (const moves of moveOrderPathsFor(line, playerColor, reorderableMoves, positionEvaluations)) {
       addPathToGraph(graph, line, moves);
     }
   }
@@ -214,9 +241,10 @@ export const createTrainingSession = (
   opponentLines: RepertoireLine[],
   playerColor: PlayerColor,
   moveOrderMoves: UciMove[] = [],
+  positionEvaluations?: Record<string, number>,
 ): TrainingSession => {
-  const allGraph = buildMoveOrderGraph(lines, playerColor, moveOrderMoves);
-  const opponentGraph = buildMoveOrderGraph(opponentLines, playerColor, moveOrderMoves);
+  const allGraph = buildMoveOrderGraph(lines, playerColor, moveOrderMoves, positionEvaluations);
+  const opponentGraph = buildMoveOrderGraph(opponentLines, playerColor, moveOrderMoves, positionEvaluations);
   const livePositions = new Set(opponentGraph.terminalsByPosition.keys());
   const positions = new Set([
     ...allGraph.edgesByPosition.keys(),
