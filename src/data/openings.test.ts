@@ -15,7 +15,7 @@ describe("repertoire selection", () => {
     expect(openings.map((opening) => opening.id).slice(0, 3)).toEqual(["catalan", "sicilian", "grunfeld"]);
     expect(openings).toHaveLength(8);
     expect(openingById("catalan")?.variants).toHaveLength(10);
-    expect(openingById("sicilian")?.variants).toHaveLength(5);
+    expect(openingById("sicilian")?.variants).toHaveLength(11);
     expect(openingById("grunfeld")?.variants).toHaveLength(6);
     expect(openingById("caro-kann")?.variants).toHaveLength(12);
     expect(openingById("london-system")?.variants).toHaveLength(9);

@@ -56,9 +56,25 @@ const sicilianGoals: Record<string, TrainingGoal> = {
     title: "A complete Sicilian Dragon",
     plans: ["Fianchetto with ...g6 and ...Bg7 only after the normal ...d6 move order.", "Castle before central or queenside counterplay.", "Use ...d5 when White has not prevented the break with Bc4."],
   },
-  anti: {
-    title: "A studied anti-Sicilian response",
-    plans: ["Follow the secondary study when White prevents the Dragon.", "Challenge White's centre before it becomes stable.", "Keep development ahead of pawn hunting."],
+  alapin: {
+    title: "Challenge the Alapin centre",
+    plans: ["Use ...Nf6, ...d6 and ...Nc6 to pressure White's advanced pawns.", "Clarify e5 only after development supports the exchange.", "Use the documented queen activity or complete the kingside fianchetto."],
+  },
+  closed: {
+    title: "A Dragon-style Closed Sicilian",
+    plans: ["Keep ...d6 first, then fianchetto with ...g6 and ...Bg7.", "Use ...e6 and ...Nge7 against White's f4 or Nge2 setup.", "Create queenside counterplay before White's kingside expansion arrives."],
+  },
+  moscow: {
+    title: "Neutralise the Moscow check",
+    plans: ["Meet Bb5+ with ...Bd7 and develop through the exchange.", "Use a Dragon-style fianchetto against White's c4 structure.", "Create queenside play with ...a6 and ...Rc8."],
+  },
+  morra: {
+    title: "Contain the Smith-Morra initiative",
+    plans: ["Accept the gambit and develop rapidly.", "Bring the c8 bishop out before ...e6.", "Use ...Ne5 and ...Bxf3 to reduce White's attacking force."],
+  },
+  bowdler: {
+    title: "Challenge the Bowdler bishop",
+    plans: ["Develop with ...Nf6 and strike immediately with ...d5.", "Recapture centrally with the knight.", "Finish with the documented kingside fianchetto and castling."],
   },
 };
 
@@ -175,7 +191,11 @@ export const trainingGoalFor = (openingId: OpeningId, lineId: string): TrainingG
   if (openingId === "sicilian") {
     if (lineId.includes("yugoslav")) return sicilianGoals.yugoslav;
     if (lineId.includes("dragon")) return sicilianGoals.dragon;
-    return sicilianGoals.anti;
+    if (lineId.includes("alapin")) return sicilianGoals.alapin;
+    if (lineId.includes("moscow")) return sicilianGoals.moscow;
+    if (lineId.includes("morra")) return sicilianGoals.morra;
+    if (lineId.includes("bowdler")) return sicilianGoals.bowdler;
+    return sicilianGoals.closed;
   }
 
   if (openingId === "grunfeld") {

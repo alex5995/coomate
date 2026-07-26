@@ -26,20 +26,68 @@ const familyGoals: Record<string, RepertoireLine["goal"]> = {
       "Use the centre and queenside for active counterplay against White's kingside castle.",
     ],
   },
-  Alapin: {
+  "Alapin central": {
     title: "Challenge the Alapin centre",
     plans: [
       "Attack e4 with ...Nf6 exactly as the source study recommends.",
-      "Exchange on d4 to prevent White from maintaining a broad pawn centre.",
-      "Use ...d6 to control e5 and prepare normal development.",
+      "Use ...d6 and ...Nc6 before clarifying White's advanced centre.",
+      "After the queen exchange, finish the Dragon-style fianchetto safely.",
     ],
   },
-  Closed: {
-    title: "A controlled Closed Sicilian",
+  "Alapin bishop exchange": {
+    title: "Use activity against the Alapin centre",
     plans: [
-      "Use the study's ...d6 setup when White chooses Nc3 without d4.",
-      "Keep the Dragon fianchetto available if White later enters an open structure.",
-      "Develop before choosing a queenside or central pawn break.",
+      "Challenge e4 with ...Nf6 and exchange on d4.",
+      "Answer Bxd5 with ...Qxd5 and keep pressure on White's centre.",
+      "Use the documented ...e5 break to finish the tactical sequence.",
+    ],
+  },
+  "Closed f4": {
+    title: "A Dragon-style Closed Sicilian",
+    plans: [
+      "Keep ...d6 first, then fianchetto with ...g6 and ...Bg7.",
+      "Use ...e6 and ...Nge7 so the kingside remains flexible against f4.",
+      "Prepare queenside play with ...Rb8 and ...b5.",
+    ],
+  },
+  "Closed Nge2": {
+    title: "Meet the quiet Closed setup",
+    plans: [
+      "Build the same ...d6, ...g6 and ...Bg7 shell.",
+      "Use ...e6, ...Nge7 and ...Nd4 to contest the dark squares.",
+      "Delay castling only as long as needed, then secure the king.",
+    ],
+  },
+  "Closed Dragon transposition": {
+    title: "Transpose to the normal Dragon",
+    plans: [
+      "Recognise when Nc3 is only a move-order choice and White still plays Nf3 and d4.",
+      "Enter the normal Dragon with ...d6 before ...g6.",
+      "Use the source study's ...d5 break once the exact Dragon position is reached.",
+    ],
+  },
+  Moscow: {
+    title: "Neutralise the Moscow check",
+    plans: [
+      "Meet Bb5+ with ...Bd7 and recapture with the queenside knight.",
+      "Build a Dragon-style kingside fianchetto after White commits to c4.",
+      "Use ...a6 and ...Rc8 to create queenside pressure.",
+    ],
+  },
+  "Smith-Morra": {
+    title: "Accept and contain the Smith-Morra",
+    plans: [
+      "Accept the gambit, then develop with ...Nc6, ...d6 and ...Nf6.",
+      "Develop the light-squared bishop to g4 before playing ...e6.",
+      "Use ...Ne5 and the documented exchange on f3 to blunt White's initiative.",
+    ],
+  },
+  Bowdler: {
+    title: "Challenge the Bowdler bishop",
+    plans: [
+      "Develop with ...Nf6 and strike immediately with ...d5.",
+      "Recapture on d5 with the knight and complete queenside development.",
+      "Use the documented ...g6, ...Bg7 and castling setup once White allows it.",
     ],
   },
 };
@@ -81,15 +129,64 @@ export const sicilianRepertoire: RepertoireLine[] = [
     26,
     "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 f1e2 f8g7 e1g1 e8g8 c1e3 b8c6 f2f4 c8d7",
   ),
-  // https://lichess.org/study/jsSks17H - Alapin Variation.
+  // https://lichess.org/study/AsIsKPrX/8DZotSqG - Moscow Variation.
   line(
-    "sicilian-alapin",
-    "Alapin",
-    14,
-    "e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4 c5d4 c3d4 d7d6",
+    "sicilian-moscow",
+    "Moscow",
+    12,
+    "e2e4 c7c5 g1f3 d7d6 f1b5 c8d7 b5d7 b8d7 c2c4 g8f6 b1c3 g7g6 d2d4 c5d4 f3d4 f8g7 e1g1 e8g8 c1e3 a7a6 a1c1 a8c8",
   ),
-  // https://lichess.org/study/jsSks17H - Closed Sicilian.
-  line("sicilian-closed", "Closed", 10, "e2e4 c7c5 b1c3 d7d6"),
+  // https://lichess.org/study/AsIsKPrX/0tmQXtZL - Smith-Morra Gambit.
+  line(
+    "sicilian-smith-morra",
+    "Smith-Morra",
+    10,
+    "e2e4 c7c5 d2d4 c5d4 c2c3 d4c3 b1c3 b8c6 g1f3 d7d6 f1c4 a7a6 e1g1 g8f6 d1e2 c8g4 f1d1 e7e6 c1f4 f6h5 f4e3 c6e5 c4b3 g4f3 g2f3 d8h4",
+  ),
+  // https://lichess.org/study/ulZswGf8/Iaw5fExU - Bowdler Attack.
+  line(
+    "sicilian-bowdler",
+    "Bowdler",
+    10,
+    "e2e4 c7c5 f1c4 g8f6 d2d3 d7d5 e4d5 f6d5 g1f3 b8c6 e1g1 g7g6 f1e1 f8g7 c2c3 e8g8",
+  ),
+  // https://lichess.org/study/jsSks17H - Alapin prefix.
+  // https://lichess.org/study/cA3kOR92 - documented continuations after 5...d6.
+  line(
+    "sicilian-alapin-central",
+    "Alapin central",
+    10,
+    "e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4 c5d4 c3d4 d7d6 g1f3 b8c6 f1c4 d6e5 d4e5 d5b6 d1d8 c6d8 c4b5 d8c6 b1c3 g7g6 e1g1 f8g7 c1e3 e8g8",
+  ),
+  line(
+    "sicilian-alapin-bishop-exchange",
+    "Alapin bishop exchange",
+    6,
+    "e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4 c5d4 c3d4 d7d6 g1f3 b8c6 f1c4 d6e5 c4d5 d8d5 b1c3 d5d6 d4d5 c6d4 f3d4 e5d4 d1d4 e7e5",
+  ),
+  // https://lichess.org/study/jsSks17H - Closed Sicilian prefix.
+  // https://lichess.org/study/72rdAVHd - Dragon-style Closed Sicilian plans.
+  // The initial quiet setup is reordered so ...d6 remains Black's first choice.
+  line(
+    "sicilian-closed-f4",
+    "Closed f4",
+    10,
+    "e2e4 c7c5 b1c3 d7d6 g2g3 g7g6 f1g2 f8g7 d2d3 b8c6 f2f4 e7e6 g1f3 g8e7 e1g1 e8g8 c1e3 a8b8 d1d2 b7b5",
+  ),
+  line(
+    "sicilian-closed-nge2",
+    "Closed Nge2",
+    7,
+    "e2e4 c7c5 b1c3 d7d6 g2g3 g7g6 f1g2 f8g7 d2d3 b8c6 g1e2 e7e6 c1e3 g8e7 d1d2 c6d4 c3d1 e6e5 c2c3 d4e2 d2e2 c8e6 e1g1 e8g8",
+  ),
+  // https://lichess.org/study/jsSks17H - 2.Nc3 d6.
+  // https://lichess.org/study/AvqP0tL1 - exact normal Dragon after transposition.
+  line(
+    "sicilian-closed-dragon-transposition",
+    "Closed Dragon transposition",
+    8,
+    "e2e4 c7c5 b1c3 d7d6 g1f3 g8f6 d2d4 c5d4 f3d4 g7g6 c1e3 f8g7 f2f3 b8c6 d1d2 e8g8 e1c1 d6d5 e4d5 f6d5",
+  ),
 ];
 
 const guidance: Record<string, { hint: string; explanation: string }> = {
@@ -103,7 +200,27 @@ const guidance: Record<string, { hint: string; explanation: string }> = {
   e8g8: { hint: "Secure the king before launching counterplay.", explanation: "Castling is essential before opening the centre or the c-file." },
   d6d5: { hint: "Strike in the centre while Bc4 does not prevent the break.", explanation: "...d5 is the study's main-line equalising idea." },
   c8d7: { hint: "Develop and prepare a rook for the c-file.", explanation: "...Bd7 connects the queenside pieces in the Yugoslav and Classical setups." },
+  b8d7: { hint: "Recapture with development and keep the queen flexible.", explanation: "...Nxd7 is the source study's answer after the Moscow bishop exchange." },
   a8c8: { hint: "Put the rook on the half-open file against White's king.", explanation: "...Rc8 creates the study's queenside counterplay in the Yugoslav Attack." },
+  a7a6: { hint: "Gain queenside space and prepare useful rook activity.", explanation: "...a6 is the documented preparation before ...Rc8 in the Moscow and supports the Smith-Morra setup." },
+  d4c3: { hint: "Accept the gambit and make White prove the compensation.", explanation: "...dxc3 enters the documented Smith-Morra accepted line." },
+  c8g4: { hint: "Develop the light-squared bishop before closing the centre.", explanation: "...Bg4 pins the knight and prepares ...e6 without trapping the bishop." },
+  f6h5: { hint: "Attack the bishop and preserve pressure on f4.", explanation: "...Nh5 is the study continuation against White's active bishop." },
+  c6e5: { hint: "Centralise the knight and challenge White's attacking pieces.", explanation: "...Ne5 is the documented Smith-Morra blockade." },
+  g4f3: { hint: "Remove a key attacker and damage White's kingside structure.", explanation: "...Bxf3 is the source line's practical simplification." },
+  d8h4: { hint: "Use the opened kingside before White consolidates.", explanation: "...Qh4 completes the documented Smith-Morra sequence." },
+  d7d5: { hint: "Challenge the bishop and the centre in one move.", explanation: "...d5 is the source study's immediate answer to the Bowdler setup." },
+  f6d5: { hint: "Recapture centrally and keep developing with tempo.", explanation: "...Nxd5 restores the pawn while keeping the pieces active." },
+  d6e5: { hint: "Clarify the advanced centre now that development supports it.", explanation: "...dxe5 is the documented Alapin continuation." },
+  d5b6: { hint: "Retreat with tempo and keep the centre under control.", explanation: "...Nb6 prepares to meet the queen exchange without losing coordination." },
+  d8d5: { hint: "Recapture actively with the queen.", explanation: "...Qxd5 keeps pressure on White's centre in the documented bishop-exchange line." },
+  d8d6: { hint: "Keep the queen central while supporting the e-pawn.", explanation: "...Qd6 prepares the tactical central sequence from the source." },
+  c6d4: { hint: "Use the outpost created by White's pawn advance.", explanation: "...Nd4 forces the documented simplification in the Alapin." },
+  e7e5: { hint: "Finish the central sequence with a tempo on the queen.", explanation: "...e5 is the source line's active equalising break." },
+  e7e6: { hint: "Support the dark squares without blocking the fianchettoed bishop.", explanation: "...e6 prepares ...Nge7 in the Closed Sicilian setup." },
+  g8e7: { hint: "Develop flexibly behind the f-pawn.", explanation: "...Nge7 keeps the f-file structure adaptable against White's kingside play." },
+  a8b8: { hint: "Prepare queenside expansion.", explanation: "...Rb8 supports the thematic ...b5 break in the Closed Sicilian." },
+  b7b5: { hint: "Claim queenside space before White's attack develops.", explanation: "...b5 begins the source study's counterplay." },
 };
 
 export const sicilianGuidanceFor = (moves: UciMove[]) =>

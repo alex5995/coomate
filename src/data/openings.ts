@@ -42,7 +42,7 @@ export const openings: OpeningRepertoire[] = [
     id: "sicilian",
     name: "Sicilian Defence",
     shortName: "Sicilian",
-    description: "Play Black with the Dragon whenever White permits it, plus studied answers to the Alapin and Closed Sicilian.",
+    description: "Play Black with the Dragon whenever White permits it, plus studied answers to the main anti-Sicilians.",
     startMessage: "White will play 1.e4. Answer with 1...c5 and follow the selected White variation.",
     playerColor: "b",
     lines: sicilianRepertoire,

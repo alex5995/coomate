@@ -13,7 +13,7 @@ CooMate is an English-language chess opening trainer built with Next.js App Rout
 The app contains eight fixed-role repertoires, displayed in this order:
 
 - Catalan Opening: the user always plays White. Curated lines come only from `https://lichess.org/study/DckpgOgd`.
-- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it; use only the Alapin and Closed Sicilian lines from `https://lichess.org/study/jsSks17H` when White prevents the Dragon. Do not expose accelerated or hyperaccelerated Dragon move orders as opponent variations.
+- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it. Alapin lines keep the `https://lichess.org/study/jsSks17H` prefix and use continuations from `https://lichess.org/study/cA3kOR92`; Closed lines keep the `https://lichess.org/study/jsSks17H` `2.Nc3 d6` prefix and use Dragon-style continuations from `https://lichess.org/study/72rdAVHd`. Moscow and Smith-Morra lines come from `https://lichess.org/study/AsIsKPrX`; Bowdler lines come from `https://lichess.org/study/ulZswGf8`. Do not expose accelerated or hyperaccelerated Dragon move orders as opponent variations.
 - Grünfeld Defence: the user always plays Black. Curated lines come only from `https://lichess.org/study/0AUYoSOH`.
 - Caro-Kann Defence: the user always plays Black and the computer always plays White.
 - London System: the user always plays White and the computer always plays Black.
@@ -48,7 +48,7 @@ The goal is practical opening training through curated middlegame positions, not
 ## Repertoire principles
 
 - Prefer practical, coherent plans over a theoretically best move that conflicts with the repertoire's intended style.
-- Catalan, Sicilian, and Grünfeld repertoire moves must remain source-bound to their documented Lichess studies. Accept safe transpositional setup orders only when they combine moves and positions already expressed by the same source study.
+- Catalan, Sicilian, and Grünfeld repertoire moves must remain source-bound to their documented Lichess studies. Accept safe transpositional setup orders only when they combine documented moves and positions. Sicilian Closed setup moves may be reordered after `2...d6` to reach the exact supplemental-study position, and `2.Nc3` may transpose to an exact normal Dragon position when White later plays `Nf3` and `d4`.
 - The Sicilian repertoire must prefer the normal `...d6` Dragon whenever White permits it. Accelerated and hyperaccelerated Dragon chapters are Black choices, so they must not appear in the opponent-variation menu or repertoire graph.
 - In Black repertoires, do not trap the light-squared bishop behind an early `...e6`. Develop or exchange that bishop first unless a specifically curated exception is deliberately documented.
 - The Caro-Kann Advance `dxc5` branch may use the documented `...e6`, `...Bxc5`, and later `...b6`/`...Bb7` exception to recover the c5 pawn without forcing an inferior bishop move.
