@@ -1,7 +1,10 @@
 # CooMate
 
-A compact chess repertoire trainer covering five fixed-role repertoires:
+A compact chess repertoire trainer covering eight fixed-role repertoires:
 
+- **Catalan:** always play White using the curated source-study lines.
+- **Sicilian:** always play Black with the normal Dragon when White permits it, plus studied Alapin and Closed Sicilian responses.
+- **Grünfeld:** always play Black against the studied `3.Nc3` and `3.Nf3` systems.
 - **Caro-Kann:** always play Black against White's main choices.
 - **London System:** always play White against Black's main replies.
 - **Universal Slav:** always play Black against `1.d4`, the English, the Réti and flank openings; the computer never begins with `1.e4`.
@@ -23,6 +26,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 - Move pieces by dragging them or by selecting the source and destination squares.
 - Choose an explicit opponent variation before every exercise. Caro-Kann Advance training distinguishes `dxc5`, `c3`, `Nf3`, `Nc3` and `h4`; Classical `Nc3/Nd2`, Exchange `Bd3/Nf3`, Panov, Fantasy and Two Knights are included too.
+- Catalan training is restricted to [The Basic Catalan Opening study](https://lichess.org/study/DckpgOgd), including Open, Closed, Slav, Tarrasch, Anti-Nimzo, Marshall, Hungarian, Albin and Neo-Catalan chapters.
+- Sicilian training uses the normal Dragon from the [Sicilian Dragon study](https://lichess.org/study/AvqP0tL1). Accelerated versions are intentionally omitted. Alapin and Closed Sicilian coverage comes from the [secondary Sicilian study](https://lichess.org/study/jsSks17H).
+- Grünfeld training is restricted to [The Grünfeld Defense study](https://lichess.org/study/0AUYoSOH), covering the study's Exchange, no-exchange, bishop-pin and `3.Nf3` branches.
 - London System training covers classical `…e6/…Bd6`, early `…c5/…Qb6`, `…g6`, `…c6`, mirrored `…Bf5`, `…b6`, `…Nc6`, `…Bg4` and `…Nh5`. White keeps a flexible d4, Nf3, Bf4 and e3 core with c3, Nbd2, natural development and kingside castling.
 - The Universal Slav repertoire can begin with `1.d4`, `1.c4`, `1.Nf3`, `1.b3` or `1.g3`. It contains 38 audited lines covering the Main Slav, London, Jobava, Colle/Zukertort, Veresov, English, Réti and flank systems.
 - In the Black Slav lines, `…e6` is never suggested before the light-squared bishop has developed or been exchanged.

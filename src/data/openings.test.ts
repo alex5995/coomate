@@ -4,12 +4,19 @@ import { openingById, openings, pickUniformVariant } from "./openings";
 
 describe("repertoire selection", () => {
   it("assigns the fixed player color for every repertoire", () => {
+    expect(openingById("catalan")?.playerColor).toBe("w");
+    expect(openingById("sicilian")?.playerColor).toBe("b");
+    expect(openingById("grunfeld")?.playerColor).toBe("b");
     expect(openingById("caro-kann")?.playerColor).toBe("b");
     expect(openingById("london-system")?.playerColor).toBe("w");
     expect(openingById("slav-universal")?.playerColor).toBe("b");
     expect(openingById("nimzo-larsen-white")?.playerColor).toBe("w");
     expect(openingById("nimzo-larsen-black")?.playerColor).toBe("b");
-    expect(openings).toHaveLength(5);
+    expect(openings.map((opening) => opening.id).slice(0, 3)).toEqual(["catalan", "sicilian", "grunfeld"]);
+    expect(openings).toHaveLength(8);
+    expect(openingById("catalan")?.variants).toHaveLength(10);
+    expect(openingById("sicilian")?.variants).toHaveLength(5);
+    expect(openingById("grunfeld")?.variants).toHaveLength(6);
     expect(openingById("caro-kann")?.variants).toHaveLength(12);
     expect(openingById("london-system")?.variants).toHaveLength(9);
     expect(openingById("slav-universal")?.variants).toHaveLength(10);

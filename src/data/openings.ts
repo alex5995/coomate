@@ -1,4 +1,10 @@
 import { caroKannPositionEvaluations } from "./caro-kann-evaluations";
+import { catalanPositionEvaluations } from "./catalan-evaluations";
+import { catalanGuidanceFor, catalanRepertoire } from "./catalan-repertoire";
+import { catalanVariants } from "./catalan-variants";
+import { grunfeldPositionEvaluations } from "./grunfeld-evaluations";
+import { grunfeldGuidanceFor, grunfeldRepertoire } from "./grunfeld-repertoire";
+import { grunfeldVariants } from "./grunfeld-variants";
 import { londonPositionEvaluations } from "./london-evaluations";
 import { londonGuidanceFor, londonRepertoire } from "./london-repertoire";
 import { londonVariants } from "./london-variants";
@@ -10,11 +16,56 @@ import { nimzoLarsenWhiteVariants } from "./nimzo-larsen-white-variants";
 import { slavPositionEvaluations } from "./slav-evaluations";
 import { slavGuidanceFor, slavRepertoire } from "./slav-repertoire";
 import { slavVariants } from "./slav-variants";
+import { sicilianPositionEvaluations } from "./sicilian-evaluations";
+import { sicilianGuidanceFor, sicilianRepertoire } from "./sicilian-repertoire";
+import { sicilianVariants } from "./sicilian-variants";
 import { stockfishEvaluationMeta } from "./stockfish-evaluation";
 import { trainerVariants } from "./trainer-variants";
 import type { OpeningId, OpeningRepertoire, TrainerVariant } from "@/lib/types";
 
 export const openings: OpeningRepertoire[] = [
+  {
+    id: "catalan",
+    name: "Catalan Opening",
+    shortName: "Catalan",
+    description: "Play White using only the Catalan lines curated in the source study.",
+    startMessage: "Play 1.d4 or the studied Neo-Catalan 1.c4 move order, depending on the selected variation.",
+    playerColor: "w",
+    lines: catalanRepertoire,
+    variants: catalanVariants,
+    moveOrderMoves: ["g1f3", "g2g3", "f1g2", "b1d2", "e1g1"],
+    evaluation: stockfishEvaluationMeta,
+    positionEvaluations: catalanPositionEvaluations,
+    guidanceFor: catalanGuidanceFor,
+  },
+  {
+    id: "sicilian",
+    name: "Sicilian Defence",
+    shortName: "Sicilian",
+    description: "Play Black with the Dragon whenever White permits it, plus studied answers to the Alapin and Closed Sicilian.",
+    startMessage: "White will play 1.e4. Answer with 1...c5 and follow the selected White variation.",
+    playerColor: "b",
+    lines: sicilianRepertoire,
+    variants: sicilianVariants,
+    moveOrderMoves: [],
+    evaluation: stockfishEvaluationMeta,
+    positionEvaluations: sicilianPositionEvaluations,
+    guidanceFor: sicilianGuidanceFor,
+  },
+  {
+    id: "grunfeld",
+    name: "Grünfeld Defence",
+    shortName: "Grünfeld",
+    description: "Play Black against White's studied 3.Nc3 and 3.Nf3 systems.",
+    startMessage: "White will play 1.d4. Build the Grünfeld with ...Nf6 and ...g6.",
+    playerColor: "b",
+    lines: grunfeldRepertoire,
+    variants: grunfeldVariants,
+    moveOrderMoves: ["f8g7", "e8g8", "c7c5", "d8a5", "b8c6", "c8g4"],
+    evaluation: stockfishEvaluationMeta,
+    positionEvaluations: grunfeldPositionEvaluations,
+    guidanceFor: grunfeldGuidanceFor,
+  },
   {
     id: "caro-kann",
     name: "Caro-Kann Defence",

@@ -174,6 +174,7 @@ const moveOrderPathsFor = (
   line: RepertoireLine,
   playerColor: PlayerColor,
   reorderableMoves: Set<UciMove>,
+  recordedPositionEvaluations: Map<string, number>,
   positionEvaluations?: Record<string, number>,
 ) => {
   const paths = [line.moves];
@@ -192,7 +193,7 @@ const moveOrderPathsFor = (
     if (positionEvaluations) {
       const safe = reordered.every((_, moveIndex) => {
         const key = positionKey(chessFromHistory(reordered.slice(0, moveIndex + 1)).fen());
-        const whiteScore = positionEvaluations[key];
+        const whiteScore = positionEvaluations[key] ?? recordedPositionEvaluations.get(key);
         return whiteScore !== undefined && (playerColor === "w" ? whiteScore : -whiteScore) >= -100;
       });
       if (!safe) continue;
@@ -208,16 +209,26 @@ export const buildMoveOrderGraph = (
   playerColor: PlayerColor,
   moveOrderMoves: UciMove[],
   positionEvaluations?: Record<string, number>,
+  evaluationLines: RepertoireLine[] = lines,
 ): RepertoireGraph => {
   if (!moveOrderMoves.length) return buildRepertoireGraph(lines);
-  const cacheKey = `${playerColor}:${positionEvaluations ? "evaluated:" : ""}${[...new Set(moveOrderMoves)].sort().join(",")}`;
+  const cacheKey = `${playerColor}:${positionEvaluations ? "evaluated:" : ""}${[...new Set(moveOrderMoves)].sort().join(",")}:${
+    evaluationLines === lines ? "local" : evaluationLines.map((line) => line.id).join(",")
+  }`;
   const cached = moveOrderGraphIndex.get(lines)?.get(cacheKey);
   if (cached) return cached;
 
   const graph = emptyGraph();
   const reorderableMoves = new Set(moveOrderMoves);
+  const recordedPositionEvaluations = new Map<string, number>();
+  for (const line of evaluationLines) {
+    indexedPositionsFor(line).forEach(({ key, moveIndex }) => {
+      const score = line.evaluations?.[moveIndex];
+      if (score !== undefined && !recordedPositionEvaluations.has(key)) recordedPositionEvaluations.set(key, score);
+    });
+  }
   for (const line of lines) {
-    for (const moves of moveOrderPathsFor(line, playerColor, reorderableMoves, positionEvaluations)) {
+    for (const moves of moveOrderPathsFor(line, playerColor, reorderableMoves, recordedPositionEvaluations, positionEvaluations)) {
       addPathToGraph(graph, line, moves);
     }
   }
@@ -244,7 +255,7 @@ export const createTrainingSession = (
   positionEvaluations?: Record<string, number>,
 ): TrainingSession => {
   const allGraph = buildMoveOrderGraph(lines, playerColor, moveOrderMoves, positionEvaluations);
-  const opponentGraph = buildMoveOrderGraph(opponentLines, playerColor, moveOrderMoves, positionEvaluations);
+  const opponentGraph = buildMoveOrderGraph(opponentLines, playerColor, moveOrderMoves, positionEvaluations, lines);
   const livePositions = new Set(opponentGraph.terminalsByPosition.keys());
   const positions = new Set([
     ...allGraph.edgesByPosition.keys(),

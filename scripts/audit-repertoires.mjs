@@ -17,7 +17,7 @@ const shardArgument = process.argv.find((argument) => argument.startsWith("--sha
 const [shardIndex, shardCount] = (shardArgument?.slice("--shard=".length) ?? "0/1").split("/").map(Number);
 
 if (!enginePath) {
-  console.error("Usage: node scripts/audit-repertoires.mjs /path/to/stockfish [depth] [--group=core|nimzo|all] [--summary]");
+  console.error("Usage: node scripts/audit-repertoires.mjs /path/to/stockfish [depth] [--group=study|core|nimzo|all] [--summary]");
   process.exit(1);
 }
 
@@ -32,6 +32,23 @@ if (!Number.isInteger(shardIndex) || !Number.isInteger(shardCount) || shardIndex
 }
 
 const sourceGroups = {
+  study: [
+    {
+      path: "src/data/catalan-repertoire.ts",
+      playerColor: "w",
+      moveOrderMoves: ["g1f3", "g2g3", "f1g2", "b1d2", "e1g1"],
+    },
+    {
+      path: "src/data/sicilian-repertoire.ts",
+      playerColor: "b",
+      moveOrderMoves: [],
+    },
+    {
+      path: "src/data/grunfeld-repertoire.ts",
+      playerColor: "b",
+      moveOrderMoves: ["f8g7", "e8g8", "c7c5", "d8a5", "b8c6", "c8g4"],
+    },
+  ],
   core: [
     {
       path: "src/data/repertoire.ts",
@@ -64,17 +81,17 @@ const sourceGroups = {
 };
 
 const sources = group === "all"
-  ? [...sourceGroups.core, ...sourceGroups.nimzo]
+  ? [...sourceGroups.study, ...sourceGroups.core, ...sourceGroups.nimzo]
   : sourceGroups[group];
 
 if (!sources) {
-  console.error("Group must be core, nimzo, or all.");
+  console.error("Group must be study, core, nimzo, or all.");
   process.exit(1);
 }
 
 const parseLines = async ({ path, playerColor, moveOrderMoves }) => {
   const source = await readFile(path, "utf8");
-  const pattern = /line\(\s*"([^"]+)",\s*"([^"]+)",\s*\d+,\s*"([a-h][1-8][a-h][1-8][^"]*)",\s*\)/g;
+  const pattern = /line\(\s*"([^"]+)",\s*"([^"]+)",\s*\d+,\s*"([a-h][1-8][a-h][1-8][^"]*)"\s*,?\s*\)/g;
   return [...source.matchAll(pattern)].map((match) => ({
     id: match[1],
     family: match[2],

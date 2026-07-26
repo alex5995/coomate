@@ -1,6 +1,9 @@
 export type UciMove = `${string}${string}`;
 export type PlayerColor = "w" | "b";
 export type OpeningId =
+  | "catalan"
+  | "sicilian"
+  | "grunfeld"
   | "caro-kann"
   | "london-system"
   | "slav-universal"

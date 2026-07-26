@@ -10,8 +10,11 @@ Keep it concise and current. Record final decisions only - do not append a chron
 
 CooMate is an English-language chess opening trainer built with Next.js App Router, React, and TypeScript.
 
-The app contains five fixed-role repertoires:
+The app contains eight fixed-role repertoires, displayed in this order:
 
+- Catalan Opening: the user always plays White. Curated lines come only from `https://lichess.org/study/DckpgOgd`.
+- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it; use only the Alapin and Closed Sicilian lines from `https://lichess.org/study/jsSks17H` when White prevents the Dragon. Do not expose accelerated or hyperaccelerated Dragon move orders as opponent variations.
+- Grünfeld Defence: the user always plays Black. Curated lines come only from `https://lichess.org/study/0AUYoSOH`.
 - Caro-Kann Defence: the user always plays Black and the computer always plays White.
 - London System: the user always plays White and the computer always plays Black.
 - Universal Slav System: the user always plays Black against non-`1.e4` openings. White may begin with `1.d4`, `1.c4`, `1.Nf3`, `1.b3`, or `1.g3`, but never `1.e4`.
@@ -45,6 +48,8 @@ The goal is practical opening training through curated middlegame positions, not
 ## Repertoire principles
 
 - Prefer practical, coherent plans over a theoretically best move that conflicts with the repertoire's intended style.
+- Catalan, Sicilian, and Grünfeld repertoire moves must remain source-bound to their documented Lichess studies. Accept safe transpositional setup orders only when they combine moves and positions already expressed by the same source study.
+- The Sicilian repertoire must prefer the normal `...d6` Dragon whenever White permits it. Accelerated and hyperaccelerated Dragon chapters are Black choices, so they must not appear in the opponent-variation menu or repertoire graph.
 - In Black repertoires, do not trap the light-squared bishop behind an early `...e6`. Develop or exchange that bishop first unless a specifically curated exception is deliberately documented.
 - The Caro-Kann Advance `dxc5` branch may use the documented `...e6`, `...Bxc5`, and later `...b6`/`...Bb7` exception to recover the c5 pawn without forcing an inferior bishop move.
 - Caro-Kann Advance coverage must include common White choices such as `c3`, `Nf3`, `Nc3`, `h4`, and `dxc5`, including both defended-center and capture lines.
@@ -82,7 +87,7 @@ The goal is practical opening training through curated middlegame positions, not
 - `src/data/*-variants.ts` and `src/data/trainer-variants.ts`: user-selectable opponent variations and displayed frequencies.
 - `src/data/training-goals.ts`: target-position teaching content.
 - `src/data/stockfish-evaluation.ts`: shared static-evaluation metadata.
-- `src/data/*-evaluations.ts`: opening-specific committed Stockfish line arrays and FEN-position evaluations.
+- `src/data/*-evaluations.ts`: opening-specific committed Stockfish line arrays and additional FEN evaluations needed by allowlisted move-order paths. Recorded positions may reuse the evaluation stored in the line array.
 - `src/lib/repertoire-engine.ts`: FEN-position repertoire graphs, live-path filtering, SAN helpers, and weighted computer choices.
 - `src/lib/storage.ts`: versioned local statistics and migrations.
 - `src/lib/types.ts`: shared domain types.
@@ -109,7 +114,7 @@ git diff --check
 
 For UI changes, also verify the affected state in a real browser at both desktop and mobile widths. For training-flow changes, test at least one correct move, one legal move outside the repertoire, and line completion when relevant.
 
-When any repertoire changes, also run the relevant offline audit with an official Stockfish binary. Use `--group=core` for Caro-Kann, London, and Universal Slav, `--group=nimzo` for both Nimzo-Larsen repertoires, or `--group=all` for every repertoire:
+When any repertoire changes, also run the relevant offline audit with an official Stockfish binary. Use `--group=study` for Catalan, Sicilian, and Grünfeld, `--group=core` for Caro-Kann, London, and Universal Slav, `--group=nimzo` for both Nimzo-Larsen repertoires, or `--group=all` for every repertoire:
 
 ```bash
 node scripts/audit-repertoires.mjs /path/to/stockfish 18 --group=all --summary
