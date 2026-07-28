@@ -39,14 +39,38 @@ const StaticEvaluation = ({ centipawns, meta }: { centipawns: number; meta: Stat
   );
 };
 
-const MoveCell = ({ san, evaluation }: { san: string; evaluation?: number | null }) => (
-  <div className="move-cell">
+const lichessEditorUrl = (fen: string, playerColor: "w" | "b") =>
+  `https://lichess.org/editor/${fen.replaceAll(" ", "_")}?color=${playerColor === "w" ? "white" : "black"}`;
+
+const MoveCell = ({
+  san,
+  evaluation,
+  fen,
+  playerColor,
+}: {
+  san: string;
+  evaluation?: number | null;
+  fen?: string;
+  playerColor: "w" | "b";
+}) => fen ? (
+  <a
+    className="move-cell"
+    href={lichessEditorUrl(fen, playerColor)}
+    target="_blank"
+    rel="noreferrer"
+    aria-label={`Open the position after ${san} in the Lichess board editor`}
+    title="Open this position in the Lichess board editor"
+  >
     <span>{san}</span>
     {evaluation !== null && evaluation !== undefined && (
       <small aria-label={`Evaluation after ${san}: ${formatEvaluation(evaluation)}`}>
         {formatEvaluation(evaluation)}
       </small>
     )}
+  </a>
+) : (
+  <div className="move-cell">
+    <span>{san}</span>
   </div>
 );
 
@@ -392,6 +416,7 @@ export function OpeningTrainer() {
   const moveEvaluations = opening?.evaluation
     ? panelHistory.map((_, index) => staticEvaluationFor(panelHistory.slice(0, index + 1), opening.lines, opening.positionEvaluations))
     : [];
+  const moveFens = panelHistory.map((_, index) => chessFromHistory(panelHistory.slice(0, index + 1)).fen());
   const accuracyBase = stats.correctMoves + stats.errors;
   const accuracy = accuracyBase ? Math.round((stats.correctMoves / accuracyBase) * 100) : 100;
   const finalGoal = completed && opening
@@ -576,10 +601,17 @@ export function OpeningTrainer() {
                 {Array.from({ length: Math.ceil(moveHistory.length / 2) }, (_, index) => (
                   <div className="move-row" key={index}>
                     <span className="move-number">{index + 1}.</span>
-                    <MoveCell san={moveHistory[index * 2] ?? ""} evaluation={moveEvaluations[index * 2]} />
+                    <MoveCell
+                      san={moveHistory[index * 2] ?? ""}
+                      evaluation={moveEvaluations[index * 2]}
+                      fen={moveFens[index * 2]}
+                      playerColor={playerColor}
+                    />
                     <MoveCell
                       san={moveHistory[index * 2 + 1] ?? (thinking && index === Math.floor(history.length / 2) ? "…" : "")}
                       evaluation={moveEvaluations[index * 2 + 1]}
+                      fen={moveFens[index * 2 + 1]}
+                      playerColor={playerColor}
                     />
                   </div>
                 ))}

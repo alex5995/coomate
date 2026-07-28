@@ -273,6 +273,40 @@ describe("OpeningTrainer board interaction", () => {
     expect(history()).toBe(initialHistory);
   });
 
+  it("links every published move to its exact Lichess editor position", () => {
+    vi.useFakeTimers();
+    const { container } = render(<OpeningTrainer />);
+    fireEvent.click(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Closed Catalan/ }));
+
+    dragPiece("d2");
+    expect(dropPiece("d2", "d4")).toBe(true);
+    act(() => vi.advanceTimersByTime(700));
+
+    const links = Array.from(container.querySelectorAll<HTMLAnchorElement>(".training-content .move-cell"));
+    expect(links).toHaveLength(2);
+    expect(links[0]).toHaveAttribute(
+      "href",
+      "https://lichess.org/editor/rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR_b_KQkq_-_0_1?color=white",
+    );
+    expect(links[1]).toHaveAttribute(
+      "href",
+      "https://lichess.org/editor/rnbqkbnr/ppp1pppp/8/3p4/3P4/8/PPP1PPPP/RNBQKBNR_w_KQkq_-_0_2?color=white",
+    );
+    expect(links.every((link) => link.target === "_blank" && link.rel === "noreferrer")).toBe(true);
+  });
+
+  it("orients Lichess history positions from the trained Black side", () => {
+    render(<OpeningTrainer />);
+    fireEvent.click(screen.getByRole("button", { name: /Sicilian Defence.*You always play Black/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Dragon · main line without Bc4/ }));
+
+    expect(screen.getByRole("link", { name: "Open the position after e4 in the Lichess board editor" })).toHaveAttribute(
+      "href",
+      "https://lichess.org/editor/rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR_b_KQkq_-_0_1?color=black",
+    );
+  });
+
   it("completes a live Catalan graph path and shows its target", () => {
     const opening = openingById("catalan");
     expect(opening).toBeDefined();

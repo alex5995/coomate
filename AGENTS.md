@@ -37,6 +37,7 @@ The goal is practical opening training through curated middlegame positions, not
 - When a Black repertoire starts, apply White's automatic first move in the same interaction that selects the variation and show one complete feedback message. Do not render an intermediate waiting or introductory message that changes without user interaction.
 - Preserve enough history for "Go back and try an alternative" to restore the exact position before the user's choice.
 - Complete each line at a curated middlegame target with practical plans and a new-exercise action.
+- Every published move-history cell links to the exact position in the Lichess board editor, preserving the full FEN and using the trained side as the board orientation.
 - Persist versioned statistics in `localStorage`. Keep progress statistics and the reset control present in every state.
 
 ## Repertoire and evaluation rules
