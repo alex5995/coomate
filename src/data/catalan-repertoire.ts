@@ -1,91 +1,9 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
 import { catalanEvaluations } from "./catalan-evaluations";
+import { trainingGoalFor } from "./training-goals";
 
 // Source: https://lichess.org/study/DckpgOgd
 // Every recorded move comes from the named chapter of this study.
-const familyGoals: Record<string, RepertoireLine["goal"]> = {
-  "Indian setup": {
-    title: "The Catalan structure",
-    plans: [
-      "Fianchetto the light-squared bishop and keep pressure on the long diagonal.",
-      "Develop the kingside and castle before expanding in the centre.",
-      "Choose the Nf3 and Bg2 move order that best fits Black's setup.",
-    ],
-  },
-  "Open Catalan": {
-    title: "Pressure after ...dxc4",
-    plans: [
-      "Use the g2 bishop and queen to recover the c4 pawn without rushing.",
-      "Complete development while Black spends time holding the extra pawn.",
-      "Look for queenside pressure on the open files and long diagonal.",
-    ],
-  },
-  "Closed Catalan": {
-    title: "Long-term queenside pressure",
-    plans: [
-      "Keep the g2 bishop active against Black's d5 centre.",
-      "Castle and complete development before choosing a central break.",
-      "Use the space advantage to improve every piece patiently.",
-    ],
-  },
-  "Anti-Nimzo": {
-    title: "A Catalan against ...Nc6",
-    plans: [
-      "Avoid an unnecessary pin and keep the fianchetto plan intact.",
-      "Pressure d5 with the g2 bishop and central pawns.",
-      "Castle before deciding how to challenge Black's knight placement.",
-    ],
-  },
-  Marshall: {
-    title: "Development against the Marshall setup",
-    plans: [
-      "Use Nf3 and Nbd2 to pressure the exposed d5 knight.",
-      "Complete the kingside fianchetto and castle.",
-      "Exploit the tempi Black spent moving the same knight and bishop.",
-    ],
-  },
-  Slav: {
-    title: "Active Catalan play against the Slav",
-    plans: [
-      "Use Qb3 and Bf4 to create concrete pressure on b7 and the queen.",
-      "Complete the fianchetto while Black untangles the queenside.",
-      "Keep the initiative through development rather than pawn grabbing.",
-    ],
-  },
-  "Hungarian Gambit": {
-    title: "Meet the early ...e5",
-    plans: [
-      "Accept the central challenge while keeping development coordinated.",
-      "Develop Nf3 and Bg2 to control the centre and protect the king.",
-      "Do not chase the advanced knight at the expense of development.",
-    ],
-  },
-  "Neo-Catalan": {
-    title: "A Catalan from the English move order",
-    plans: [
-      "Reach the same fianchetto structure without forcing 1.d4.",
-      "Use the delayed d4 push once the kingside pieces are developed.",
-      "Keep pressure on the centre from the g2 bishop.",
-    ],
-  },
-  Tarrasch: {
-    title: "Play against the isolated d-pawn",
-    plans: [
-      "Exchange on d5 and make the isolated pawn a long-term target.",
-      "Develop rapidly and castle before increasing central pressure.",
-      "Coordinate the g2 bishop and queenside knight against d5.",
-    ],
-  },
-  Albin: {
-    title: "Contain the Albin counter-gambit",
-    plans: [
-      "Resolve the central tension without trying to hold every pawn.",
-      "Develop Nf3 and Bg2 against Black's advanced d4 pawn.",
-      "Prepare to challenge the centre after completing development.",
-    ],
-  },
-};
-
 const line = (
   id: string,
   family: string,
@@ -98,7 +16,7 @@ const line = (
   weight,
   moves: moves.split(" ") as UciMove[],
   evaluations: catalanEvaluations[id],
-  goal: familyGoals[family],
+  goal: trainingGoalFor("catalan", id),
 });
 
 export const catalanRepertoire: RepertoireLine[] = [

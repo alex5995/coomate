@@ -36,7 +36,7 @@ The goal is practical opening training through curated middlegame positions, not
 - Treat a correct user move and the computer reply as one atomic panel update. Move the board immediately, but keep the previous feedback, progress, static evaluation, move history, and alternative action unchanged while the computer is thinking. Publish the combined title, explanation, next task, progress, evaluation, history, and alternative action together when the computer replies.
 - When a Black repertoire starts, apply White's automatic first move in the same interaction that selects the variation and show one complete feedback message. Do not render an intermediate waiting or introductory message that changes without user interaction.
 - Preserve enough history for "Go back and try an alternative" to restore the exact position before the user's choice.
-- Complete each line at a curated middlegame target with practical plans and a new-exercise action.
+- Complete each line at a curated middlegame target with a new-exercise action and three brief, position-specific plans for what the trained side should do next. Do not use the target summary to recap moves that have already been played.
 - Every published move-history cell links to the exact position in the Lichess board editor, preserving the full FEN and using the trained side as the board orientation.
 - Persist versioned statistics in `localStorage`. Keep progress statistics and the reset control present in every state.
 

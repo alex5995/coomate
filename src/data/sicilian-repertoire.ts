@@ -1,96 +1,6 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
 import { sicilianEvaluations } from "./sicilian-evaluations";
-
-const familyGoals: Record<string, RepertoireLine["goal"]> = {
-  "Dragon main line": {
-    title: "Central counterplay in the Dragon",
-    plans: [
-      "Complete ...Bg7, ...Nc6 and castling before striking the centre.",
-      "Use ...d5 when White has not prevented the break with Bc4.",
-      "Create counterplay against the queenside-castled king.",
-    ],
-  },
-  "Dragon Yugoslav": {
-    title: "Meet the Yugoslav Attack",
-    plans: [
-      "Develop ...Bd7 and place a rook on the half-open c-file.",
-      "Generate queenside counterplay before White's kingside pawns arrive.",
-      "Keep the g7 bishop active on the long diagonal.",
-    ],
-  },
-  "Dragon Classical": {
-    title: "A sound Dragon against Be2",
-    plans: [
-      "Fianchetto, castle and complete ...Nc6 without delay.",
-      "Develop the c8 bishop to d7.",
-      "Use the centre and queenside for active counterplay against White's kingside castle.",
-    ],
-  },
-  "Alapin central": {
-    title: "Challenge the Alapin centre",
-    plans: [
-      "Attack e4 immediately with ...Nf6.",
-      "Use ...d6 and ...Nc6 before clarifying White's advanced centre.",
-      "After the queen exchange, finish the Dragon-style fianchetto safely.",
-    ],
-  },
-  "Alapin bishop exchange": {
-    title: "Use activity against the Alapin centre",
-    plans: [
-      "Challenge e4 with ...Nf6 and exchange on d4.",
-      "Answer Bxd5 with ...Qxd5 and keep pressure on White's centre.",
-      "Use the ...e5 break to finish the tactical sequence with tempo.",
-    ],
-  },
-  "Closed f4": {
-    title: "A Dragon-style Closed Sicilian",
-    plans: [
-      "Keep ...d6 first, then fianchetto with ...g6 and ...Bg7.",
-      "Use ...e6 and ...Nge7 so the kingside remains flexible against f4.",
-      "Prepare queenside play with ...Rb8 and ...b5.",
-    ],
-  },
-  "Closed Nge2": {
-    title: "Meet the quiet Closed setup",
-    plans: [
-      "Build the same ...d6, ...g6 and ...Bg7 shell.",
-      "Use ...e6, ...Nge7 and ...Nd4 to contest the dark squares.",
-      "Delay castling only as long as needed, then secure the king.",
-    ],
-  },
-  "Closed Dragon transposition": {
-    title: "Transpose to the normal Dragon",
-    plans: [
-      "Recognise when Nc3 is only a move-order choice and White still plays Nf3 and d4.",
-      "Enter the normal Dragon with ...d6 before ...g6.",
-      "Use the ...d5 break once the normal Dragon position is reached.",
-    ],
-  },
-  Moscow: {
-    title: "Neutralise the Moscow check",
-    plans: [
-      "Meet Bb5+ with ...Bd7 and recapture with the queenside knight.",
-      "Build a Dragon-style kingside fianchetto after White commits to c4.",
-      "Use ...a6 and ...Rc8 to create queenside pressure.",
-    ],
-  },
-  "Smith-Morra": {
-    title: "Accept and contain the Smith-Morra",
-    plans: [
-      "Accept the gambit, then develop with ...Nc6, ...d6 and ...Nf6.",
-      "Develop the light-squared bishop to g4 before playing ...e6.",
-      "Use ...Ne5 and exchange on f3 to blunt White's initiative.",
-    ],
-  },
-  Bowdler: {
-    title: "Challenge the Bowdler bishop",
-    plans: [
-      "Develop with ...Nf6 and strike immediately with ...d5.",
-      "Recapture on d5 with the knight and complete queenside development.",
-      "Use ...g6, ...Bg7 and castling once White allows the fianchetto.",
-    ],
-  },
-};
+import { trainingGoalFor } from "./training-goals";
 
 const line = (
   id: string,
@@ -104,7 +14,7 @@ const line = (
   weight,
   moves: moves.split(" ") as UciMove[],
   evaluations: sicilianEvaluations[id],
-  goal: familyGoals[family],
+  goal: trainingGoalFor("sicilian", id),
 });
 
 export const sicilianRepertoire: RepertoireLine[] = [

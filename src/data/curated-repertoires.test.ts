@@ -9,6 +9,7 @@ import { grunfeldVariants } from "./grunfeld-variants";
 import { openings } from "./openings";
 import { sicilianRepertoire } from "./sicilian-repertoire";
 import { sicilianVariants } from "./sicilian-variants";
+import { trainingGoalFor } from "./training-goals";
 
 const curatedOpenings = openings;
 
@@ -24,6 +25,7 @@ describe("curated repertoires", () => {
         expect(userScore, line.id).toBeGreaterThanOrEqual(-100);
       });
       expect(line.goal.plans).toHaveLength(3);
+      expect(line.goal).toEqual(trainingGoalFor(opening.id, line.id));
     },
   );
 

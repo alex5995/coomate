@@ -1,59 +1,9 @@
 import type { RepertoireLine, UciMove } from "@/lib/types";
 import { grunfeldEvaluations } from "./grunfeld-evaluations";
+import { trainingGoalFor } from "./training-goals";
 
 // Source: https://lichess.org/study/0AUYoSOH
 // Continuation chapters are prefixed only with the exact setup encoded in their FEN.
-const familyGoals: Record<string, RepertoireLine["goal"]> = {
-  Exchange: {
-    title: "Attack White's broad centre",
-    plans: [
-      "Exchange the c3 knight when it weakens White's control of the centre.",
-      "Use ...c5, ...Qa5, ...Bg4 and ...Nc6 to increase pressure on d4.",
-      "Castle before opening more lines against the centre.",
-    ],
-  },
-  "Knight recapture": {
-    title: "Active play after Nxd5",
-    plans: [
-      "Recapture with the queen and develop without allowing useful tempi.",
-      "Use ...c5 and ...Nc6 against the d4 pawn.",
-      "Coordinate the rooks on the central files after castling.",
-    ],
-  },
-  "No exchange": {
-    title: "Keep pressure without an early exchange",
-    plans: [
-      "Complete the kingside fianchetto and castle.",
-      "Challenge the centre with ...c5 even when White declines cxd5.",
-      "Use ...Qa5 against the c3 knight and loose queenside squares.",
-    ],
-  },
-  "Bishop pin": {
-    title: "Meet Bg5 with central activity",
-    plans: [
-      "Use ...Ne4 to exploit the pressure on d4.",
-      "Exploit the queen and bishop pressure on d4.",
-      "Finish development before committing more central pawns.",
-    ],
-  },
-  "Quiet Nf3": {
-    title: "A flexible Grünfeld setup",
-    plans: [
-      "Fianchetto the bishop and castle before choosing a pawn break.",
-      "Support ...c5 or ...d5 according to White's next setup move.",
-      "Keep the queenside pieces flexible while White delays Nc3.",
-    ],
-  },
-  "Catalan setup": {
-    title: "Meet the Catalan move order",
-    plans: [
-      "Use ...c6 to prepare ...d5 against the fianchetto.",
-      "Keep ...d5 available without overextending the centre.",
-      "Complete development before challenging White's long diagonal.",
-    ],
-  },
-};
-
 const line = (
   id: string,
   family: string,
@@ -66,7 +16,7 @@ const line = (
   weight,
   moves: moves.split(" ") as UciMove[],
   evaluations: grunfeldEvaluations[id],
-  goal: familyGoals[family],
+  goal: trainingGoalFor("grunfeld", id),
 });
 
 export const grunfeldRepertoire: RepertoireLine[] = [
