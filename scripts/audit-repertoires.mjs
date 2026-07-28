@@ -17,7 +17,7 @@ const shardArgument = process.argv.find((argument) => argument.startsWith("--sha
 const [shardIndex, shardCount] = (shardArgument?.slice("--shard=".length) ?? "0/1").split("/").map(Number);
 
 if (!enginePath) {
-  console.error("Usage: node scripts/audit-repertoires.mjs /path/to/stockfish [depth] [--group=study|core|nimzo|all] [--summary]");
+  console.error("Usage: node scripts/audit-repertoires.mjs /path/to/stockfish [depth] [--group=all] [--summary]");
   process.exit(1);
 }
 
@@ -31,61 +31,26 @@ if (!Number.isInteger(shardIndex) || !Number.isInteger(shardCount) || shardIndex
   process.exit(1);
 }
 
-const sourceGroups = {
-  study: [
-    {
-      path: "src/data/catalan-repertoire.ts",
-      playerColor: "w",
-      moveOrderMoves: ["g1f3", "g2g3", "f1g2", "b1d2", "e1g1"],
-    },
-    {
-      path: "src/data/sicilian-repertoire.ts",
-      playerColor: "b",
-      moveOrderMoves: [],
-    },
-    {
-      path: "src/data/grunfeld-repertoire.ts",
-      playerColor: "b",
-      moveOrderMoves: ["f8g7", "e8g8", "c7c5", "d8a5", "b8c6", "c8g4"],
-    },
-  ],
-  core: [
-    {
-      path: "src/data/repertoire.ts",
-      playerColor: "b",
-      moveOrderMoves: ["c8f5", "c8g4", "g8f6", "g8e7", "b8c6", "b8d7", "e7e6", "f8e7", "f8d6", "f8c5", "e8g8"],
-    },
-    {
-      path: "src/data/london-repertoire.ts",
-      playerColor: "w",
-      moveOrderMoves: ["c1f4", "g1f3", "e2e3", "c2c3", "f1d3", "f1e2", "b1d2", "h2h3", "e1g1", "f3e5"],
-    },
-    {
-      path: "src/data/slav-repertoire.ts",
-      playerColor: "b",
-      moveOrderMoves: ["d7d5", "c7c6", "c8f5", "c8g4", "g8f6", "g8e7", "b8c6", "b8d7", "e7e6", "f8e7", "f8d6", "f8b4", "e8g8"],
-    },
-  ],
-  nimzo: [
-    {
-      path: "src/data/nimzo-larsen-white-repertoire.ts",
-      playerColor: "w",
-      moveOrderMoves: [],
-    },
-    {
-      path: "src/data/nimzo-larsen-black-repertoire.ts",
-      playerColor: "b",
-      moveOrderMoves: [],
-    },
-  ],
-};
+const sources = [
+  {
+    path: "src/data/catalan-repertoire.ts",
+    playerColor: "w",
+    moveOrderMoves: ["g1f3", "g2g3", "f1g2", "b1d2", "e1g1"],
+  },
+  {
+    path: "src/data/sicilian-repertoire.ts",
+    playerColor: "b",
+    moveOrderMoves: [],
+  },
+  {
+    path: "src/data/grunfeld-repertoire.ts",
+    playerColor: "b",
+    moveOrderMoves: ["f8g7", "e8g8", "c7c5", "d8a5", "b8c6", "c8g4"],
+  },
+];
 
-const sources = group === "all"
-  ? [...sourceGroups.study, ...sourceGroups.core, ...sourceGroups.nimzo]
-  : sourceGroups[group];
-
-if (!sources) {
-  console.error("Group must be study, core, nimzo, or all.");
+if (group !== "all") {
+  console.error("Group must be all.");
   process.exit(1);
 }
 

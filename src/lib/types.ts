@@ -1,14 +1,6 @@
 export type UciMove = `${string}${string}`;
 export type PlayerColor = "w" | "b";
-export type OpeningId =
-  | "catalan"
-  | "sicilian"
-  | "grunfeld"
-  | "caro-kann"
-  | "london-system"
-  | "slav-universal"
-  | "nimzo-larsen-white"
-  | "nimzo-larsen-black";
+export type OpeningId = "catalan" | "sicilian" | "grunfeld";
 
 export interface RepertoireLine {
   id: string;

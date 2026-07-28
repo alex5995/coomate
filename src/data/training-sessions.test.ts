@@ -79,13 +79,15 @@ describe("training session policies", () => {
             if (reorderedKey !== positionKey(chessFromHistory(line.moves).fen())) continue;
             if (opening.positionEvaluations) {
               const safe = reordered.every((_, moveIndex) => {
-                const userScore = staticEvaluationFor(
+                const whiteScore = staticEvaluationFor(
                   reordered.slice(0, moveIndex + 1),
                   opening.lines,
-                  opening.playerColor,
                   opening.positionEvaluations,
                 );
-                return userScore !== null && userScore >= -100;
+                const trainedSideScore = whiteScore === null
+                  ? null
+                  : opening.playerColor === "w" ? whiteScore : -whiteScore;
+                return trainedSideScore !== null && trainedSideScore >= -100;
               });
               if (!safe) continue;
             }
@@ -102,31 +104,4 @@ describe("training session policies", () => {
     }
   }
 
-  it("accepts a natural bishop-first Caro-Kann Exchange move order", () => {
-    const opening = openings.find((candidate) => candidate.id === "caro-kann");
-    const opponentLines = opening?.lines.filter((line) => [
-      "exchange-white-nf3-nc6",
-      "exchange-nf3-bg4",
-      "exchange-white-nf3-nf6",
-    ].includes(line.id)) ?? [];
-    const session = createTrainingSession(opening?.lines ?? [], opponentLines, "b", opening?.moveOrderMoves ?? []);
-    const history = "e2e4 c7c6 d2d4 d7d5 e4d5 c6d5 g1f3".split(" ") as UciMove[];
-
-    expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("c8g4");
-    history.push("c8g4", "f1e2");
-    expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("b8c6");
-  });
-
-  it("accepts ...Nf6 before ...d5 while preserving the selected Slav opponent family", () => {
-    const opening = openings.find((candidate) => candidate.id === "slav-universal");
-    const opponentLines = opening?.lines.filter((line) => line.family === "London") ?? [];
-    const session = createTrainingSession(opening?.lines ?? [], opponentLines, "b", opening?.moveOrderMoves ?? []);
-    const history = ["d2d4"] as UciMove[];
-
-    expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("g8f6");
-    history.push("g8f6");
-    expect(sessionChoices(session, history).flatMap((choice) => choice.lineIds).every((id) => opponentLines.some((line) => line.id === id))).toBe(true);
-    history.push("g1f3");
-    expect(sessionChoices(session, history).map((choice) => choice.uci)).toContain("d7d5");
-  });
 });

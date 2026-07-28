@@ -1,5 +1,4 @@
 import { Chess, type Square } from "chess.js";
-import { repertoire } from "@/data/repertoire";
 import type { MoveChoice, PlayerColor, RepertoireLine, UciMove } from "@/lib/types";
 
 interface PositionCandidate {
@@ -48,10 +47,10 @@ const indexedPositionsFor = (line: RepertoireLine) => {
 export const isPrefix = (history: UciMove[], line: RepertoireLine) =>
   history.every((move, index) => line.moves[index] === move);
 
-export const candidatesFor = (history: UciMove[], lines = repertoire) =>
+export const candidatesFor = (history: UciMove[], lines: RepertoireLine[]) =>
   lines.filter((line) => isPrefix(history, line));
 
-export const choicesFor = (history: UciMove[], lines = repertoire): MoveChoice[] => {
+export const choicesFor = (history: UciMove[], lines: RepertoireLine[]): MoveChoice[] => {
   const grouped = new Map<UciMove, MoveChoice>();
   for (const line of candidatesFor(history, lines)) {
     const uci = line.moves[history.length];
@@ -72,14 +71,14 @@ export const choicesFor = (history: UciMove[], lines = repertoire): MoveChoice[]
  * order. This keeps castling and en-passant rights significant while allowing
  * ordinary opening transpositions to share the same continuations.
  */
-export const positionCandidatesFor = (history: UciMove[], lines = repertoire): PositionCandidate[] => {
+export const positionCandidatesFor = (history: UciMove[], lines: RepertoireLine[]): PositionCandidate[] => {
   const currentKey = positionKey(chessFromHistory(history).fen());
   return lines.flatMap((line) => indexedPositionsFor(line)
     .filter((position) => position.key === currentKey)
     .map((position) => ({ line, moveIndex: position.moveIndex })));
 };
 
-export const positionChoicesFor = (history: UciMove[], lines = repertoire): MoveChoice[] => {
+export const positionChoicesFor = (history: UciMove[], lines: RepertoireLine[]): MoveChoice[] => {
   const grouped = new Map<UciMove, MoveChoice>();
   for (const { line, moveIndex } of positionCandidatesFor(history, lines)) {
     const uci = line.moves[moveIndex];
@@ -95,23 +94,22 @@ export const positionChoicesFor = (history: UciMove[], lines = repertoire): Move
   return [...grouped.values()].sort((a, b) => b.weight - a.weight);
 };
 
-export const terminalLinesFor = (history: UciMove[], lines = repertoire) => positionCandidatesFor(history, lines)
+export const terminalLinesFor = (history: UciMove[], lines: RepertoireLine[]) => positionCandidatesFor(history, lines)
   .filter(({ line, moveIndex }) => moveIndex === line.moves.length)
   .map(({ line }) => line);
 
 export const staticEvaluationFor = (
   history: UciMove[],
   lines: RepertoireLine[],
-  playerColor: PlayerColor,
   positionEvaluations?: Record<string, number>,
 ) => {
   for (const { line, moveIndex } of positionCandidatesFor(history, lines)) {
     const whiteCentipawns = line.evaluations?.[moveIndex];
     if (whiteCentipawns === undefined) continue;
-    return playerColor === "w" ? whiteCentipawns : -whiteCentipawns;
+    return whiteCentipawns;
   }
   const whiteCentipawns = positionEvaluations?.[positionKey(chessFromHistory(history).fen())];
-  if (whiteCentipawns !== undefined) return playerColor === "w" ? whiteCentipawns : -whiteCentipawns;
+  if (whiteCentipawns !== undefined) return whiteCentipawns;
   return null;
 };
 

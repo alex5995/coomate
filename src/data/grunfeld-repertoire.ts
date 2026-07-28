@@ -7,7 +7,7 @@ const familyGoals: Record<string, RepertoireLine["goal"]> = {
   Exchange: {
     title: "Attack White's broad centre",
     plans: [
-      "Exchange the c3 knight when the study calls for it.",
+      "Exchange the c3 knight when it weakens White's control of the centre.",
       "Use ...c5, ...Qa5, ...Bg4 and ...Nc6 to increase pressure on d4.",
       "Castle before opening more lines against the centre.",
     ],
@@ -31,7 +31,7 @@ const familyGoals: Record<string, RepertoireLine["goal"]> = {
   "Bishop pin": {
     title: "Meet Bg5 with central activity",
     plans: [
-      "Use ...Ne4 exactly as the study recommends.",
+      "Use ...Ne4 to exploit the pressure on d4.",
       "Exploit the queen and bishop pressure on d4.",
       "Finish development before committing more central pawns.",
     ],
@@ -47,7 +47,7 @@ const familyGoals: Record<string, RepertoireLine["goal"]> = {
   "Catalan setup": {
     title: "Meet the Catalan move order",
     plans: [
-      "Use ...c6 as the study's preparation against the fianchetto.",
+      "Use ...c6 to prepare ...d5 against the fianchetto.",
       "Keep ...d5 available without overextending the centre.",
       "Complete development before challenging White's long diagonal.",
     ],
@@ -129,20 +129,20 @@ export const grunfeldRepertoire: RepertoireLine[] = [
 ];
 
 const guidance: Record<string, { hint: string; explanation: string }> = {
-  g8f6: { hint: "Begin with the flexible Indian Defence knight move.", explanation: "...Nf6 prevents e4 and starts the study's Grünfeld setup." },
+  g8f6: { hint: "Begin with the flexible Indian Defence knight move.", explanation: "...Nf6 prevents an immediate e4 and keeps the central pawn structure flexible." },
   g7g6: { hint: "Prepare the kingside bishop fianchetto.", explanation: "...g6 opens the long diagonal for the bishop." },
   d7d5: { hint: "Challenge White's centre before it becomes stable.", explanation: "...d5 is the defining Grünfeld central strike after Nc3." },
-  f6d5: { hint: "Recapture and prepare to exchange the c3 knight.", explanation: "...Nxd5 follows the study's Exchange Variation plan." },
+  f6d5: { hint: "Recapture and prepare to exchange the c3 knight.", explanation: "...Nxd5 restores the pawn and puts immediate pressure on c3 and e3." },
   d5c3: { hint: "Remove the knight that supports White's centre.", explanation: "...Nxc3 leaves White with a broad but attackable pawn centre." },
   f8g7: { hint: "Activate the bishop against White's centre.", explanation: "...Bg7 completes the fianchetto and pressures d4." },
-  c7c5: { hint: "Attack the base of White's central pawn chain.", explanation: "...c5 is one of the study's key moves against d4." },
-  d8a5: { hint: "Use the queen to add pressure on c3 and d4.", explanation: "...Qa5 is a recurring study motif against White's centre." },
-  c8g4: { hint: "Pin the knight and remove a defender of d4.", explanation: "...Bg4 is one of the study's principal pressure-building moves." },
+  c7c5: { hint: "Attack the base of White's central pawn chain.", explanation: "...c5 attacks d4 and forces White to make a concrete decision in the centre." },
+  d8a5: { hint: "Use the queen to add pressure on c3 and d4.", explanation: "...Qa5 increases pressure on the c3 knight and White's broad centre." },
+  c8g4: { hint: "Pin the knight and remove a defender of d4.", explanation: "...Bg4 develops with pressure and makes d4 harder to defend." },
   f6e4: { hint: "Jump into the centre when White pins the knight.", explanation: "...Ne4 exploits the queen and bishop pressure on d4." },
 };
 
 export const grunfeldGuidanceFor = (moves: UciMove[]) =>
   moves.map((move) => guidance[move]).find(Boolean) ?? {
     hint: "Develop with pressure against White's centre.",
-    explanation: "This continuation follows the selected Grünfeld study chapter.",
+    explanation: "This continuation develops with direct pressure against White's centre.",
   };

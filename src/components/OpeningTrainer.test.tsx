@@ -22,13 +22,13 @@ const boardOptions = () => {
 
 const startWhiteSession = () => {
   render(<OpeningTrainer />);
-  fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
-  fireEvent.click(screen.getByRole("button", { name: /Random variation/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ }));
+  fireEvent.click(screen.getByRole("button", { name: /^Closed Catalan/ }));
 };
 
 const chooseWhiteRepertoire = () => {
   render(<OpeningTrainer />);
-  fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ }));
 };
 
 const dragPiece = (square: string) => {
@@ -89,33 +89,13 @@ describe("OpeningTrainer board interaction", () => {
     expect(screen.queryAllByText("Illegal move")).toHaveLength(0);
   });
 
-  it("offers the Nimzo-Larsen System as separate White and Black repertoires", () => {
+  it("offers exactly the Catalan, Sicilian and Grünfeld repertoires", () => {
     render(<OpeningTrainer />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Nimzo.*Larsen System - White.*You always play White/ }));
-    expect(screen.getByRole("heading", { name: /Choose a variation · Nimzo.*Larsen White/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Classical · …d5 and …Nc6/ })).toBeInTheDocument();
-    expect(screen.getByLabelText("Chessboard oriented from White's side")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "← Change repertoire" }));
-    fireEvent.click(screen.getByRole("button", { name: /Nimzo.*Larsen System - Black.*You always play Black/ }));
-    expect(screen.getByRole("heading", { name: /Choose a variation · Nimzo.*Larsen Black/ })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /1.d4 · Queen's Gambit/ })).toBeInTheDocument();
-    expect(screen.getByLabelText("Chessboard oriented from Black's side")).toBeInTheDocument();
-  });
-
-  it("starts the White Nimzo-Larsen exercise with 1.b3", () => {
-    render(<OpeningTrainer />);
-    fireEvent.click(screen.getByRole("button", { name: /Nimzo.*Larsen System - White.*You always play White/ }));
-    fireEvent.click(screen.getByRole("button", { name: /Classical · …d5 and …Nc6/ }));
-
-    expect(screen.getByText("Your move: play b3.")).toBeInTheDocument();
-    expect(screen.queryAllByLabelText("Static evaluation +0.37 pawns for your side").length).toBeGreaterThan(0);
-    dragPiece("b2");
-    expect(dropPiece("b2", "b3")).toBe(true);
-    expect(screen.queryAllByText(/b3 is correct/).length).toBeGreaterThan(0);
-    expect(screen.queryAllByLabelText("Static evaluation -0.23 pawns for your side").length).toBeGreaterThan(0);
-    expect(screen.getByLabelText("Evaluation after b3: -0.23")).toBeInTheDocument();
+    expect(screen.getAllByRole("button").filter((button) => /You always play/.test(button.textContent ?? ""))).toHaveLength(3);
+    expect(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Sicilian Defence.*You always play Black/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Grünfeld Defence.*You always play Black/ })).toBeInTheDocument();
   });
 
   it("selects and deselects a piece with successive taps", () => {
@@ -145,8 +125,8 @@ describe("OpeningTrainer board interaction", () => {
   it("deselects with a stale drag-start callback retained by the board", () => {
     render(<OpeningTrainer />);
     const retainedDragStart = boardOptions().onPieceDrag;
-    fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
-    fireEvent.click(screen.getByRole("button", { name: /Random variation/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Closed Catalan/ }));
 
     act(() => boardOptions().onSquareClick?.({ piece: { pieceType: "wP" }, square: "e2" }));
     act(() => retainedDragStart?.({
@@ -233,34 +213,70 @@ describe("OpeningTrainer board interaction", () => {
 
     expect(boardOptions().position).not.toBe(initialPosition);
     expect(boardOptions().squareStyles?.d2).toEqual({ background: "rgba(255, 178, 122, .46)" });
-    expect(screen.queryAllByText(/d4 is correct/).length).toBeGreaterThan(0);
+    expect(screen.queryAllByText(/d4 is correct/)).toHaveLength(0);
+    expect(screen.queryAllByText("Waiting").length).toBeGreaterThan(0);
   });
 
-  it("accepts the alternate London move order while Black follows the selected variation", () => {
+  it("publishes feedback, progress, evaluation and history once for the complete move pair", () => {
     vi.useFakeTimers();
-    render(<OpeningTrainer />);
-    fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
-    fireEvent.click(screen.getByRole("button", { name: /Classical · …e6 and …Bd6/ }));
+    const { container } = render(<OpeningTrainer />);
+    fireEvent.click(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Closed Catalan/ }));
+
+    const feedback = () => container.querySelector(".training-content .feedback")?.textContent;
+    const progress = () => container.querySelector(".training-content .progress-copy strong")?.textContent;
+    const evaluation = () => container.querySelector(".training-content .static-evaluation strong")?.textContent;
+    const moveRows = () => container.querySelectorAll(".training-content .move-row").length;
+    const feedbackBeforeMove = feedback();
+    const progressBeforeMove = progress();
+    const evaluationBeforeMove = evaluation();
 
     dragPiece("d2");
     expect(dropPiece("d2", "d4")).toBe(true);
+
+    expect(feedback()).toBe(feedbackBeforeMove);
+    expect(progress()).toBe(progressBeforeMove);
+    expect(evaluation()).toBe(evaluationBeforeMove);
+    expect(moveRows()).toBe(0);
+
     act(() => vi.advanceTimersByTime(700));
+
     expect(screen.queryAllByText(/Black plays d5/).length).toBeGreaterThan(0);
-
-    dragPiece("c1");
-    expect(dropPiece("c1", "f4")).toBe(true);
-    act(() => vi.advanceTimersByTime(700));
-    expect(screen.queryAllByText(/Black plays Nf6/).length).toBeGreaterThan(0);
-
-    dragPiece("g1");
-    expect(dropPiece("g1", "f3")).toBe(true);
-    expect(screen.queryAllByText(/Nf3 is correct/).length).toBeGreaterThan(0);
+    expect(screen.queryAllByText(/Find White's continuation/).length).toBeGreaterThan(0);
+    expect(progress()).not.toBe(progressBeforeMove);
+    expect(moveRows()).toBe(1);
+    expect(container.querySelector(".training-content .move-list")?.textContent).toContain("d4");
+    expect(container.querySelector(".training-content .move-list")?.textContent).toContain("d5");
   });
 
-  it("completes a live London graph path and shows its target", () => {
-    const opening = openingById("london-system");
+  it("starts a Black repertoire with one complete message and no automatic follow-up", () => {
+    vi.useFakeTimers();
+    const { container } = render(<OpeningTrainer />);
+    fireEvent.click(screen.getByRole("button", { name: /Sicilian Defence.*You always play Black/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Dragon · main line without Bc4/ }));
+
+    const feedback = () => container.querySelector(".training-content .feedback")?.textContent;
+    const progress = () => container.querySelector(".training-content .progress-copy strong")?.textContent;
+    const history = () => container.querySelector(".training-content .move-list")?.textContent;
+    const initialFeedback = feedback();
+    const initialProgress = progress();
+    const initialHistory = history();
+
+    expect(initialFeedback).toContain("White plays e4");
+    expect(initialFeedback).toContain("Find a theoretical continuation for Black.");
+    expect(initialHistory).toContain("e4");
+
+    act(() => vi.advanceTimersByTime(1_000));
+
+    expect(feedback()).toBe(initialFeedback);
+    expect(progress()).toBe(initialProgress);
+    expect(history()).toBe(initialHistory);
+  });
+
+  it("completes a live Catalan graph path and shows its target", () => {
+    const opening = openingById("catalan");
     expect(opening).toBeDefined();
-    const variant = opening?.variants.find((item) => item.id === "london-classical");
+    const variant = opening?.variants.find((item) => item.id === "catalan-closed");
     const opponentLines = opening?.lines.filter((line) => line.family === variant?.family) ?? [];
     const session = createTrainingSession(opening?.lines ?? [], opponentLines, "w", opening?.moveOrderMoves ?? []);
     const plannedHistory: UciMove[] = [];
@@ -274,8 +290,8 @@ describe("OpeningTrainer board interaction", () => {
     vi.useFakeTimers();
     vi.spyOn(Math, "random").mockReturnValue(0);
     render(<OpeningTrainer />);
-    fireEvent.click(screen.getByRole("button", { name: /London System.*You always play White/ }));
-    fireEvent.click(screen.getByRole("button", { name: /Classical · …e6 and …Bd6/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Catalan Opening.*You always play White/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Closed Catalan/ }));
 
     plannedHistory.forEach((move, index) => {
       if (index % 2 === 0) {

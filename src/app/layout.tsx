@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "CooMate · Chess Opening Trainer",
-  description: "Train the London System as White and the Caro-Kann or Universal Slav as Black.",
+  description: "Train the Catalan as White and the Sicilian Dragon or Grünfeld as Black.",
   icons: { icon: "/coomate-tab-icon.png", apple: "/coomate-tab-icon.png" },
 };
 

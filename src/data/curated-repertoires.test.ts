@@ -10,11 +10,11 @@ import { openings } from "./openings";
 import { sicilianRepertoire } from "./sicilian-repertoire";
 import { sicilianVariants } from "./sicilian-variants";
 
-const newOpenings = openings.slice(0, 3);
+const curatedOpenings = openings;
 
-describe("study-sourced repertoires", () => {
-  it.each(newOpenings.flatMap((opening) => opening.lines.map((line) => [opening, line] as const)))(
-    "$id contains only legal source moves and complete safe evaluations",
+describe("curated repertoires", () => {
+  it.each(curatedOpenings.flatMap((opening) => opening.lines.map((line) => [opening, line] as const)))(
+    "$id contains only legal moves and complete safe evaluations",
     (opening, line) => {
       const chess = new Chess();
       for (const uci of line.moves) expect(() => chess.move(parseUci(uci)), `${line.id}: ${uci}`).not.toThrow();
@@ -35,8 +35,8 @@ describe("study-sourced repertoires", () => {
     for (const variant of variants) expect(lines.some((line) => line.family === variant.family), variant.id).toBe(true);
   });
 
-  it("accepts both Catalan setup orders explicitly supported by the study", () => {
-    const opening = newOpenings.find((candidate) => candidate.id === "catalan") as OpeningRepertoire;
+  it("accepts both curated Catalan setup orders", () => {
+    const opening = curatedOpenings.find((candidate) => candidate.id === "catalan") as OpeningRepertoire;
     const selected = opening.lines.filter((line) => line.family === "Indian setup");
     const session = createTrainingSession(
       opening.lines,
@@ -55,7 +55,7 @@ describe("study-sourced repertoires", () => {
     expect(sicilianRepertoire.filter((line) => line.id.includes("dragon")).every((line) => line.moves[3] === "d7d6")).toBe(true);
   });
 
-  it("keeps the expanded anti-Sicilian coverage on the documented source prefixes", () => {
+  it("keeps the expanded anti-Sicilian coverage on the curated prefixes", () => {
     expect(sicilianRepertoire.filter((line) => !line.id.includes("dragon")).map((line) => line.id).sort()).toEqual([
       "sicilian-alapin-bishop-exchange",
       "sicilian-alapin-central",

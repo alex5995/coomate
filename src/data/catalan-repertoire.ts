@@ -55,7 +55,7 @@ const familyGoals: Record<string, RepertoireLine["goal"]> = {
   "Hungarian Gambit": {
     title: "Meet the early ...e5",
     plans: [
-      "Accept the central challenge exactly as the study shows.",
+      "Accept the central challenge while keeping development coordinated.",
       "Develop Nf3 and Bg2 to control the centre and protect the king.",
       "Do not chase the advanced knight at the expense of development.",
     ],
@@ -79,7 +79,7 @@ const familyGoals: Record<string, RepertoireLine["goal"]> = {
   Albin: {
     title: "Contain the Albin counter-gambit",
     plans: [
-      "Follow the study's central exchanges without trying to hold everything.",
+      "Resolve the central tension without trying to hold every pawn.",
       "Develop Nf3 and Bg2 against Black's advanced d4 pawn.",
       "Prepare to challenge the centre after completing development.",
     ],
@@ -170,18 +170,18 @@ export const catalanRepertoire: RepertoireLine[] = [
 ];
 
 const guidance: Record<string, { hint: string; explanation: string }> = {
-  d2d4: { hint: "Claim the centre with the queen's pawn.", explanation: "d4 is the study's main Catalan starting move." },
-  c2c4: { hint: "Challenge Black's d-pawn and open the queen's diagonal.", explanation: "c4 creates the central tension used throughout the Catalan study." },
+  d2d4: { hint: "Claim the centre with the queen's pawn.", explanation: "d4 claims central space and prepares the Catalan structure." },
+  c2c4: { hint: "Challenge Black's d-pawn and open the queen's diagonal.", explanation: "c4 creates central tension and increases pressure on d5." },
   g2g3: { hint: "Prepare the defining light-squared bishop fianchetto.", explanation: "g3 opens g2 for the bishop and builds long-term pressure on the long diagonal." },
-  g1f3: { hint: "Develop while increasing control over the centre.", explanation: "Nf3 supports d4, prepares castling and fits the study's flexible setup." },
+  g1f3: { hint: "Develop while increasing control over the centre.", explanation: "Nf3 supports d4, prepares castling and keeps the setup flexible." },
   f1g2: { hint: "Complete the fianchetto and aim through the centre.", explanation: "Bg2 activates the Catalan bishop on the long diagonal." },
-  e1g1: { hint: "Secure the king before increasing central pressure.", explanation: "Castling completes the study's core kingside development." },
-  d1b3: { hint: "Create immediate pressure on b7.", explanation: "Qb3 is the study's active answer to the Slav setup." },
-  c1f4: { hint: "Develop with tempo against the queen.", explanation: "Bf4 adds pressure to c7 and gains time in the studied Slav line." },
+  e1g1: { hint: "Secure the king before increasing central pressure.", explanation: "Castling completes the core kingside development and connects the rooks." },
+  d1b3: { hint: "Create immediate pressure on b7.", explanation: "Qb3 targets b7 and makes Black spend time defending the queenside." },
+  c1f4: { hint: "Develop with tempo against the queen.", explanation: "Bf4 adds pressure to c7 and gains time against Black's queen." },
 };
 
 export const catalanGuidanceFor = (moves: UciMove[]) =>
   moves.map((move) => guidance[move]).find(Boolean) ?? {
     hint: "Improve development while preserving pressure on the long diagonal.",
-    explanation: "This continuation follows the selected Catalan study chapter.",
+    explanation: "This continuation improves coordination while preserving Catalan pressure on the centre and long diagonal.",
   };

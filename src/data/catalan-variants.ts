@@ -9,7 +9,7 @@ export const catalanVariants: TrainerVariant[] = [
   { id: "catalan-tarrasch", family: "Tarrasch", label: "Tarrasch · ...c5", moves: "1.d4 d5 2.c4 e6 3.Nf3 Nf6 4.g3 c5", description: "Exchange in the centre and play against Black's isolated d-pawn.", probability: 10 },
   { id: "catalan-anti-nimzo", family: "Anti-Nimzo", label: "Anti-Nimzo · ...Nc6", moves: "1.d4 Nf6 2.c4 e6 3.Nf3 Nc6", description: "Keep the Catalan fianchetto while avoiding the usual Nimzo pin.", probability: 7 },
   { id: "catalan-marshall", family: "Marshall", label: "Marshall · early ...Nf6", moves: "1.d4 d5 2.c4 Nf6 3.cxd5 Nxd5", description: "Develop with tempo against Black's exposed central knight.", probability: 5 },
-  { id: "catalan-albin", family: "Albin", label: "Albin Counter-Gambit · ...e5", moves: "1.d4 d5 2.c4 e5", description: "Contain Black's advanced centre through the study's exact setup.", probability: 3 },
+  { id: "catalan-albin", family: "Albin", label: "Albin Counter-Gambit · ...e5", moves: "1.d4 d5 2.c4 e5", description: "Contain Black's advanced centre with precise development and central pressure.", probability: 3 },
   { id: "catalan-hungarian", family: "Hungarian Gambit", label: "Hungarian Gambit · ...e5", moves: "1.d4 Nf6 2.c4 e6 3.g3 e5", description: "Meet the rare early pawn sacrifice without abandoning development.", probability: 2 },
   { id: "catalan-neo", family: "Neo-Catalan", label: "Neo-Catalan · 1.c4", moves: "1.c4 e6 2.Nf3 d5 3.g3", description: "Reach the Catalan structure from the English move order.", probability: 2 },
 ];

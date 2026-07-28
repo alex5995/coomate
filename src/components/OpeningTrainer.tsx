@@ -12,7 +12,11 @@ import { Logo } from "./Logo";
 
 const defaultFeedback = (opening: OpeningRepertoire | null): Feedback => {
   if (opening) {
-    return { kind: "info", title: opening.playerColor === "w" ? "Your move" : "Get ready", message: opening.startMessage };
+    return {
+      kind: "info",
+      title: opening.playerColor === "w" ? "Your move" : "Get ready",
+      message: opening.startMessage,
+    };
   }
   return { kind: "info", title: "Choose a repertoire", message: "Pick the opening you want to train." };
 };
@@ -27,10 +31,10 @@ const formatEvaluation = (centipawns: number) => {
 const StaticEvaluation = ({ centipawns, meta }: { centipawns: number; meta: StaticEvaluationMeta }) => {
   const formatted = formatEvaluation(centipawns);
   return (
-    <div className="static-evaluation" aria-label={`Static evaluation ${formatted} pawns for your side`}>
+    <div className="static-evaluation" aria-label={`Static evaluation ${formatted} pawns from White's perspective`}>
       <span>STATIC EVALUATION</span>
       <strong>{formatted}</strong>
-      <small>{meta.engine} - depth {meta.depth} - your perspective</small>
+      <small>{meta.engine} - depth {meta.depth} - positive favors White, negative favors Black</small>
     </div>
   );
 };
@@ -57,6 +61,7 @@ export function OpeningTrainer() {
   const [completed, setCompleted] = useState(false);
   const [completedLineId, setCompletedLineId] = useState<string | null>(null);
   const [takeback, setTakeback] = useState<TakebackSnapshot | null>(null);
+  const [publishedPlyCount, setPublishedPlyCount] = useState(0);
   const [stats, setStats] = useState<TrainerStats>(emptyStats);
   const mobileSummaryRef = useRef<HTMLDivElement | null>(null);
   const selectedSquareRef = useRef<Square | null>(null);
@@ -81,13 +86,16 @@ export function OpeningTrainer() {
   const choices = useMemo(() => session ? sessionChoices(session, history) : [], [history, session]);
   const targetLine = useMemo(() => session ? sessionTarget(session, history) : null, [history, session]);
   const opponentColor = playerColor === "w" ? "b" : "w";
-  const positionEvaluation = useMemo(
-    () => opening?.evaluation ? staticEvaluationFor(history, opening.lines, playerColor, opening.positionEvaluations) : null,
-    [history, opening, playerColor],
-  );
   const isUserTurn = game.turn() === playerColor;
   const atTarget = Boolean(targetLine);
   const thinking = Boolean(selectedVariant) && !completed && !atTarget && !isUserTurn;
+  const panelHistoryLength = Math.min(history.length, publishedPlyCount);
+  const panelHistory = useMemo(() => history.slice(0, panelHistoryLength), [history, panelHistoryLength]);
+  const panelGame = useMemo(() => chessFromHistory(panelHistory), [panelHistory]);
+  const positionEvaluation = useMemo(
+    () => opening?.evaluation ? staticEvaluationFor(panelHistory, opening.lines, opening.positionEvaluations) : null,
+    [opening, panelHistory],
+  );
 
   const persistStats = useCallback((updater: (current: TrainerStats) => TrainerStats) => {
     setStats((current) => {
@@ -118,6 +126,7 @@ export function OpeningTrainer() {
       const completionTimer = window.setTimeout(() => {
         setCompleted(true);
         setCompletedLineId(targetLine.id);
+        setPublishedPlyCount(history.length);
         pendingSuccessRef.current = null;
         setFeedback({ kind: "success", title: "Target position reached", message: trainingGoalFor(opening.id, targetLine.id).title });
         persistStats((current) => ({
@@ -138,6 +147,7 @@ export function OpeningTrainer() {
       const nextGame = chessFromHistory(nextHistory);
       const san = nextGame.history().at(-1) ?? "";
       setHistory(nextHistory);
+      setPublishedPlyCount(nextHistory.length);
       setSelectedSquare(null);
       const success = pendingSuccessRef.current;
       if (success) {
@@ -145,14 +155,18 @@ export function OpeningTrainer() {
         setFeedback({
           kind: "success",
           title: `${success.playedSan} is correct · ${colorName(opponentColor)} plays ${san}`,
-          message: `${success.explanation}${alternatives} Now find ${colorName(playerColor)}'s continuation.`,
+          message: `${success.explanation}${alternatives} Find ${colorName(playerColor)}'s continuation.`,
         });
         pendingSuccessRef.current = null;
       } else {
-        setFeedback({ kind: "info", title: `${colorName(opponentColor)} plays ${san}`, message: `Find a theoretical continuation for ${colorName(playerColor)}.` });
+        setFeedback({
+          kind: "info",
+          title: `${colorName(opponentColor)} plays ${san}`,
+          message: defaultFeedback(opening).message,
+        });
       }
       persistStats((current) => ({ ...current, positionsSeen: current.positionsSeen + 1 }));
-    }, history.length === 0 ? 420 : 650);
+    }, 650);
     return () => window.clearTimeout(timer);
   }, [choices, completed, history, isUserTurn, opening, opponentColor, persistStats, playerColor, selectedVariant, session, targetLine]);
 
@@ -199,11 +213,6 @@ export function OpeningTrainer() {
     const explanation = opening.guidanceFor([playedUci]).explanation;
     const alternativeSans = alternatives.map((move) => sanFor(game, move));
     pendingSuccessRef.current = { playedSan, explanation, alternativeSans };
-    setFeedback({
-      kind: "success",
-      title: alternatives.length ? `${playedSan} is correct · alternatives available` : `${playedSan} is correct`,
-      message: alternatives.length ? `${explanation} ${alternativeSans.join(" or ")} ${alternativeSans.length > 1 ? "were" : "was"} theoretical too.` : explanation,
-    });
     return true;
   }, [acceptedSans, atTarget, attempts, choices, completed, game, history, isUserTurn, opening, persistStats, selectedVariant, thinking]);
 
@@ -301,6 +310,7 @@ export function OpeningTrainer() {
     setCompleted(false);
     setCompletedLineId(null);
     setTakeback(null);
+    setPublishedPlyCount(0);
     draggingSourceRef.current = null;
     dragStartSelectionRef.current = null;
     suppressSquareClickRef.current = false;
@@ -327,6 +337,37 @@ export function OpeningTrainer() {
 
   const startVariant = (variantId: string) => {
     setSelectedVariant(variantId);
+    if (opening?.playerColor === "b") {
+      const variant = opening.variants.find((item) => item.id === variantId);
+      const variantLines = variant
+        ? opening.lines.filter((line) => variant.opponentLineIds?.includes(line.id) ?? line.family === variant.family)
+        : [];
+      const nextSession = createTrainingSession(
+        opening.lines,
+        variantLines,
+        opening.playerColor,
+        opening.moveOrderMoves,
+        opening.positionEvaluations,
+      );
+      const firstChoice = weightedChoice(sessionChoices(nextSession, []));
+      if (firstChoice) {
+        const firstHistory = [firstChoice.uci];
+        const firstSan = chessFromHistory(firstHistory).history().at(-1) ?? "";
+        resetSession({
+          kind: "info",
+          title: `White plays ${firstSan}`,
+          message: `${opening.startMessage} Find a theoretical continuation for Black.`,
+        });
+        setHistory(firstHistory);
+        setPublishedPlyCount(firstHistory.length);
+        persistStats((current) => ({
+          ...current,
+          sessions: current.sessions + 1,
+          positionsSeen: current.positionsSeen + 1,
+        }));
+        return;
+      }
+    }
     resetSession();
     persistStats((current) => ({ ...current, sessions: current.sessions + 1 }));
   };
@@ -334,6 +375,7 @@ export function OpeningTrainer() {
   const tryAlternative = () => {
     if (!takeback) return;
     setHistory(takeback.history);
+    setPublishedPlyCount(takeback.history.length);
     setCompleted(false);
     setCompletedLineId(null);
     pendingSuccessRef.current = null;
@@ -345,10 +387,10 @@ export function OpeningTrainer() {
   };
 
   const maxLength = session?.maxTargetLength ?? Math.max(1, history.length);
-  const progress = atTarget || completed ? 100 : Math.min(100, Math.round((history.length / maxLength) * 100));
-  const moveHistory = game.history();
+  const progress = atTarget || completed ? 100 : Math.min(100, Math.round((panelHistory.length / maxLength) * 100));
+  const moveHistory = panelGame.history();
   const moveEvaluations = opening?.evaluation
-    ? history.map((_, index) => staticEvaluationFor(history.slice(0, index + 1), opening.lines, playerColor, opening.positionEvaluations))
+    ? panelHistory.map((_, index) => staticEvaluationFor(panelHistory.slice(0, index + 1), opening.lines, opening.positionEvaluations))
     : [];
   const accuracyBase = stats.correctMoves + stats.errors;
   const accuracy = accuracyBase ? Math.round((stats.correctMoves / accuracyBase) * 100) : 100;
@@ -449,7 +491,7 @@ export function OpeningTrainer() {
                 <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
               )}
 
-              {takeback && takeback.alternatives.length > 0 && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
+              {takeback && takeback.alternatives.length > 0 && !thinking && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
 
               {completed && finalGoalContent && (
                 <div className="goal-card">
@@ -516,7 +558,7 @@ export function OpeningTrainer() {
               <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
             )}
 
-            {takeback && takeback.alternatives.length > 0 && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
+            {takeback && takeback.alternatives.length > 0 && !thinking && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
 
             {completed && finalGoalContent && (
               <div className="goal-card">

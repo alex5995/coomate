@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { londonVariants } from "./london-variants";
+import { catalanVariants } from "./catalan-variants";
 import { openingById, openings, pickUniformVariant } from "./openings";
 
 describe("repertoire selection", () => {
@@ -7,21 +7,11 @@ describe("repertoire selection", () => {
     expect(openingById("catalan")?.playerColor).toBe("w");
     expect(openingById("sicilian")?.playerColor).toBe("b");
     expect(openingById("grunfeld")?.playerColor).toBe("b");
-    expect(openingById("caro-kann")?.playerColor).toBe("b");
-    expect(openingById("london-system")?.playerColor).toBe("w");
-    expect(openingById("slav-universal")?.playerColor).toBe("b");
-    expect(openingById("nimzo-larsen-white")?.playerColor).toBe("w");
-    expect(openingById("nimzo-larsen-black")?.playerColor).toBe("b");
-    expect(openings.map((opening) => opening.id).slice(0, 3)).toEqual(["catalan", "sicilian", "grunfeld"]);
-    expect(openings).toHaveLength(8);
+    expect(openings.map((opening) => opening.id)).toEqual(["catalan", "sicilian", "grunfeld"]);
+    expect(openings).toHaveLength(3);
     expect(openingById("catalan")?.variants).toHaveLength(10);
     expect(openingById("sicilian")?.variants).toHaveLength(11);
     expect(openingById("grunfeld")?.variants).toHaveLength(6);
-    expect(openingById("caro-kann")?.variants).toHaveLength(12);
-    expect(openingById("london-system")?.variants).toHaveLength(9);
-    expect(openingById("slav-universal")?.variants).toHaveLength(10);
-    expect(openingById("nimzo-larsen-white")?.variants).toHaveLength(7);
-    expect(openingById("nimzo-larsen-black")?.variants).toHaveLength(8);
   });
 
   it("keeps each finite menu ordered and normalised", () => {
@@ -33,15 +23,15 @@ describe("repertoire selection", () => {
   });
 
   it("selects random variations uniformly rather than using displayed frequency", () => {
-    const step = 1 / londonVariants.length;
+    const step = 1 / catalanVariants.length;
 
-    londonVariants.forEach((variant, index) => {
-      expect(pickUniformVariant(londonVariants, () => index * step + step / 2)).toEqual(variant);
+    catalanVariants.forEach((variant, index) => {
+      expect(pickUniformVariant(catalanVariants, () => index * step + step / 2)).toEqual(variant);
     });
   });
 
   it("keeps the final item at the random generator's upper boundary", () => {
-    expect(pickUniformVariant(londonVariants, () => 1)).toEqual(londonVariants.at(-1));
+    expect(pickUniformVariant(catalanVariants, () => 1)).toEqual(catalanVariants.at(-1));
   });
 
   it("keeps every recorded position within one pawn for the trained side", () => {
@@ -54,6 +44,26 @@ describe("repertoire selection", () => {
           expect(userScore, line.id).toBeGreaterThanOrEqual(-100);
         }
       }
+    }
+  });
+
+  it("keeps all user-facing repertoire copy independent from source studies", () => {
+    for (const opening of openings) {
+      const copy = [
+        opening.name,
+        opening.description,
+        opening.startMessage,
+        ...opening.variants.flatMap((variant) => [variant.label, variant.description]),
+        ...opening.lines.flatMap((line) => [
+          line.goal.title,
+          ...line.goal.plans,
+          ...line.moves.flatMap((move) => {
+            const guidance = opening.guidanceFor([move]);
+            return [guidance.hint, guidance.explanation];
+          }),
+        ]),
+      ].join(" ");
+      expect(copy).not.toMatch(/\b(?:study|lichess|source|documented)\b/i);
     }
   });
 });
