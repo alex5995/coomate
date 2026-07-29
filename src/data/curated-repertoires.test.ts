@@ -51,6 +51,22 @@ describe("curated repertoires", () => {
     expect(sessionChoices(session, history).map((choice) => choice.uci).sort()).toEqual(["f1g2", "g1f3"]);
   });
 
+  it("keeps the Catalan response set aligned with the selected repertoire", () => {
+    expect(catalanVariants.map((variant) => variant.id)).toContain("catalan-benoni");
+    expect(catalanVariants.map((variant) => variant.id)).toContain("catalan-budapest");
+    expect(catalanVariants.map((variant) => variant.id)).not.toContain("catalan-hungarian");
+    expect(catalanVariants.map((variant) => variant.id)).not.toContain("catalan-neo");
+    expect(catalanRepertoire.find((line) => line.id === "catalan-budapest")?.moves.slice(0, 7)).toEqual(
+      "d2d4 g8f6 c2c4 e7e5 d4e5 f6g4 g2g3".split(" "),
+    );
+    expect(catalanRepertoire.find((line) => line.id === "catalan-marshall")?.moves.slice(-4)).toEqual([
+      "f5g6",
+      "e1g1",
+      "b8c6",
+      "b1c3",
+    ]);
+  });
+
   it("does not expose accelerated Dragon choices", () => {
     expect(sicilianVariants.map((variant) => `${variant.id} ${variant.label}`.toLowerCase()).join(" ")).not.toContain("acceler");
     expect(sicilianRepertoire.some((line) => line.moves[3] === "b8c6" || line.moves[3] === "g7g6")).toBe(false);

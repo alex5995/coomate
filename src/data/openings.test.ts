@@ -63,7 +63,7 @@ describe("repertoire selection", () => {
           }),
         ]),
       ].join(" ");
-      expect(copy).not.toMatch(/\b(?:study|lichess|source|documented)\b/i);
+      expect(copy).not.toMatch(/\b(?:stud(?:y|ies|ied)|lichess|source|documented)\b/i);
     }
   });
 });

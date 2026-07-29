@@ -57,11 +57,11 @@ const trainingGoals = {
       ],
     },
     "catalan-marshall": {
-      title: "Drive back the centralised knight",
+      title: "Exploit the lead in development",
       plans: [
-        "Use e4 or Nc4 to question the knight on d5 and gain space.",
-        "Develop the c1 bishop with b3 and Bb2 when the diagonal is useful.",
-        "Put the rooks on c1 and d1, then exploit Black's lag in development.",
+        "Use Qb3 or Re1 to increase pressure before Black can finish development.",
+        "Prepare e4 to drive the d5 knight back and open the centre.",
+        "Meet ...Nxc3 with bxc3, then use the open b-file and active bishops.",
       ],
     },
     "catalan-slav": {
@@ -72,20 +72,20 @@ const trainingGoals = {
         "Clarify the centre with cxd5 only when it opens useful files for the rooks.",
       ],
     },
-    "catalan-hungarian": {
-      title: "Trade the extra pawn for development",
+    "catalan-benoni": {
+      title: "Build the centre before Black's queenside break",
       plans: [
-        "Castle instead of spending tempi trying to hold e5 at all costs.",
-        "Develop Nc3 and Bf4, and use h3 to question the knight on g4.",
-        "Open central lines while Black's king and queenside pieces remain undeveloped.",
+        "Follow with e4 to secure the space advantage and prepare e5.",
+        "Develop Bf4 and Qd2, then place a rook on e1 behind the central break.",
+        "Meet ...b5 with timely central play or a4, and use Nd2-c4 to pressure d6.",
       ],
     },
-    "catalan-neo": {
-      title: "Turn the move order into a full Catalan",
+    "catalan-budapest": {
+      title: "Build on the space gained with f4",
       plans: [
-        "Castle and develop Nc3 or Nbd2 according to Black's pressure on d4.",
-        "Use Qc2 and Rd1 to prepare the e4 break.",
-        "If Black takes on c4, recover it without giving up the long diagonal.",
+        "Develop Nc3 and Qc2 before preparing the central e4 advance.",
+        "Meet ...Bxc3 with Bxc3 so the g2 bishop and queen keep pressure on the long diagonals.",
+        "Use a3 or f5 only after the king is safe and the centre is under control.",
       ],
     },
     "catalan-tarrasch": {

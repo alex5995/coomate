@@ -12,7 +12,7 @@ CooMate is an English-language chess opening trainer built with Next.js App Rout
 
 The app contains exactly three fixed-role repertoires, displayed in this order:
 
-- Catalan Opening: the user always plays White. Curated lines come only from `https://lichess.org/study/DckpgOgd`.
+- Catalan Opening: the user always plays White. Core Catalan lines come from `https://lichess.org/study/DckpgOgd`; the Budapest Gambit uses the practical `4.g3` fianchetto line from `https://www.chess.com/openings/Budapest-Gambit`, and the `1...c5` response uses an Old Benoni move order into the Fianchetto Variation from `https://www.chess.com/openings/Benoni-Defense-Modern-Fianchetto-Variation`.
 - Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it. Alapin lines keep the `https://lichess.org/study/jsSks17H` prefix and use continuations from `https://lichess.org/study/cA3kOR92`; Closed lines keep the `https://lichess.org/study/jsSks17H` `2.Nc3 d6` prefix and use Dragon-style continuations from `https://lichess.org/study/72rdAVHd`. Moscow and Smith-Morra lines come from `https://lichess.org/study/AsIsKPrX`; Bowdler lines come from `https://lichess.org/study/ulZswGf8`.
 - Grünfeld Defence: the user always plays Black. Curated lines come only from `https://lichess.org/study/0AUYoSOH`.
 

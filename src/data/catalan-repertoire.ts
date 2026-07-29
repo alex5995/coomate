@@ -2,8 +2,9 @@ import type { RepertoireLine, UciMove } from "@/lib/types";
 import { catalanEvaluations } from "./catalan-evaluations";
 import { trainingGoalFor } from "./training-goals";
 
-// Source: https://lichess.org/study/DckpgOgd
-// Every recorded move comes from the named chapter of this study.
+// Main source: https://lichess.org/study/DckpgOgd
+// Budapest practical 4.g3 fianchetto: https://www.chess.com/openings/Budapest-Gambit
+// Old Benoni into the Fianchetto Variation: https://www.chess.com/openings/Benoni-Defense-Modern-Fianchetto-Variation
 const line = (
   id: string,
   family: string,
@@ -43,7 +44,7 @@ export const catalanRepertoire: RepertoireLine[] = [
     "catalan-marshall",
     "Marshall",
     10,
-    "d2d4 d7d5 c2c4 g8f6 c4d5 f6d5 g1f3 c8f5 g2g3 e7e6 b1d2 f5g6 f1g2 b8c6 e1g1",
+    "d2d4 d7d5 c2c4 g8f6 c4d5 f6d5 g1f3 c8f5 g2g3 e7e6 f1g2 f5g6 e1g1 b8c6 b1c3",
   ),
 
   // Catalan Opening; Slav Defense.
@@ -54,20 +55,20 @@ export const catalanRepertoire: RepertoireLine[] = [
     "d2d4 d7d5 c2c4 c7c6 g1f3 c8f5 d1b3 d8c7 g2g3 g8f6 c1f4 c7c8 f1g2",
   ),
 
-  // Catalan Opening; Hungarian Gambit.
+  // Old Benoni move order into a Fianchetto Benoni structure.
   line(
-    "catalan-hungarian",
-    "Hungarian Gambit",
-    5,
-    "d2d4 g8f6 c2c4 e7e6 g2g3 e6e5 d4e5 f6g4 g1f3 b8c6 f1g2",
+    "catalan-benoni",
+    "Old Benoni",
+    6,
+    "d2d4 c7c5 d4d5 e7e6 c2c4 e6d5 c4d5 d7d6 g1f3 g8f6 g2g3 g7g6 f1g2 f8g7 e1g1 e8g8 b1c3",
   ),
 
-  // English Opening; Neo-Catalan.
+  // Budapest Gambit with a practical 4.g3 fianchetto.
   line(
-    "catalan-neo",
-    "Neo-Catalan",
+    "catalan-budapest",
+    "Budapest Gambit",
     5,
-    "c2c4 e7e6 g1f3 d7d5 g2g3 g8f6 f1g2 b8d7 d2d4",
+    "d2d4 g8f6 c2c4 e7e5 d4e5 f6g4 g2g3 g4e5 e2e3 f8b4 c1d2 a7a5 f2f4 e5c6 f1g2 d7d6 g1f3 e8g8 e1g1",
   ),
 
   // Catalan Opening; Tarrasch Defense.

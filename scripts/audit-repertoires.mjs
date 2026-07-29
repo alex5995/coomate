@@ -35,7 +35,7 @@ const sources = [
   {
     path: "src/data/catalan-repertoire.ts",
     playerColor: "w",
-    moveOrderMoves: ["g1f3", "g2g3", "f1g2", "b1d2", "e1g1"],
+    moveOrderMoves: ["g1f3", "g2g3", "f1g2", "e1g1"],
   },
   {
     path: "src/data/sicilian-repertoire.ts",
