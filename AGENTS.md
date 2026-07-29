@@ -13,7 +13,7 @@ CooMate is an English-language chess opening trainer built with Next.js App Rout
 The app contains exactly three fixed-role repertoires, displayed in this order:
 
 - Catalan Opening: the user always plays White. Core Catalan lines come from `https://lichess.org/study/DckpgOgd`; the Budapest Gambit uses the practical `4.g3` fianchetto line from `https://www.chess.com/openings/Budapest-Gambit`, and the `1...c5` response uses an Old Benoni move order into the Fianchetto Variation from `https://www.chess.com/openings/Benoni-Defense-Modern-Fianchetto-Variation`.
-- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it. Alapin lines keep the `https://lichess.org/study/jsSks17H` prefix and use continuations from `https://lichess.org/study/cA3kOR92`; Closed lines keep the `https://lichess.org/study/jsSks17H` `2.Nc3 d6` prefix and use Dragon-style continuations from `https://lichess.org/study/72rdAVHd`. Moscow and Smith-Morra lines come from `https://lichess.org/study/AsIsKPrX`; Bowdler lines come from `https://lichess.org/study/ulZswGf8`.
+- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it. Alapin lines keep the `https://lichess.org/study/jsSks17H` prefix and use continuations from `https://lichess.org/study/cA3kOR92`; decline the Smith-Morra with `3...Nf6` and transpose into that same Alapin repertoire. Closed lines keep the `https://lichess.org/study/jsSks17H` `2.Nc3 d6` prefix and use Dragon-style continuations from `https://lichess.org/study/72rdAVHd`. Moscow lines come from `https://lichess.org/study/AsIsKPrX`; Bowdler lines come from `https://lichess.org/study/ulZswGf8`.
 - Grünfeld Defence: the user always plays Black. Curated lines come only from `https://lichess.org/study/0AUYoSOH`.
 
 The goal is practical opening training through curated middlegame positions, not engine analysis.
@@ -37,6 +37,7 @@ The goal is practical opening training through curated middlegame positions, not
 - When a Black repertoire starts, apply White's automatic first move in the same interaction that selects the variation and show one complete feedback message. Do not render an intermediate waiting or introductory message that changes without user interaction.
 - Preserve enough history for "Go back and try an alternative" to restore the exact position before the user's choice.
 - Complete each line at a curated middlegame target with a new-exercise action and three brief, position-specific plans for what the trained side should do next. Do not use the target summary to recap moves that have already been played.
+- At line completion, provide one action that opens the full PGN in the Lichess Analysis Board in a new tab.
 - Every published move-history cell links to the exact position in the Lichess board editor, preserving the full FEN and using the trained side as the board orientation.
 - Persist versioned statistics in `localStorage`. Keep progress statistics and the reset control present in every state.
 
@@ -45,6 +46,11 @@ The goal is practical opening training through curated middlegame positions, not
 - Prefer practical, coherent plans over a theoretically best move that conflicts with the repertoire's intended style.
 - Catalan, Sicilian, and Grünfeld moves remain source-bound to the internal source studies. User-facing descriptions, hints, explanations, goals, and messages must stand on their own and must never mention a study, Lichess, a source line, or source documentation.
 - The Sicilian repertoire prefers the normal `...d6` Dragon whenever White permits it. Do not expose accelerated or hyperaccelerated Dragon move orders as opponent variations.
+- Against the Smith-Morra, decline with `3...Nf6` and transpose into the repertoire's `...Nf6` Alapin line. Do not retain an Accepted variation.
+- Against the Closed Sicilian, use the common Dragon setup `...d6`, `...Nf6`, `...g6`, `...Bg7`, `...O-O` and `...Nc6`; do not switch to a separate `...e6/...Nge7` system. If White plays `d4`, transpose into the normal Open Dragon.
+- In Dragon setups, accept `...Nc6` and `...O-O` in either order when the intervening White move and target position are unchanged.
+- Against the Bowdler Attack, use only `2...d6 3.Nf3 Nf6 4.d3 Nc6`, then complete the Dragon with `...g6`, `...Bg7`, and `...O-O`. Do not allow White to castle before defending e4 with d3, and do not expose alternative Black move orders inside this variation.
+- In the Alapin `Bxd5` exchange line, follow the central `...Qxd5`, `...Qd6`, and `...e5` sequence with direct `...Be7` development and castling. After `Nb5-c7` and `Qxa7`, use `...Rb8` and the `...Bh3` sacrifice to expose White's king. Exchange queens with `...Qxa3` before recovering the c7 knight with `...Bxc7`, reaching a queenless ending against White's doubled isolated a- and h-pawns. Do not force a late kingside fianchetto.
 - Store every Stockfish score in centipawns from White's perspective. Display that same sign everywhere: positive favours White and negative favours Black, regardless of the trained side.
 - Every curated position has a committed Stockfish 18 depth-18 evaluation. Current-position and move-history scores use the same White-perspective convention.
 - Every recorded or automatically reordered position must evaluate to at least `-1.00` for the trained side. Prune automatically generated paths that fail this threshold.
@@ -60,6 +66,7 @@ The goal is practical opening training through curated middlegame positions, not
 - Preserve real header-logo transparency and keep Next Image optimization disabled for it.
 - Desktop fits the board, header, and active panel in the viewport. Long menus scroll inside the panel.
 - Variation-card copy, frequency, and notation stay inside the card at every width.
+- Vertically centre both SAN and its evaluation within each move-history cell.
 - At single-column breakpoints, starting a variation returns the page to the board. Feedback and completion appear immediately below it.
 - On mobile completion, bring the target summary and new-exercise action into view.
 - Preserve keyboard accessibility, visible status messaging, and reduced-motion behavior.

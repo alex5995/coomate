@@ -34,7 +34,7 @@ export const openings: OpeningRepertoire[] = [
     playerColor: "b",
     lines: sicilianRepertoire,
     variants: sicilianVariants,
-    moveOrderMoves: [],
+    moveOrderMoves: ["b8c6", "e8g8"],
     evaluation: stockfishEvaluationMeta,
     positionEvaluations: sicilianPositionEvaluations,
     guidanceFor: sicilianGuidanceFor,

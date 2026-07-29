@@ -1,6 +1,6 @@
 import { Chess } from "chess.js";
 import { describe, expect, it } from "vitest";
-import { createTrainingSession, parseUci, sessionChoices } from "@/lib/repertoire-engine";
+import { createTrainingSession, parseUci, sessionChoices, sessionTarget } from "@/lib/repertoire-engine";
 import type { OpeningRepertoire, UciMove } from "@/lib/types";
 import { catalanRepertoire } from "./catalan-repertoire";
 import { catalanVariants } from "./catalan-variants";
@@ -89,15 +89,126 @@ describe("curated repertoires", () => {
     expect(sicilianRepertoire.filter((line) => line.id.includes("closed")).every((line) =>
       line.moves.slice(0, 4).join(" ") === "e2e4 c7c5 b1c3 d7d6"
     )).toBe(true);
+    expect(sicilianRepertoire.filter((line) => line.id.includes("closed")).every((line) =>
+      line.moves[5] === "g8f6"
+    )).toBe(true);
+    expect(sicilianRepertoire.filter((line) => line.id.includes("closed")).every((line) =>
+      !line.moves.includes("g8e7")
+    )).toBe(true);
     expect(sicilianRepertoire.find((line) => line.id === "sicilian-moscow")?.moves.slice(0, 8).join(" ")).toBe(
       "e2e4 c7c5 g1f3 d7d6 f1b5 c8d7 b5d7 b8d7",
     );
     expect(sicilianRepertoire.find((line) => line.id === "sicilian-smith-morra")?.moves.slice(0, 8).join(" ")).toBe(
-      "e2e4 c7c5 d2d4 c5d4 c2c3 d4c3 b1c3 b8c6",
+      "e2e4 c7c5 d2d4 c5d4 c2c3 g8f6 e4e5 f6d5",
     );
-    expect(sicilianRepertoire.find((line) => line.id === "sicilian-bowdler")?.moves.slice(0, 8).join(" ")).toBe(
-      "e2e4 c7c5 f1c4 g8f6 d2d3 d7d5 e4d5 f6d5",
+    expect(sicilianRepertoire.find((line) => line.id === "sicilian-bowdler")?.moves.slice(0, 10).join(" ")).toBe(
+      "e2e4 c7c5 f1c4 d7d6 g1f3 g8f6 d2d3 b8c6 e1g1 g7g6",
     );
+  });
+
+  it("declines the Smith-Morra into the curated Alapin position", () => {
+    const smithMorra = sicilianRepertoire.find((line) => line.id === "sicilian-smith-morra");
+    const alapin = sicilianRepertoire.find((line) => line.id === "sicilian-alapin-central");
+    expect(smithMorra).toBeDefined();
+    expect(alapin).toBeDefined();
+
+    const fenAfter = (moves: UciMove[]) => {
+      const chess = new Chess();
+      moves.forEach((uci) => chess.move(parseUci(uci)));
+      return chess.fen().split(" ").slice(0, 4).join(" ");
+    };
+
+    expect(fenAfter(smithMorra?.moves.slice(0, 12) ?? [])).toBe(
+      fenAfter(alapin?.moves.slice(0, 12) ?? []),
+    );
+    expect(smithMorra?.moves.slice(12)).toEqual(alapin?.moves.slice(12));
+    expect(smithMorra?.moves).not.toContain("d4c3");
+  });
+
+  it("uses direct development and the ...Bh3 tactic in the Alapin Bxd5 exchange", () => {
+    const bishopExchange = sicilianRepertoire.find((line) => line.id === "sicilian-alapin-bishop-exchange");
+
+    expect(bishopExchange?.moves.slice(23, 28)).toEqual(["e7e5", "d4e3", "f8e7", "e1g1", "e8g8"]);
+    expect(bishopExchange?.moves.slice(-14)).toEqual([
+      "c3b5",
+      "d6f6",
+      "b5c7",
+      "a8b8",
+      "e3a7",
+      "c8h3",
+      "g2h3",
+      "f6d6",
+      "a7a5",
+      "e7d8",
+      "a5a3",
+      "d6a3",
+      "b2a3",
+      "d8c7",
+    ]);
+    expect(bishopExchange?.moves).not.toContain("g7g6");
+  });
+
+  it.each(["sicilian-dragon-yugoslav", "sicilian-dragon-main"])(
+    "%s accepts castling before ...Nc6",
+    (variantId) => {
+      const opening = curatedOpenings.find((candidate) => candidate.id === "sicilian") as OpeningRepertoire;
+      const selected = opening.lines.filter((candidate) => candidate.id === variantId);
+      const session = createTrainingSession(
+        opening.lines,
+        selected,
+        opening.playerColor,
+        opening.moveOrderMoves,
+        opening.positionEvaluations,
+      );
+      const beforeChoice = "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 c1e3 f8g7 f2f3".split(" ") as UciMove[];
+
+      expect(sessionChoices(session, beforeChoice).map((choice) => choice.uci).sort()).toEqual(["b8c6", "e8g8"]);
+      const afterCastle = [...beforeChoice, "e8g8", "d1d2"] as UciMove[];
+      expect(sessionChoices(session, afterCastle).map((choice) => choice.uci)).toContain("b8c6");
+    },
+  );
+
+  it("accepts castling before ...Nc6 in the Closed Sicilian Nge2 and Nd5 line", () => {
+    const opening = curatedOpenings.find((candidate) => candidate.id === "sicilian") as OpeningRepertoire;
+    const selected = opening.lines.filter((candidate) => candidate.id === "sicilian-closed-nge2");
+    const session = createTrainingSession(
+      opening.lines,
+      selected,
+      opening.playerColor,
+      opening.moveOrderMoves,
+      opening.positionEvaluations,
+    );
+    const beforeChoice = "e2e4 c7c5 b1c3 d7d6 g2g3 g8f6 f1g2 g7g6 g1e2 f8g7 c3d5".split(" ") as UciMove[];
+
+    expect(sessionChoices(session, beforeChoice).map((choice) => choice.uci).sort()).toEqual(["b8c6", "e8g8"]);
+    const afterCastle = [...beforeChoice, "e8g8", "e1g1"] as UciMove[];
+    expect(sessionChoices(session, afterCastle).map((choice) => choice.uci)).toContain("b8c6");
+  });
+
+  it("keeps one Bowdler path with e4 defended before castling", () => {
+    const opening = curatedOpenings.find((candidate) => candidate.id === "sicilian") as OpeningRepertoire;
+    const selected = opening.lines.filter((candidate) => candidate.family === "Bowdler");
+    const session = createTrainingSession(
+      opening.lines,
+      selected,
+      opening.playerColor,
+      opening.moveOrderMoves,
+      opening.positionEvaluations,
+    );
+    const beforeChoice = "e2e4 c7c5 f1c4".split(" ") as UciMove[];
+
+    expect(sessionChoices(session, beforeChoice).map((choice) => choice.uci)).toEqual(["d7d6"]);
+    const afterWhiteKnight = [...beforeChoice, "d7d6", "g1f3"] as UciMove[];
+    expect(sessionChoices(session, afterWhiteKnight).map((choice) => choice.uci)).toEqual(["g8f6"]);
+    const afterDefence = [...afterWhiteKnight, "g8f6", "d2d3"] as UciMove[];
+    expect(sessionChoices(session, afterDefence).map((choice) => choice.uci)).toEqual(["b8c6"]);
+    const afterDevelopment = [...afterDefence, "b8c6", "e1g1"] as UciMove[];
+    expect(sessionChoices(session, afterDevelopment).map((choice) => choice.uci)).toEqual(["g7g6"]);
+    const afterFianchettoStart = [...afterDevelopment, "g7g6", "c2c3"] as UciMove[];
+    expect(sessionChoices(session, afterFianchettoStart).map((choice) => choice.uci)).toEqual(["f8g7"]);
+    const beforeBlackCastles = [...afterFianchettoStart, "f8g7", "f1e1"] as UciMove[];
+    expect(sessionChoices(session, beforeBlackCastles).map((choice) => choice.uci)).toEqual(["e8g8"]);
+    expect(sessionTarget(session, [...beforeBlackCastles, "e8g8"])).toMatchObject({ id: "sicilian-bowdler" });
   });
 
   it("reaches the exact normal Dragon after the 2.Nc3 transposition", () => {

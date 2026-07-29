@@ -42,6 +42,50 @@ const StaticEvaluation = ({ centipawns, meta }: { centipawns: number; meta: Stat
 const lichessEditorUrl = (fen: string, playerColor: "w" | "b") =>
   `https://lichess.org/editor/${fen.replaceAll(" ", "_")}?color=${playerColor === "w" ? "white" : "black"}`;
 
+const lichessPgnAnalysisUrl = (pgn: string, playerColor: "w" | "b") =>
+  `https://lichess.org/analysis/pgn/${encodeURIComponent(pgn)}?color=${playerColor === "w" ? "white" : "black"}`;
+
+const trainingPgn = (
+  history: UciMove[],
+  opening: OpeningRepertoire,
+  variation: string,
+) => {
+  const exportGame = chessFromHistory(history);
+  const headers = {
+    Event: "CooMate opening training",
+    Site: "CooMate",
+    Date: new Date().toISOString().slice(0, 10).replaceAll("-", "."),
+    Round: "-",
+    White: opening.playerColor === "w" ? "You" : "Computer",
+    Black: opening.playerColor === "b" ? "You" : "Computer",
+    Result: "*",
+    Opening: opening.name,
+    Variation: variation,
+  };
+  Object.entries(headers).forEach(([key, value]) => exportGame.setHeader(key, value));
+  return exportGame.pgn();
+};
+
+const CompletionActions = ({
+  analysisUrl,
+  onNewExercise,
+}: {
+  analysisUrl: string;
+  onNewExercise: () => void;
+}) => (
+  <div className="goal-actions">
+    <a
+      className="analysis-action"
+      href={analysisUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Open in Lichess Analysis Board <span>↗</span>
+    </a>
+    <button className="primary-action" onClick={onNewExercise}>New exercise <span>→</span></button>
+  </div>
+);
+
 const MoveCell = ({
   san,
   evaluation,
@@ -423,6 +467,15 @@ export function OpeningTrainer() {
     ? opening.lines.find((line) => line.id === completedLineId)
     : null;
   const finalGoalContent = finalGoal && opening ? trainingGoalFor(opening.id, finalGoal.id) : null;
+  const completedPgn = useMemo(
+    () => completed && opening && selectedVariantConfig
+      ? trainingPgn(history, opening, selectedVariantConfig.label)
+      : null,
+    [completed, history, opening, selectedVariantConfig],
+  );
+  const completedAnalysisUrl = completedPgn
+    ? lichessPgnAnalysisUrl(completedPgn, playerColor)
+    : "";
   const pickerMode = !selectedOpening || !selectedVariant;
 
   useEffect(() => {
@@ -523,7 +576,10 @@ export function OpeningTrainer() {
                   <span className="eyebrow">TARGET POSITION</span>
                   <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
                   <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
-                  <button className="primary-action" onClick={newExercise}>New exercise <span>→</span></button>
+                  <CompletionActions
+                    analysisUrl={completedAnalysisUrl}
+                    onNewExercise={newExercise}
+                  />
                 </div>
               )}
             </div>
@@ -590,7 +646,10 @@ export function OpeningTrainer() {
                 <span className="eyebrow">TARGET POSITION</span>
                 <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
                 <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
-                <button className="primary-action" onClick={newExercise}>New exercise <span>→</span></button>
+                <CompletionActions
+                  analysisUrl={completedAnalysisUrl}
+                  onNewExercise={newExercise}
+                />
               </div>
             )}
 

@@ -132,19 +132,19 @@ const trainingGoals = {
       ],
     },
     "sicilian-smith-morra": {
-      title: "Convert the extra pawn through forcing play",
+      title: "Attack the advanced e5 pawn",
       plans: [
-        "Use ...Rd8 to challenge White's rook and queen on the d-file.",
-        "Keep Qh4 and the knights aimed at f2 and f3 while White's king is loose.",
-        "Develop ...Be7 and secure the king once the immediate threats have forced concessions.",
+        "If White exchanges on b6, recapture ...axb6 and use the open a-file.",
+        "Develop ...Bg4 or ...Bf5, then place a rook on d8 or c8.",
+        "Exchange on e5 when it removes White's space without releasing the d-file.",
       ],
     },
     "sicilian-bowdler": {
-      title: "Finish development and squeeze the centre",
+      title: "Use the completed Dragon to seize the centre",
       plans: [
-        "Develop the c8 bishop to f5, e6 or b7 according to White's setup.",
-        "Use ...b6 and the c-file to increase pressure on c3 and d3.",
-        "Prepare ...e5 or ...b5 only after the queenside pieces are connected.",
+        "Play ...d5 against a slow move and answer exd5 with ...Nxd5 to activate the pieces.",
+        "Meet Nbd2 with ...Na5 and ...b5, gaining space while driving the c4 bishop back.",
+        "Use ...h6 and ...e6 when the central break needs preparation, then place a rook on e8 or b8.",
       ],
     },
     "sicilian-alapin-central": {
@@ -156,27 +156,27 @@ const trainingGoals = {
       ],
     },
     "sicilian-alapin-bishop-exchange": {
-      title: "Complete development around the exposed queen",
+      title: "Press the damaged pawns in the queenless ending",
       plans: [
-        "Play ...Bd7 and ...Be7 before castling.",
-        "Use ...Rc8 to gain time against a queen on c4 or d4.",
-        "Challenge the d5 pawn with ...f6 once the king is safe.",
+        "Place the f8 rook on d8 and use ...Bd6 to blockade or pressure the passed d5 pawn.",
+        "Prepare ...b5 so the b8 rook can attack the doubled a2 and a3 pawns.",
+        "Centralise the king through f7 and use ...f5 to create a second weakness on the kingside.",
       ],
     },
     "sicilian-closed-f4": {
-      title: "Keep the queenside expansion moving",
+      title: "Use the Dragon setup to race on the queenside",
       plans: [
-        "Follow ...b5 with ...b4 or ...a5 to gain space against the c3 knight.",
-        "Use ...Qc7 and ...Rd8 to support the queenside and central breaks.",
-        "Occupy d4 when White plays c3, and avoid weakening the kingside without need.",
+        "Push ...b4 when it gains time against the c3 knight.",
+        "Use ...Nd4 or ...e6 to challenge the centre before White's kingside pawns advance.",
+        "Place the queen on a5 or c7 and connect the rooks behind the b-file pressure.",
       ],
     },
     "sicilian-closed-nge2": {
-      title: "Occupy d4 and expand on the queenside",
+      title: "Challenge Nd5 from a completed Dragon setup",
       plans: [
-        "Reroute the e7 knight through c6 toward the d4 outpost.",
-        "Prepare ...a6-b5 while White spends time reorganising the d1 knight.",
-        "Use ...f5 only when e5 is secure and the kingside cannot be opened against your king.",
+        "Play ...bxc3 when damaging White's queenside structure is worth releasing the b-file tension.",
+        "Challenge the d5 knight with ...e6 once the centre is stable.",
+        "Use ...Qa5 or ...Rc8 to increase pressure on c3 and the queenside.",
       ],
     },
     "sicilian-closed-dragon-transposition": dragonCentralPlan,

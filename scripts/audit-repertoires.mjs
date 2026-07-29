@@ -40,7 +40,7 @@ const sources = [
   {
     path: "src/data/sicilian-repertoire.ts",
     playerColor: "b",
-    moveOrderMoves: [],
+    moveOrderMoves: ["b8c6", "e8g8"],
   },
   {
     path: "src/data/grunfeld-repertoire.ts",

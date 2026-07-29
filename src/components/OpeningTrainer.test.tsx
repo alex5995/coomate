@@ -2,7 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChessboardOptions } from "react-chessboard";
 import { openingById } from "@/data/openings";
-import { createTrainingSession, sessionChoices, sessionTarget } from "@/lib/repertoire-engine";
+import { chessFromHistory, createTrainingSession, sessionChoices, sessionTarget } from "@/lib/repertoire-engine";
 import type { UciMove } from "@/lib/types";
 import { OpeningTrainer } from "./OpeningTrainer";
 
@@ -307,7 +307,7 @@ describe("OpeningTrainer board interaction", () => {
     );
   });
 
-  it("completes a live Catalan graph path and shows its target", () => {
+  it("completes a live Catalan graph path and exports its PGN to Lichess", async () => {
     const opening = openingById("catalan");
     expect(opening).toBeDefined();
     const variant = opening?.variants.find((item) => item.id === "catalan-closed");
@@ -339,5 +339,24 @@ describe("OpeningTrainer board interaction", () => {
 
     expect(screen.queryAllByText("Target position reached").length).toBeGreaterThan(0);
     expect(screen.queryAllByRole("button", { name: /New exercise/ }).length).toBeGreaterThan(0);
+
+    const analysisLinks = screen.getAllByRole("link", { name: "Open in Lichess Analysis Board ↗" });
+    const href = analysisLinks[0].getAttribute("href") ?? "";
+    const encodedPgn = href
+      .replace("https://lichess.org/analysis/pgn/", "")
+      .replace(/\?color=white$/, "");
+    const pgn = decodeURIComponent(encodedPgn);
+    expect(pgn).toContain('[Event "CooMate opening training"]');
+    expect(pgn).toContain('[Opening "Catalan Opening"]');
+    expect(pgn).toContain('[Variation "Closed Catalan"]');
+    const moveText = chessFromHistory(plannedHistory).pgn().split("\n\n").at(-1);
+    expect(moveText).toBeDefined();
+    expect(pgn.endsWith(moveText ?? "")).toBe(true);
+    expect(analysisLinks[0]).toHaveAttribute(
+      "href",
+      `https://lichess.org/analysis/pgn/${encodeURIComponent(pgn)}?color=white`,
+    );
+    expect(analysisLinks[0]).toHaveAttribute("target", "_blank");
+    expect(analysisLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
   });
 });
