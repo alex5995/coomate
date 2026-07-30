@@ -27,6 +27,7 @@ The goal is practical opening training through curated middlegame positions, not
 - The computer may choose only moves present in the selected curated repertoire. Do not add live Stockfish, free move generation, a backend, accounts, or external runtime calls.
 - Ask for the repertoire first, then an explicit opponent variation.
 - Opponent variations are separate menu entries. The only intentional user-side alternative is in the Sicilian Alapin `Bxd5` exchange line at move 20, where `...Qxc7` keeps the queens and `...Qxa3` enters the queenless ending.
+- Each Grünfeld Exchange setup is a separate opponent variation: `7.Nf3 8.Be2`, `7.Nf3 8.Be3`, and `7.Bc4 8.Ne2`. Never mix these White continuations inside one exercise.
 - Match continuations by the first four FEN fields so equivalent positions share theory across transpositions.
 - Follow the recorded move order exactly. Do not generate alternative paths by reordering adjacent setup moves.
 - Display approximate variation frequencies from most common to least common. Random selection is uniform across displayed variations.
@@ -44,6 +45,7 @@ The goal is practical opening training through curated middlegame positions, not
 ## Repertoire and evaluation rules
 
 - Prefer practical, coherent plans over a theoretically best move that conflicts with the repertoire's intended style.
+- Keep every target plan aligned with the pieces, pawn structure, and central break taught by that exact line. Do not reuse tactical or strategic plans from a sibling variation.
 - Catalan, Sicilian, and Grünfeld moves remain source-bound to the internal source studies, except for the explicit project-curated Alapin `Bxd5` extension. User-facing descriptions, hints, explanations, goals, and messages must stand on their own and must never mention a study, Lichess, a source line, or source documentation.
 - The Sicilian repertoire prefers the normal `...d6` Dragon whenever White permits it. Do not expose accelerated or hyperaccelerated Dragon move orders as opponent variations.
 - Against the Smith-Morra, decline with `3...Nf6` and transpose into the repertoire's `...Nf6` Alapin line. Do not retain an Accepted variation.

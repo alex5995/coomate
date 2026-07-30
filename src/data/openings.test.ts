@@ -11,7 +11,7 @@ describe("repertoire selection", () => {
     expect(openings).toHaveLength(3);
     expect(openingById("catalan")?.variants).toHaveLength(10);
     expect(openingById("sicilian")?.variants).toHaveLength(11);
-    expect(openingById("grunfeld")?.variants).toHaveLength(6);
+    expect(openingById("grunfeld")?.variants).toHaveLength(8);
   });
 
   it("keeps each finite menu ordered and normalised", () => {

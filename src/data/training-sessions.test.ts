@@ -17,6 +17,7 @@ describe("training session policies", () => {
         const visited = new Set<string>();
         let targets = 0;
         let playerBranchPositions = 0;
+        let opponentBranchPositions = 0;
 
         expect(opponentLines.length, "the menu variation must select internal lines").toBeGreaterThan(0);
         for (const move of opening.moveOrderMoves) {
@@ -45,6 +46,7 @@ describe("training session policies", () => {
 
           if (isPlayerTurn && viableEdges.length > 1) playerBranchPositions += 1;
           if (!isPlayerTurn) {
+            if (viableEdges.length > 1) opponentBranchPositions += 1;
             for (const edge of viableEdges) {
               expect(edge.lineIds.every((id) => opponentLineIds.has(id)), `computer left ${variant.id}`).toBe(true);
             }
@@ -55,6 +57,7 @@ describe("training session policies", () => {
         expect(targets).toBeGreaterThan(0);
         const expectedPlayerBranches = variant.id === "sicilian-alapin-bishop-exchange" ? 1 : 0;
         expect(playerBranchPositions, `${variant.id} has an unexpected user-side choice`).toBe(expectedPlayerBranches);
+        expect(opponentBranchPositions, `${variant.id} mixes multiple opponent continuations`).toBe(0);
       });
     }
   }

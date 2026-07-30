@@ -34,7 +34,23 @@ describe("curated repertoires", () => {
     [sicilianRepertoire, sicilianVariants],
     [grunfeldRepertoire, grunfeldVariants],
   ] as const)("connects every displayed variation to at least one curated line", (lines, variants) => {
-    for (const variant of variants) expect(lines.some((line) => line.family === variant.family), variant.id).toBe(true);
+    for (const variant of variants) {
+      const selected = lines.filter((line) =>
+        variant.opponentLineIds?.includes(line.id) ?? line.family === variant.family,
+      );
+      expect(selected.length, variant.id).toBeGreaterThan(0);
+    }
+  });
+
+  it("presents each Grünfeld Exchange continuation as an explicit opponent variation", () => {
+    const exchangeVariants = grunfeldVariants.filter((variant) => variant.family === "Exchange");
+
+    expect(exchangeVariants.map((variant) => variant.opponentLineIds)).toEqual([
+      ["grunfeld-exchange-classical"],
+      ["grunfeld-exchange-gm"],
+      ["grunfeld-exchange-exact"],
+    ]);
+    expect(exchangeVariants.reduce((total, variant) => total + variant.probability, 0)).toBe(34);
   });
 
   it("commits the Indian Catalan to Nf3 before the fianchetto", () => {

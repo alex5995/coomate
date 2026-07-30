@@ -183,35 +183,35 @@ const trainingGoals = {
   },
   grunfeld: {
     "grunfeld-exchange-classical": {
-      title: "Increase pressure before opening the centre",
+      title: "Complete the pile-up against d4",
       plans: [
-        "Add ...Nc6 and ...Rfd8 so every piece attacks d4.",
-        "If White plays h3, exchange ...Bxf3 when it weakens the e4-d4 chain.",
-        "Use ...cxd4 only when the resulting open files favour the active pieces.",
+        "Develop ...Nc6 to add the final minor-piece attacker against d4.",
+        "Place the rooks on d8 and c8 behind the two central pressure points.",
+        "Use ...cxd4 when the liquidation leaves c3 or d4 exposed.",
       ],
     },
     "grunfeld-exchange-gm": {
-      title: "Open d4 before White consolidates",
+      title: "Finish development around the central pressure",
       plans: [
-        "Calculate ...cxd4 immediately; after Nxd4, ...Qxa2 can punish the loose queenside.",
-        "Castle as soon as the concrete central sequence is resolved.",
-        "Keep the queen and rook active against c3 and the c-file.",
+        "Castle before starting concrete operations in the centre.",
+        "Add ...Nc6 and ...Bg4 to increase the pressure against d4.",
+        "Bring the rooks to c8 and d8, then use ...cxd4 when the open files favour Black.",
       ],
     },
     "grunfeld-exchange-exact": {
-      title: "Finish the pressure against d4",
+      title: "Complete the queenside fianchetto",
       plans: [
-        "Develop ...Bb7 and ...Qc7 to add pressure from both diagonals.",
-        "Meet d5 with ...e6 or ...Rd8 and blockade the passed pawn.",
-        "Use ...cxd4 when White cannot answer with a central advance gaining tempo.",
+        "Develop ...Bb7 so both bishops point toward White's central structure.",
+        "Use ...Qc7 and ...Rfd8 to reinforce pressure against d4.",
+        "Meet d5 with ...e6 and blockade the advanced pawn before opening files.",
       ],
     },
     "grunfeld-knight-takes": {
-      title: "Calculate ...cxd4 before routine development",
+      title: "Put the rooks behind the central break",
       plans: [
-        "Use ...cxd4 if Bc3 allows the tactical reply ...Qxa2.",
-        "Keep the queen active against a2 and d4 while White untangles.",
-        "If the tactic is unavailable, use ...e5 or ...b6 and connect the rooks.",
+        "Place the rooks on d8 and c8 to challenge White on both open files.",
+        "Use ...cxd4 to open the position before White finishes coordinating.",
+        "Keep the queen active on d5, where it supports the break and watches a2.",
       ],
     },
     "grunfeld-no-exchange": {
