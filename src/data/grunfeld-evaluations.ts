@@ -11,25 +11,4 @@ export const grunfeldEvaluations: Record<string, number[]> = {
   "grunfeld-nf3-catalan": [40, 24, 29, 35, 37, 28, 31, 28, 29],
 };
 
-// Additional safe positions created by the allowlisted adjacent Grünfeld setup move orders.
-export const grunfeldPositionEvaluations: Record<string, number> = {
-  "rnbqkb1r/pp2pp1p/6p1/2p5/3PP3/2P5/P4PPP/R1BQKBNR w KQkq -": 45,
-  "rnbqkb1r/pp2pp1p/6p1/2p5/3PP3/2P2N2/P4PPP/R1BQKB1R b KQkq -": 35,
-  "rnbq1rk1/ppp1ppbp/6p1/8/3PP3/2P2N2/P4PPP/R1BQKB1R w KQ -": 73,
-  "rnbq1rk1/ppp1ppbp/6p1/8/3PP3/2P2N2/P3BPPP/R1BQK2R b KQ -": 74,
-  "rnb1k2r/pp2ppbp/6p1/q1p5/3PP3/2P2N2/P3BPPP/R1BQK2R w KQkq -": 74,
-  "rnb1k2r/pp2ppbp/6p1/q1p5/3PP3/2P2N2/P3BPPP/R1BQ1RK1 b kq -": 83,
-  "rn1q1rk1/pp2ppbp/6p1/2p5/3PP1b1/2P2N2/P3BPPP/R1BQ1RK1 w - -": 61,
-  "rn1q1rk1/pp2ppbp/6p1/2p5/3PP1b1/2P2N2/P2BBPPP/R2Q1RK1 b - -": -52,
-  "rnbqkb1r/pp2pp1p/6p1/2p5/2BPP3/2P5/P4PPP/R1BQK1NR b KQkq -": 39,
-  "rnbq1rk1/ppp1ppbp/6p1/8/2BPP3/2P5/P4PPP/R1BQK1NR w KQ -": 41,
-  "rnbq1rk1/ppp1ppbp/6p1/8/2BPP3/2P5/P3NPPP/R1BQK2R b KQ -": 33,
-  "r1bqk2r/pp2ppbp/2n3p1/2p5/2BPP3/2P5/P3NPPP/R1BQK2R w KQkq -": 31,
-  "r1bqk2r/pp2ppbp/2n3p1/2p5/2BPP3/2P5/P3NPPP/R1BQ1RK1 b kq -": -27,
-  "rnb1k2r/pp2ppbp/6p1/2pq4/3P4/4PN2/PP3PPP/R1BQKB1R w KQkq -": -33,
-  "rnb1k2r/pp2ppbp/6p1/2pq4/3P4/4PN2/PP2BPPP/R1BQK2R b KQkq -": -88,
-  "rn3rk1/pp2ppbp/6p1/2pq4/3P2b1/4PN2/PP2BPPP/R1BQ1RK1 w - -": -22,
-  "rn3rk1/pp2ppbp/6p1/2pq4/3P2b1/4PN2/PP1BBPPP/R2Q1RK1 b - -": -43,
-  "rnbqk2r/pp2ppbp/5np1/2pp4/2PP4/2N1PN2/PP3PPP/R1BQKB1R w KQkq -": 70,
-  "rnbqk2r/pp2ppbp/5np1/2pp4/2PP4/2N1PN2/PP2BPPP/R1BQK2R b KQkq -": -9,
-};
+export const grunfeldPositionEvaluations: Record<string, number> = {};

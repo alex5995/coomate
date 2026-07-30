@@ -35,17 +35,17 @@ const sources = [
   {
     path: "src/data/catalan-repertoire.ts",
     playerColor: "w",
-    moveOrderMoves: ["g1f3", "g2g3", "f1g2", "e1g1"],
+    moveOrderMoves: [],
   },
   {
     path: "src/data/sicilian-repertoire.ts",
     playerColor: "b",
-    moveOrderMoves: ["b8c6", "e8g8"],
+    moveOrderMoves: [],
   },
   {
     path: "src/data/grunfeld-repertoire.ts",
     playerColor: "b",
-    moveOrderMoves: ["f8g7", "e8g8", "c7c5", "d8a5", "b8c6", "c8g4"],
+    moveOrderMoves: [],
   },
 ];
 

@@ -23,14 +23,14 @@ export const sicilianRepertoire: RepertoireLine[] = [
     "sicilian-dragon-main",
     "Dragon main line",
     24,
-    "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 c1e3 f8g7 f2f3 b8c6 d1d2 e8g8 e1c1 d6d5 e4d5 f6d5",
+    "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 c1e3 f8g7 f2f3 e8g8 d1d2 b8c6 e1c1 d6d5 e4d5 f6d5",
   ),
   // https://lichess.org/study/AvqP0tL1 - Yugoslav Attack.
   line(
     "sicilian-dragon-yugoslav",
     "Dragon Yugoslav",
     30,
-    "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 c1e3 f8g7 f2f3 b8c6 d1d2 e8g8 f1c4 c8d7 e1c1 a8c8",
+    "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 g7g6 c1e3 f8g7 f2f3 e8g8 d1d2 b8c6 f1c4 c8d7 e1c1 a8c8",
   ),
   // https://lichess.org/study/AvqP0tL1 - Classical Variation.
   line(
@@ -74,6 +74,12 @@ export const sicilianRepertoire: RepertoireLine[] = [
     6,
     "e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4 c5d4 c3d4 d7d6 g1f3 b8c6 f1c4 d6e5 c4d5 d8d5 b1c3 d5d6 d4d5 c6d4 f3d4 e5d4 d1d4 e7e5 d4e3 f8e7 e1g1 e8g8 c3b5 d6f6 b5c7 a8b8 e3a7 c8h3 g2h3 f6d6 a7a5 e7d8 a5a3 d6a3 b2a3 d8c7",
   ),
+  line(
+    "sicilian-alapin-bishop-exchange-queens",
+    "Alapin bishop exchange",
+    6,
+    "e2e4 c7c5 c2c3 g8f6 e4e5 f6d5 d2d4 c5d4 c3d4 d7d6 g1f3 b8c6 f1c4 d6e5 c4d5 d8d5 b1c3 d5d6 d4d5 c6d4 f3d4 e5d4 d1d4 e7e5 d4e3 f8e7 e1g1 e8g8 c3b5 d6f6 b5c7 a8b8 e3a7 c8h3 g2h3 f6d6 a7a5 e7d8 a5a3 d6c7 c1d2 f8e8",
+  ),
   // https://lichess.org/study/jsSks17H - Closed Sicilian prefix.
   // https://lichess.org/study/72rdAVHd - normal Dragon development and queenside counterplay.
   line(
@@ -86,7 +92,7 @@ export const sicilianRepertoire: RepertoireLine[] = [
     "sicilian-closed-nge2",
     "Closed Nge2",
     7,
-    "e2e4 c7c5 b1c3 d7d6 g2g3 g8f6 f1g2 g7g6 g1e2 f8g7 c3d5 b8c6 e1g1 e8g8 c2c3 c8d7 d2d3 b7b5 d3d4 b5b4 d4c5 d6c5",
+    "e2e4 c7c5 b1c3 d7d6 g2g3 g8f6 f1g2 g7g6 g1e2 f8g7 c3d5 e8g8 e1g1 b8c6 c2c3 c8d7 d2d3 b7b5 d3d4 b5b4 d4c5 d6c5",
   ),
   // https://lichess.org/study/jsSks17H - 2.Nc3 d6.
   // https://lichess.org/study/AvqP0tL1 - exact normal Dragon after transposition.
@@ -94,7 +100,7 @@ export const sicilianRepertoire: RepertoireLine[] = [
     "sicilian-closed-dragon-transposition",
     "Closed Dragon transposition",
     8,
-    "e2e4 c7c5 b1c3 d7d6 g1f3 g8f6 d2d4 c5d4 f3d4 g7g6 c1e3 f8g7 f2f3 b8c6 d1d2 e8g8 e1c1 d6d5 e4d5 f6d5",
+    "e2e4 c7c5 b1c3 d7d6 g1f3 g8f6 d2d4 c5d4 f3d4 g7g6 c1e3 f8g7 f2f3 e8g8 d1d2 b8c6 e1c1 d6d5 e4d5 f6d5",
   ),
 ];
 
@@ -126,7 +132,9 @@ const guidance: Record<string, { hint: string; explanation: string }> = {
   f6d6: { hint: "Return the queen to the diagonal that reaches c7.", explanation: "...Qd6 attacks c7 and forces White to spend time moving the queen while Black prepares to recover the trapped knight." },
   e7d8: { hint: "Add a second attack to the knight on c7.", explanation: "...Bd8 challenges the queen-knight alignment on the a5-c7 diagonal and prepares to recover the knight with the bishop after a queen exchange." },
   d6a3: { hint: "Exchange queens before recovering the knight.", explanation: "...Qxa3 removes White's active queen and forces bxa3, leaving two pairs of doubled isolated pawns for the queenless ending." },
+  d6c7: { hint: "Recover the knight with the queen and keep attacking chances.", explanation: "...Qxc7 restores the material balance while keeping the queens on the board for a more dynamic continuation." },
   d8c7: { hint: "Recover the knight with the bishop now that the queens are gone.", explanation: "...Bxc7 restores the minor-piece balance and reaches a quiet ending where Black can target White's damaged pawn structure." },
+  f8e8: { hint: "Centralise the rook behind the e-pawn.", explanation: "...Re8 increases central pressure while the queens remain active." },
   b7b5: { hint: "Claim queenside space before White's attack develops.", explanation: "...b5 gains space and starts Black's thematic queenside counterplay." },
   b5b4: { hint: "Gain another tempo on White's queenside.", explanation: "...b4 fixes the c3 structure and makes it harder for White to support the centre." },
   a6b5: { hint: "Recapture toward the centre and preserve the advanced pawn.", explanation: "...axb5 keeps a pawn on b5 and opens the a-file for Black's rook." },

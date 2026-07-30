@@ -21,9 +21,8 @@ const line = (
 });
 
 export const catalanRepertoire: RepertoireLine[] = [
-  // Basic Catalan Opening Setup, including the study's explicit 4.Bg2 variation.
-  line("catalan-indian-nf3", "Indian setup", 22, "d2d4 g8f6 c2c4 e7e6 g2g3 d7d5 g1f3"),
-  line("catalan-indian-bg2", "Indian setup", 12, "d2d4 g8f6 c2c4 e7e6 g2g3 d7d5 f1g2"),
+  // Basic Catalan Opening Setup with the committed 3.Nf3 move order.
+  line("catalan-indian-nf3", "Indian setup", 34, "d2d4 g8f6 c2c4 e7e6 g1f3 d7d5 g2g3"),
 
   // Open Catalan Opening; Modern Sharp Variation.
   line(

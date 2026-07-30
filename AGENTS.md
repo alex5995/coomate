@@ -13,7 +13,7 @@ CooMate is an English-language chess opening trainer built with Next.js App Rout
 The app contains exactly three fixed-role repertoires, displayed in this order:
 
 - Catalan Opening: the user always plays White. Core Catalan lines come from `https://lichess.org/study/DckpgOgd`; the Budapest Gambit uses the practical `4.g3` fianchetto line from `https://www.chess.com/openings/Budapest-Gambit`, and the `1...c5` response uses an Old Benoni move order into the Fianchetto Variation from `https://www.chess.com/openings/Benoni-Defense-Modern-Fianchetto-Variation`.
-- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it. Alapin lines keep the `https://lichess.org/study/jsSks17H` prefix and use continuations from `https://lichess.org/study/cA3kOR92`; decline the Smith-Morra with `3...Nf6` and transpose into that same Alapin repertoire. Closed lines keep the `https://lichess.org/study/jsSks17H` `2.Nc3 d6` prefix and use Dragon-style continuations from `https://lichess.org/study/72rdAVHd`. Moscow lines come from `https://lichess.org/study/AsIsKPrX`; Bowdler lines come from `https://lichess.org/study/ulZswGf8`.
+- Sicilian Defence: the user always plays Black. Use the normal Dragon from `https://lichess.org/study/AvqP0tL1` whenever White permits it. Alapin lines keep the `https://lichess.org/study/jsSks17H` prefix and use continuations from `https://lichess.org/study/cA3kOR92`; the tactical `Bxd5` continuation after `...e5` is an explicit project-curated extension. Decline the Smith-Morra with `3...Nf6` and transpose into that same Alapin repertoire. Closed lines keep the `https://lichess.org/study/jsSks17H` `2.Nc3 d6` prefix and use Dragon-style continuations from `https://lichess.org/study/72rdAVHd`. Moscow lines come from `https://lichess.org/study/AsIsKPrX`; Bowdler lines come from `https://lichess.org/study/ulZswGf8`.
 - Grünfeld Defence: the user always plays Black. Curated lines come only from `https://lichess.org/study/0AUYoSOH`.
 
 The goal is practical opening training through curated middlegame positions, not engine analysis.
@@ -26,9 +26,9 @@ The goal is practical opening training through curated middlegame positions, not
 - Keep repertoire data separate from the UI.
 - The computer may choose only moves present in the selected curated repertoire. Do not add live Stockfish, free move generation, a backend, accounts, or external runtime calls.
 - Ask for the repertoire first, then an explicit opponent variation.
-- Opponent variations are separate menu entries. Multiple theoretical moves for the user's side remain accepted alternatives inside a variation.
+- Opponent variations are separate menu entries. The only intentional user-side alternative is in the Sicilian Alapin `Bxd5` exchange line at move 20, where `...Qxc7` keeps the queens and `...Qxa3` enters the queenless ending.
 - Match continuations by the first four FEN fields so equivalent positions share theory across transpositions.
-- Accept adjacent curated setup moves in either order only when both player moves are allowlisted, the opponent reply remains fixed, and the reordered line is legal and reaches the same target. Do not reorder captures or tactical moves automatically.
+- Follow the recorded move order exactly. Do not generate alternative paths by reordering adjacent setup moves.
 - Display approximate variation frequencies from most common to least common. Random selection is uniform across displayed variations.
 - A legal move outside the repertoire is rejected without changing the position.
 - The first theoretical mistake gives a strategic hint. The second consecutive mistake at the same position reveals every accepted continuation.
@@ -44,16 +44,16 @@ The goal is practical opening training through curated middlegame positions, not
 ## Repertoire and evaluation rules
 
 - Prefer practical, coherent plans over a theoretically best move that conflicts with the repertoire's intended style.
-- Catalan, Sicilian, and Grünfeld moves remain source-bound to the internal source studies. User-facing descriptions, hints, explanations, goals, and messages must stand on their own and must never mention a study, Lichess, a source line, or source documentation.
+- Catalan, Sicilian, and Grünfeld moves remain source-bound to the internal source studies, except for the explicit project-curated Alapin `Bxd5` extension. User-facing descriptions, hints, explanations, goals, and messages must stand on their own and must never mention a study, Lichess, a source line, or source documentation.
 - The Sicilian repertoire prefers the normal `...d6` Dragon whenever White permits it. Do not expose accelerated or hyperaccelerated Dragon move orders as opponent variations.
 - Against the Smith-Morra, decline with `3...Nf6` and transpose into the repertoire's `...Nf6` Alapin line. Do not retain an Accepted variation.
 - Against the Closed Sicilian, use the common Dragon setup `...d6`, `...Nf6`, `...g6`, `...Bg7`, `...O-O` and `...Nc6`; do not switch to a separate `...e6/...Nge7` system. If White plays `d4`, transpose into the normal Open Dragon.
-- In Dragon setups, accept `...Nc6` and `...O-O` in either order when the intervening White move and target position are unchanged.
+- In the Open Dragon, Classical Dragon, Closed Dragon transposition, and Closed `Nge2/Nd5` line, castle before playing `...Nc6`. Do not accept the reverse order.
 - Against the Bowdler Attack, use only `2...d6 3.Nf3 Nf6 4.d3 Nc6`, then complete the Dragon with `...g6`, `...Bg7`, and `...O-O`. Do not allow White to castle before defending e4 with d3, and do not expose alternative Black move orders inside this variation.
-- In the Alapin `Bxd5` exchange line, follow the central `...Qxd5`, `...Qd6`, and `...e5` sequence with direct `...Be7` development and castling. After `Nb5-c7` and `Qxa7`, use `...Rb8` and the `...Bh3` sacrifice to expose White's king. Exchange queens with `...Qxa3` before recovering the c7 knight with `...Bxc7`, reaching a queenless ending against White's doubled isolated a- and h-pawns. Do not force a late kingside fianchetto.
+- In the Alapin `Bxd5` exchange line, follow the central `...Qxd5`, `...Qd6`, and `...e5` sequence with direct `...Be7` development and castling. After `Nb5-c7` and `Qxa7`, use `...Rb8` and the `...Bh3` sacrifice to expose White's king. At move 20, accept the only intentional repertoire choice: `...Qxc7 21.Bd2 Re8` keeps the queens, while `...Qxa3 21.bxa3 Bxc7` reaches the queenless ending against White's doubled isolated a- and h-pawns. Do not force a late kingside fianchetto.
 - Store every Stockfish score in centipawns from White's perspective. Display that same sign everywhere: positive favours White and negative favours Black, regardless of the trained side.
 - Every curated position has a committed Stockfish 18 depth-18 evaluation. Current-position and move-history scores use the same White-perspective convention.
-- Every recorded or automatically reordered position must evaluate to at least `-1.00` for the trained side. Prune automatically generated paths that fail this threshold.
+- Every recorded position must evaluate to at least `-1.00` for the trained side.
 - Any repertoire expansion must update legality tests so every complete path is legal and reaches a target.
 
 ## UI and content rules
@@ -111,7 +111,7 @@ When repertoire data changes, audit all three repertoires with an official Stock
 node scripts/audit-repertoires.mjs /path/to/stockfish 18 --group=all --summary
 ```
 
-If allowlisted move-order generation changes, audit additional positions too:
+The reordered-position audit should return an empty position set because automatic move-order generation is disabled:
 
 ```bash
 node scripts/audit-repertoires.mjs /path/to/stockfish 18 --group=all --reordered-only

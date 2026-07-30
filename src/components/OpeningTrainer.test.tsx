@@ -307,6 +307,43 @@ describe("OpeningTrainer board interaction", () => {
     );
   });
 
+  it("offers the intentional Alapin ending alternative and restores the exact choice position", () => {
+    const opening = openingById("sicilian");
+    const line = opening?.lines.find((candidate) => candidate.id === "sicilian-alapin-bishop-exchange");
+    expect(line).toBeDefined();
+    const beforeChoice = line?.moves.slice(0, 39) ?? [];
+
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    render(<OpeningTrainer />);
+    fireEvent.click(screen.getByRole("button", { name: /Sicilian Defence.*You always play Black/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Alapin · Bxd5 exchange/ }));
+
+    beforeChoice.slice(1).forEach((move, index) => {
+      const ply = index + 1;
+      if (ply % 2 === 1) {
+        dragPiece(move.slice(0, 2));
+        expect(dropPiece(move.slice(0, 2), move.slice(2, 4)), move).toBe(true);
+      } else {
+        act(() => vi.advanceTimersByTime(700));
+      }
+    });
+
+    const choicePosition = boardOptions().position;
+    dragPiece("d6");
+    expect(dropPiece("d6", "c7")).toBe(true);
+    act(() => vi.advanceTimersByTime(700));
+    expect(screen.queryAllByRole("button", { name: /Go back and try an alternative/ }).length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getAllByRole("button", { name: /Go back and try an alternative/ })[0]);
+    expect(boardOptions().position).toBe(choicePosition);
+
+    dragPiece("d6");
+    expect(dropPiece("d6", "a3")).toBe(true);
+    act(() => vi.advanceTimersByTime(700));
+    expect(screen.queryAllByRole("button", { name: /Go back and try an alternative/ }).length).toBeGreaterThan(0);
+  });
+
   it("completes a live Catalan graph path and exports its PGN to Lichess", async () => {
     const opening = openingById("catalan");
     expect(opening).toBeDefined();

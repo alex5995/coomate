@@ -24,14 +24,6 @@ const trainingGoals = {
         "Prepare e4; if Black takes on c4, recover the pawn through development.",
       ],
     },
-    "catalan-indian-bg2": {
-      title: "Build around the Catalan bishop",
-      plans: [
-        "Develop Nf3 and castle so the g2 bishop can work without tactical distractions.",
-        "Coordinate Qc2 and Rd1 against d5 before committing the queenside knight.",
-        "Prepare e4 and recover c4 calmly if Black releases the central tension.",
-      ],
-    },
     "catalan-open-modern-sharp": {
       title: "Activate the rooks against Black's queenside",
       plans: [
@@ -161,6 +153,14 @@ const trainingGoals = {
         "Place the f8 rook on d8 and use ...Bd6 to blockade or pressure the passed d5 pawn.",
         "Prepare ...b5 so the b8 rook can attack the doubled a2 and a3 pawns.",
         "Centralise the king through f7 and use ...f5 to create a second weakness on the kingside.",
+      ],
+    },
+    "sicilian-alapin-bishop-exchange-queens": {
+      title: "Use the active queens to pressure White's centre",
+      plans: [
+        "Double pressure on d5 with ...Qd7 and ...Bb6 before White can consolidate the passed pawn.",
+        "Use ...b5 to gain queenside space while the b8 rook remains active.",
+        "Keep ...f5 available to attack the centre and create threats against White's exposed king.",
       ],
     },
     "sicilian-closed-f4": {

@@ -1,8 +1,7 @@
 // Static Stockfish 18 depth-18 scores in centipawns from White's perspective.
 // Line arrays include the initial position, then one score after every move.
 export const catalanEvaluations: Record<string, number[]> = {
-  "catalan-indian-nf3": [40, 24, 29, 35, 36, 30, 37, 34],
-  "catalan-indian-bg2": [40, 24, 29, 35, 36, 30, 37, 34],
+  "catalan-indian-nf3": [43, 32, 39, 39, 41, 43, 36, 35],
   "catalan-open-modern-sharp": [
     40, 24, 37, 37, 36, 38, 40, 33, 35, 35, 34, 36, 29, 32, 26, 27, 30, 34, 31, 28, 29, 29, 29, 24, 24, 22, 21,
     23, 22, 20,
@@ -17,16 +16,4 @@ export const catalanEvaluations: Record<string, number[]> = {
   "catalan-albin": [40, 24, 37, 37, 62, 83, 74, 70, 66, 79, 109, 111],
 };
 
-// Additional safe positions created by the allowlisted adjacent Catalan setup move orders.
-export const catalanPositionEvaluations: Record<string, number> = {
-  "rnbqkbnr/ppp2ppp/4p3/3p4/2PP4/6P1/PP2PP1P/RNBQKBNR b KQkq -": 20,
-  "r1bqkb1r/pppp1ppp/2n1pn2/8/2PP4/6P1/PP2PP1P/RNBQKBNR w KQkq -": 35,
-  "rnbqkb1r/ppp1pppp/8/3n4/3P4/6P1/PP2PP1P/RNBQKBNR b KQkq -": 35,
-  "rn1qkb1r/ppp1pppp/8/3n1b2/3P4/6P1/PP2PP1P/RNBQKBNR w KQkq -": 110,
-  "rnbqkbnr/pp3ppp/3p4/2pP4/8/6P1/PP2PP1P/RNBQKBNR b KQkq -": 28,
-  "rnbqkb1r/pp3ppp/3p1n2/2pP4/8/6P1/PP2PP1P/RNBQKBNR w KQkq -": 35,
-  "rnbqk2r/1ppp1ppp/2n5/p7/1bP2P2/4PNP1/PP1B3P/RN1QKB1R b KQkq -": 32,
-  "rnbqk2r/1pp2ppp/2np4/p7/1bP2P2/4PNP1/PP1B3P/RN1QKB1R w KQkq -": 35,
-  "rnbqkbnr/ppp2ppp/8/4P3/2Pp4/6P1/PP2PP1P/RNBQKBNR b KQkq -": 64,
-  "r1bqkbnr/ppp2ppp/2n5/4P3/2Pp4/6P1/PP2PP1P/RNBQKBNR w KQkq -": 68,
-};
+export const catalanPositionEvaluations: Record<string, number> = {};
