@@ -26,6 +26,10 @@ The goal is practical opening training through curated middlegame positions, not
 - Keep repertoire data separate from the UI.
 - The computer may choose only moves present in the selected curated repertoire. Do not add live Stockfish, free move generation, a backend, accounts, or external runtime calls.
 - Ask for the repertoire first, then an explicit opponent variation.
+- Each repertoire also offers a `Repertoire Exam` that presents every displayed opponent variation exactly once in a shuffled order. Keep the current variation name, frequency, and strategic guidance hidden until the line is complete, and do not expose accepted moves before the exam mistake rule permits it.
+- In an exam, the first theoretical mistake gives only generic feedback and the second consecutive mistake at the same position reveals every accepted continuation. Present completed lines as `Perfect`, `Completed`, or `Needs practice`.
+- Reveal the variation and target plans at the end of each exam line, then wait for an explicit next-line action. A completed exam shows perfect lines, accuracy, mistakes, lines to practise, and a focused-practice action.
+- Exam sessions and results are ephemeral. Exiting or reloading discards them without updating persistent statistics, and restarting creates a new shuffled order. Focused-practice runs are clearly distinct from exams.
 - Opponent variations are separate menu entries. The only intentional user-side alternative is in the Sicilian Alapin `Bxd5` exchange line at move 20, where `...Qxc7` keeps the queens and `...Qxa3` enters the queenless ending.
 - Each Grünfeld Exchange setup is a separate opponent variation: `7.Nf3 8.Be2`, `7.Nf3 8.Be3`, and `7.Bc4 8.Ne2`. Never mix these White continuations inside one exercise.
 - Match continuations by the first four FEN fields so equivalent positions share theory across transpositions.
@@ -40,7 +44,7 @@ The goal is practical opening training through curated middlegame positions, not
 - Complete each line at a curated middlegame target with a new-exercise action and three brief, position-specific plans for what the trained side should do next. Do not use the target summary to recap moves that have already been played.
 - At line completion, provide one action that opens the full PGN in the Lichess Analysis Board in a new tab.
 - Every published move-history cell links to the exact position in the Lichess board editor, preserving the full FEN and using the trained side as the board orientation.
-- Persist versioned statistics in `localStorage`. Keep progress statistics and the reset control present in every state.
+- Persist versioned guided-training statistics in `localStorage`. Do not persist exam or focused-practice results. Keep progress statistics and the reset control in menus and guided training, but hide the entire section throughout exams, exam results, and focused practice.
 
 ## Repertoire and evaluation rules
 
@@ -62,6 +66,7 @@ The goal is practical opening training through curated middlegame positions, not
 
 - All user-facing copy, source identifiers, and filenames are English or language-neutral.
 - Never use an em dash. Use an ASCII hyphen with surrounding spaces for punctuation.
+- Keep exam copy minimal. Do not state that names or hints are hidden and do not show placeholder labels such as `Name hidden`.
 - Keep established hyphenated names such as `Smith-Morra` from wrapping at the hyphen.
 - Preserve the icy-sea palette and the standard readable chess pieces.
 - Use `public/coomate-logo.png` in the header and `public/coomate-tab-icon.png` for browser icons.
@@ -72,6 +77,11 @@ The goal is practical opening training through curated middlegame positions, not
 - At single-column breakpoints, starting a variation returns the page to the board. Feedback and completion appear immediately below it.
 - On mobile completion, bring the target summary and new-exercise action into view.
 - Preserve keyboard accessibility, visible status messaging, and reduced-motion behavior.
+- Keep evaluation copy minimal: show `EVALUATION`, the score, and `Stockfish 18 · depth 18` without explaining sign conventions.
+- Show `-` for training accuracy until at least one move or mistake has been recorded.
+- Do not repeat a move count beside `Move history`; the numbered table already communicates it. Use `Perfect lines`, `Accuracy`, and `Mistakes` for both exam and focused-practice result summaries.
+- Keep the `Repertoire Exam` and `Random variation` launch cards title-only, without descriptions or saved exam statistics.
+- Opening-selection cards state the side in their descriptions; do not repeat it with a separate `You always play White/Black` line.
 
 ## Architecture map
 
@@ -82,6 +92,7 @@ The goal is practical opening training through curated middlegame positions, not
 - `src/data/stockfish-evaluation.ts`: shared static-evaluation metadata.
 - `src/data/*-evaluations.ts`: opening-specific committed Stockfish scores.
 - `src/lib/repertoire-engine.ts`: repertoire graphs, path filtering, SAN helpers, and weighted choices.
+- `src/lib/exam.ts`: exam shuffling, line classification, and final score summaries.
 - `src/lib/storage.ts`: versioned local statistics and migrations.
 - `src/lib/types.ts`: shared domain types.
 - `src/app/globals.css`: application theme and responsive layout.

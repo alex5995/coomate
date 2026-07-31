@@ -62,6 +62,16 @@ export interface TrainerStats {
   linesSeen: Record<string, number>;
 }
 
+export type ExamLineStatus = "mastered" | "passed" | "review";
+
+export interface ExamLineResult {
+  variantId: string;
+  status: ExamLineStatus;
+  errors: number;
+  correctMoves: number;
+  firstTryMoves: number;
+}
+
 export interface Feedback {
   kind: "info" | "success" | "hint" | "error";
   title: string;
@@ -71,4 +81,6 @@ export interface Feedback {
 export interface TakebackSnapshot {
   history: UciMove[];
   alternatives: UciMove[];
+  examAttempts?: number;
+  examFirstTry?: boolean;
 }

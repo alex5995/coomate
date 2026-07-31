@@ -22,7 +22,13 @@ describe("local statistics", () => {
 
   it("saves the versioned schema", () => {
     const values = new Map<string, string>();
-    saveStats({ ...emptyStats(), completed: 2 }, { setItem: (key, value) => values.set(key, value) });
-    expect(JSON.parse(values.get(STORAGE_KEY) ?? "{}").completed).toBe(2);
+    saveStats({
+      ...emptyStats(),
+      completed: 2,
+    }, { setItem: (key, value) => values.set(key, value) });
+    const saved = JSON.parse(values.get(STORAGE_KEY) ?? "{}");
+    expect(saved.version).toBe(1);
+    expect(saved.completed).toBe(2);
+    expect(saved).not.toHaveProperty("exams");
   });
 });

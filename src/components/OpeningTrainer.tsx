@@ -5,10 +5,23 @@ import { Chessboard } from "react-chessboard";
 import type { Square } from "chess.js";
 import { openingById, openings, pickUniformVariant } from "@/data/openings";
 import { trainingGoalFor } from "@/data/training-goals";
+import { examLineStatus, revealedMovesPrompt, shuffleExamVariants, summarizeExam } from "@/lib/exam";
 import { chessFromHistory, createTrainingSession, sanFor, sessionChoices, sessionTarget, staticEvaluationFor, weightedChoice } from "@/lib/repertoire-engine";
 import { emptyStats, loadStats, saveStats } from "@/lib/storage";
-import type { Feedback, OpeningId, OpeningRepertoire, StaticEvaluationMeta, TakebackSnapshot, TrainerStats, UciMove } from "@/lib/types";
+import type { ExamLineResult, Feedback, OpeningId, OpeningRepertoire, StaticEvaluationMeta, TakebackSnapshot, TrainerStats, UciMove } from "@/lib/types";
 import { Logo } from "./Logo";
+
+interface ActiveExam {
+  variantIds: string[];
+  index: number;
+  results: ExamLineResult[];
+  currentErrors: number;
+  currentCorrectMoves: number;
+  currentFirstTryMoves: number;
+  currentRevealed: boolean;
+  resultsVisible: boolean;
+  isPractice: boolean;
+}
 
 const defaultFeedback = (opening: OpeningRepertoire | null): Feedback => {
   if (opening) {
@@ -32,9 +45,9 @@ const StaticEvaluation = ({ centipawns, meta }: { centipawns: number; meta: Stat
   const formatted = formatEvaluation(centipawns);
   return (
     <div className="static-evaluation" aria-label={`Static evaluation ${formatted} pawns from White's perspective`}>
-      <span>STATIC EVALUATION</span>
+      <span>EVALUATION</span>
       <strong>{formatted}</strong>
-      <small>{meta.engine} - depth {meta.depth} - positive favors White, negative favors Black</small>
+      <small>{meta.engine} · depth {meta.depth}</small>
     </div>
   );
 };
@@ -69,9 +82,11 @@ const trainingPgn = (
 const CompletionActions = ({
   analysisUrl,
   onNewExercise,
+  primaryLabel = "New exercise",
 }: {
   analysisUrl: string;
   onNewExercise: () => void;
+  primaryLabel?: string;
 }) => (
   <div className="goal-actions">
     <a
@@ -82,9 +97,68 @@ const CompletionActions = ({
     >
       Open in Lichess Analysis Board <span>↗</span>
     </a>
-    <button className="primary-action" onClick={onNewExercise}>New exercise <span>→</span></button>
+    <button className="primary-action" onClick={onNewExercise}>{primaryLabel} <span>→</span></button>
   </div>
 );
+
+const examStatusLabel = {
+  mastered: "Perfect",
+  passed: "Completed",
+  review: "Needs practice",
+} as const;
+
+const ExamResults = ({
+  exam,
+  opening,
+  onRetry,
+  onRestart,
+  onExit,
+}: {
+  exam: ActiveExam;
+  opening: OpeningRepertoire;
+  onRetry: () => void;
+  onRestart: () => void;
+  onExit: () => void;
+}) => {
+  const summary = summarizeExam(exam.results);
+  const resultsToPractise = exam.results.filter((result) => result.status !== "mastered");
+  return (
+    <section className="exam-results" aria-label={exam.isPractice ? "Practice results" : "Exam results"}>
+      <span className="eyebrow">{exam.isPractice ? "PRACTICE COMPLETE" : "EXAM COMPLETE"}</span>
+      <h2>{exam.isPractice ? "Focused practice complete" : `${opening.shortName} exam complete`}</h2>
+      <div className="exam-score-grid">
+        <div><strong>{summary.mastered}/{exam.results.length}</strong><span>Perfect lines</span></div>
+        <div><strong>{summary.accuracy}%</strong><span>Accuracy</span></div>
+        <div><strong>{summary.errors}</strong><span>Mistakes</span></div>
+      </div>
+      {resultsToPractise.length ? (
+        <div className="exam-practice-list">
+          <h3>{exam.isPractice ? "Try these again" : "Practise these lines"}</h3>
+          {resultsToPractise.map((result) => {
+            const label = opening.variants.find((variant) => variant.id === result.variantId)?.label ?? result.variantId;
+            return (
+              <div key={result.variantId}>
+                <span>{keepCompoundWordsTogether(label)}</span>
+                <b className={`exam-status ${result.status}`}>{examStatusLabel[result.status]}</b>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="exam-perfect">Perfect score.</div>
+      )}
+      <div className="exam-result-actions">
+        {resultsToPractise.length > 0 && (
+          <button className="primary-action" onClick={onRetry}>
+            {exam.isPractice ? "Practise these again" : "Practise missed lines"} <span>→</span>
+          </button>
+        )}
+        <button className={resultsToPractise.length ? "secondary-action" : "primary-action"} onClick={onRestart}>Start a new exam <span>↻</span></button>
+        <button className="text-action" onClick={onExit}>Back to variations</button>
+      </div>
+    </section>
+  );
+};
 
 const MoveCell = ({
   san,
@@ -131,6 +205,7 @@ export function OpeningTrainer() {
   const [takeback, setTakeback] = useState<TakebackSnapshot | null>(null);
   const [publishedPlyCount, setPublishedPlyCount] = useState(0);
   const [stats, setStats] = useState<TrainerStats>(emptyStats);
+  const [exam, setExam] = useState<ActiveExam | null>(null);
   const mobileSummaryRef = useRef<HTMLDivElement | null>(null);
   const selectedSquareRef = useRef<Square | null>(null);
   const draggingSourceRef = useRef<Square | null>(null);
@@ -157,6 +232,7 @@ export function OpeningTrainer() {
   const isUserTurn = game.turn() === playerColor;
   const atTarget = Boolean(targetLine);
   const thinking = Boolean(selectedVariant) && !completed && !atTarget && !isUserTurn;
+  const examFinished = Boolean(exam && exam.results.length === exam.variantIds.length);
   const panelHistoryLength = Math.min(history.length, publishedPlyCount);
   const panelHistory = useMemo(() => history.slice(0, panelHistoryLength), [history, panelHistoryLength]);
   const panelGame = useMemo(() => chessFromHistory(panelHistory), [panelHistory]);
@@ -196,12 +272,33 @@ export function OpeningTrainer() {
         setCompletedLineId(targetLine.id);
         setPublishedPlyCount(history.length);
         pendingSuccessRef.current = null;
-        setFeedback({ kind: "success", title: "Target position reached", message: trainingGoalFor(opening.id, targetLine.id).title });
-        persistStats((current) => ({
-          ...current,
-          completed: current.completed + 1,
-          linesSeen: { ...current.linesSeen, [targetLine.id]: (current.linesSeen[targetLine.id] ?? 0) + 1 },
-        }));
+        if (exam && selectedVariant) {
+          const status = examLineStatus(exam.currentErrors, exam.currentRevealed);
+          const result: ExamLineResult = {
+            variantId: selectedVariant,
+            status,
+            errors: exam.currentErrors,
+            correctMoves: exam.currentCorrectMoves,
+            firstTryMoves: exam.currentFirstTryMoves,
+          };
+          const nextResults = [...exam.results, result];
+          setExam({
+            ...exam,
+            results: nextResults,
+          });
+          setFeedback({
+            kind: "success",
+            title: "Line complete",
+            message: selectedVariantConfig?.label ?? "",
+          });
+        } else {
+          setFeedback({ kind: "success", title: "Target position reached", message: trainingGoalFor(opening.id, targetLine.id).title });
+          persistStats((current) => ({
+            ...current,
+            completed: current.completed + 1,
+            linesSeen: { ...current.linesSeen, [targetLine.id]: (current.linesSeen[targetLine.id] ?? 0) + 1 },
+          }));
+        }
       }, 0);
       return () => window.clearTimeout(completionTimer);
     }
@@ -219,24 +316,34 @@ export function OpeningTrainer() {
       setSelectedSquare(null);
       const success = pendingSuccessRef.current;
       if (success) {
-        const alternatives = success.alternativeSans.length ? ` ${success.alternativeSans.join(" or ")} ${success.alternativeSans.length > 1 ? "were" : "was"} theoretical too.` : "";
-        setFeedback({
-          kind: "success",
-          title: `${success.playedSan} is correct · ${colorName(opponentColor)} plays ${san}`,
-          message: `${success.explanation}${alternatives} Find ${colorName(playerColor)}'s continuation.`,
-        });
+        if (exam) {
+          setFeedback({
+            kind: "success",
+            title: `${success.playedSan} is correct · ${colorName(opponentColor)} plays ${san}`,
+            message: "",
+          });
+        } else {
+          const alternatives = success.alternativeSans.length ? ` ${success.alternativeSans.join(" or ")} ${success.alternativeSans.length > 1 ? "also work" : "also works"} here.` : "";
+          setFeedback({
+            kind: "success",
+            title: `${success.playedSan} is correct · ${colorName(opponentColor)} plays ${san}`,
+            message: `${success.explanation}${alternatives} Find ${colorName(playerColor)}'s next move.`,
+          });
+        }
         pendingSuccessRef.current = null;
       } else {
         setFeedback({
           kind: "info",
           title: `${colorName(opponentColor)} plays ${san}`,
-          message: defaultFeedback(opening).message,
+          message: exam
+            ? ""
+            : defaultFeedback(opening).message,
         });
       }
-      persistStats((current) => ({ ...current, positionsSeen: current.positionsSeen + 1 }));
+      if (!exam) persistStats((current) => ({ ...current, positionsSeen: current.positionsSeen + 1 }));
     }, 650);
     return () => window.clearTimeout(timer);
-  }, [choices, completed, history, isUserTurn, opening, opponentColor, persistStats, playerColor, selectedVariant, session, targetLine]);
+  }, [choices, completed, exam, history, isUserTurn, opening, opponentColor, persistStats, playerColor, selectedVariant, selectedVariantConfig, session, targetLine]);
 
   const acceptedSans = useMemo(
     () => choices.map((choice) => ({ uci: choice.uci, san: sanFor(game, choice.uci) })),
@@ -259,30 +366,54 @@ export function OpeningTrainer() {
     const accepted = choices.map((choice) => choice.uci);
     if (!accepted.includes(playedUci)) {
       const nextAttempts = attempts + 1;
+      const revealedPrompt = revealedMovesPrompt(acceptedSans.map((item) => item.san));
       setAttempts(nextAttempts);
       setReveal(nextAttempts >= 2);
-      const guide = opening.guidanceFor(accepted);
-      setFeedback(nextAttempts >= 2
-        ? { kind: "hint", title: "Here are the continuations", message: `Try one of these: ${acceptedSans.map((item) => item.san).join(", ")}.` }
-        : { kind: "hint", title: "Not quite - try again", message: guide.hint });
-      persistStats((current) => ({ ...current, errors: current.errors + 1 }));
+      if (exam) {
+        setExam((current) => current ? {
+          ...current,
+          currentErrors: current.currentErrors + 1,
+          currentRevealed: current.currentRevealed || nextAttempts >= 2,
+        } : current);
+        setFeedback(nextAttempts >= 2
+          ? { kind: "hint", title: revealedPrompt, message: "" }
+          : { kind: "hint", title: "Try again", message: "" });
+      } else {
+        const guide = opening.guidanceFor(accepted);
+        setFeedback(nextAttempts >= 2
+          ? { kind: "hint", title: revealedPrompt, message: "" }
+          : { kind: "hint", title: "Not quite - try again", message: guide.hint });
+        persistStats((current) => ({ ...current, errors: current.errors + 1 }));
+      }
       setSelectedSquare(from as Square);
       return false;
     }
 
     const alternatives = accepted.filter((uci) => uci !== playedUci);
-    setTakeback({ history, alternatives });
+    setTakeback({
+      history,
+      alternatives,
+      ...(exam ? { examAttempts: attempts, examFirstTry: attempts === 0 } : {}),
+    });
     setHistory([...history, playedUci]);
     setAttempts(0);
     setReveal(false);
     setSelectedSquare(null);
-    persistStats((current) => ({ ...current, correctMoves: current.correctMoves + 1 }));
+    if (exam) {
+      setExam((current) => current ? {
+        ...current,
+        currentCorrectMoves: current.currentCorrectMoves + 1,
+        currentFirstTryMoves: current.currentFirstTryMoves + (attempts === 0 ? 1 : 0),
+      } : current);
+    } else {
+      persistStats((current) => ({ ...current, correctMoves: current.correctMoves + 1 }));
+    }
     const playedSan = sanFor(game, playedUci);
     const explanation = opening.guidanceFor([playedUci]).explanation;
     const alternativeSans = alternatives.map((move) => sanFor(game, move));
     pendingSuccessRef.current = { playedSan, explanation, alternativeSans };
     return true;
-  }, [acceptedSans, atTarget, attempts, choices, completed, game, history, isUserTurn, opening, persistStats, selectedVariant, thinking]);
+  }, [acceptedSans, atTarget, attempts, choices, completed, exam, game, history, isUserTurn, opening, persistStats, selectedVariant, thinking]);
 
   const handleSquareClick = useCallback(({ square }: { square: string }) => {
     if (suppressSquareClickRef.current) {
@@ -389,21 +520,24 @@ export function OpeningTrainer() {
     const nextOpening = openingById(openingId);
     setSelectedOpening(openingId);
     setSelectedVariant(null);
+    setExam(null);
     resetSession(defaultFeedback(nextOpening));
   };
 
   const changeOpening = () => {
     setSelectedOpening(null);
     setSelectedVariant(null);
+    setExam(null);
     resetSession(defaultFeedback(null));
   };
 
   const newExercise = () => {
     setSelectedVariant(null);
+    setExam(null);
     resetSession();
   };
 
-  const startVariant = (variantId: string) => {
+  const startCurrentVariant = (variantId: string, examMode: boolean) => {
     setSelectedVariant(variantId);
     if (opening?.playerColor === "b") {
       const variant = opening.variants.find((item) => item.id === variantId);
@@ -424,20 +558,85 @@ export function OpeningTrainer() {
         resetSession({
           kind: "info",
           title: `White plays ${firstSan}`,
-          message: `${opening.startMessage} Find a theoretical continuation for Black.`,
+          message: examMode
+            ? ""
+            : `${opening.startMessage} Find Black's next move.`,
         });
         setHistory(firstHistory);
         setPublishedPlyCount(firstHistory.length);
-        persistStats((current) => ({
-          ...current,
-          sessions: current.sessions + 1,
-          positionsSeen: current.positionsSeen + 1,
-        }));
+        if (!examMode) {
+          persistStats((current) => ({
+            ...current,
+            sessions: current.sessions + 1,
+            positionsSeen: current.positionsSeen + 1,
+          }));
+        }
         return;
       }
     }
+    resetSession(examMode
+      ? {
+          kind: "info",
+          title: "Your move",
+          message: "",
+        }
+      : undefined);
+    if (!examMode) persistStats((current) => ({ ...current, sessions: current.sessions + 1 }));
+  };
+
+  const startVariant = (variantId: string) => {
+    setExam(null);
+    startCurrentVariant(variantId, false);
+  };
+
+  const startExam = (variantIds = opening?.variants.map((variant) => variant.id) ?? [], isPractice = false) => {
+    if (!opening || !variantIds.length) return;
+    const shuffled = shuffleExamVariants(variantIds);
+    setExam({
+      variantIds: shuffled,
+      index: 0,
+      results: [],
+      currentErrors: 0,
+      currentCorrectMoves: 0,
+      currentFirstTryMoves: 0,
+      currentRevealed: false,
+      resultsVisible: false,
+      isPractice,
+    });
+    startCurrentVariant(shuffled[0], true);
+  };
+
+  const exitExam = () => {
+    const exitMessage = exam?.isPractice
+      ? "Stop this practice? Your current progress will be lost."
+      : "Exit the exam? Your current progress will be lost.";
+    if (exam && !examFinished && !window.confirm(exitMessage)) return;
+    setExam(null);
+    setSelectedVariant(null);
     resetSession();
-    persistStats((current) => ({ ...current, sessions: current.sessions + 1 }));
+  };
+
+  const continueExam = () => {
+    if (!exam || exam.results.length <= exam.index) return;
+    if (exam.index === exam.variantIds.length - 1) {
+      setExam({ ...exam, resultsVisible: true });
+      return;
+    }
+    const nextIndex = exam.index + 1;
+    setExam({
+      ...exam,
+      index: nextIndex,
+      currentErrors: 0,
+      currentCorrectMoves: 0,
+      currentFirstTryMoves: 0,
+      currentRevealed: false,
+    });
+    startCurrentVariant(exam.variantIds[nextIndex], true);
+  };
+
+  const startFocusedPractice = () => {
+    if (!exam) return;
+    startExam(summarizeExam(exam.results).reviewVariantIds, true);
   };
 
   const tryAlternative = () => {
@@ -447,26 +646,35 @@ export function OpeningTrainer() {
     setCompleted(false);
     setCompletedLineId(null);
     pendingSuccessRef.current = null;
-    setAttempts(0);
-    setReveal(false);
+    setAttempts(takeback.examAttempts ?? 0);
+    setReveal((takeback.examAttempts ?? 0) >= 2);
     setSelectedSquare(null);
+    if (exam) {
+      setExam((current) => current ? {
+        ...current,
+        currentCorrectMoves: Math.max(0, current.currentCorrectMoves - 1),
+        currentFirstTryMoves: Math.max(0, current.currentFirstTryMoves - (takeback.examFirstTry ? 1 : 0)),
+      } : current);
+    }
     setFeedback({ kind: "info", title: "Try an alternative", message: "You are back at the position before your previous choice." });
     setTakeback(null);
   };
 
   const maxLength = session?.maxTargetLength ?? Math.max(1, history.length);
   const progress = atTarget || completed ? 100 : Math.min(100, Math.round((panelHistory.length / maxLength) * 100));
+  const progressLabel = exam ? "Current line" : "On the way to the middlegame";
   const moveHistory = panelGame.history();
   const moveEvaluations = opening?.evaluation
     ? panelHistory.map((_, index) => staticEvaluationFor(panelHistory.slice(0, index + 1), opening.lines, opening.positionEvaluations))
     : [];
   const moveFens = panelHistory.map((_, index) => chessFromHistory(panelHistory.slice(0, index + 1)).fen());
   const accuracyBase = stats.correctMoves + stats.errors;
-  const accuracy = accuracyBase ? Math.round((stats.correctMoves / accuracyBase) * 100) : 100;
+  const accuracy = accuracyBase ? Math.round((stats.correctMoves / accuracyBase) * 100) : null;
   const finalGoal = completed && opening
     ? opening.lines.find((line) => line.id === completedLineId)
     : null;
   const finalGoalContent = finalGoal && opening ? trainingGoalFor(opening.id, finalGoal.id) : null;
+  const currentExamResult = exam?.results[exam.index] ?? null;
   const completedPgn = useMemo(
     () => completed && opening && selectedVariantConfig
       ? trainingPgn(history, opening, selectedVariantConfig.label)
@@ -511,7 +719,7 @@ export function OpeningTrainer() {
         <div className="board-column">
           <div className="player-row opponent">
             <div className={`avatar ${opponentColor === "w" ? "white-avatar" : "black-avatar"}`}>{opponentColor === "w" ? "♙" : "♟"}</div>
-            <div><strong>Computer</strong><span>{colorName(opponentColor)} · curated repertoire</span></div>
+            <div><strong>Computer</strong><span>{colorName(opponentColor)}</span></div>
             {thinking && <span className="thinking"><i /><i /><i /></span>}
           </div>
 
@@ -551,36 +759,61 @@ export function OpeningTrainer() {
             <div className={`avatar ${playerColor === "w" ? "white-avatar user-white-avatar" : "black-avatar"}`}>{playerColor === "w" ? "♙" : "♟"}</div>
             <div><strong>You</strong><span>{colorName(playerColor)}{opening ? ` · ${keepCompoundWordsTogether(opening.shortName)}` : ""}</span></div>
             <span className={`turn-pill ${isUserTurn && selectedVariant && !completed && !atTarget ? "active" : ""}`}>
-              {!selectedOpening ? "Choose repertoire" : !selectedVariant ? "Choose variation" : completed || atTarget ? "Line complete" : isUserTurn ? "Your move" : "Waiting"}
+              {!selectedOpening
+                ? "Choose repertoire"
+                : !selectedVariant
+                  ? "Choose variation"
+                  : exam?.resultsVisible
+                    ? exam.isPractice ? "Practice complete" : "Exam complete"
+                    : exam
+                      ? `${exam.index + 1}/${exam.variantIds.length}`
+                    : completed || atTarget ? "Line complete" : isUserTurn ? "Your move" : "Waiting"}
             </span>
           </div>
 
           {selectedVariant && (
             <div className="mobile-session-summary" ref={mobileSummaryRef}>
-              <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
-              <div className="progress-copy"><span>On the way to the middlegame</span><strong>{progress}%</strong></div>
+              {exam?.resultsVisible && opening ? (
+                <ExamResults
+                  exam={exam}
+                  opening={opening}
+                  onRetry={startFocusedPractice}
+                  onRestart={() => startExam()}
+                  onExit={exitExam}
+                />
+              ) : (
+                <>
+                  <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
+                  <div className="progress-copy"><span>{progressLabel}</span><strong>{progress}%</strong></div>
 
-              <div className={`feedback ${feedback.kind}`} role="status">
-                <span className="feedback-icon">{feedback.kind === "success" ? "✓" : feedback.kind === "hint" ? "✦" : feedback.kind === "error" ? "!" : playerColor === "w" ? "♙" : "♟"}</span>
-                <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong><p>{keepCompoundWordsTogether(feedback.message)}</p></div>
-              </div>
+                  <div className={`feedback ${feedback.kind}`} role="status">
+                    <span className="feedback-icon">{feedback.kind === "success" ? "✓" : feedback.kind === "hint" ? "✦" : feedback.kind === "error" ? "!" : playerColor === "w" ? "♙" : "♟"}</span>
+                    <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong>{feedback.message && <p>{keepCompoundWordsTogether(feedback.message)}</p>}</div>
+                  </div>
 
-              {opening?.evaluation && positionEvaluation !== null && (
-                <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
-              )}
+                  {opening?.evaluation && positionEvaluation !== null && (
+                    <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
+                  )}
 
-              {takeback && takeback.alternatives.length > 0 && !thinking && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
+                  {takeback && takeback.alternatives.length > 0 && !thinking && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
 
-              {completed && finalGoalContent && (
-                <div className="goal-card">
-                  <span className="eyebrow">TARGET POSITION</span>
-                  <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
-                  <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
-                  <CompletionActions
-                    analysisUrl={completedAnalysisUrl}
-                    onNewExercise={newExercise}
-                  />
-                </div>
+                  {completed && finalGoalContent && (
+                    <div className="goal-card">
+                      <span className="eyebrow">{exam && currentExamResult ? `${examStatusLabel[currentExamResult.status].toUpperCase()} · ${selectedVariantConfig?.label ?? ""}` : "TARGET POSITION"}</span>
+                      <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
+                      <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
+                      <CompletionActions
+                        analysisUrl={completedAnalysisUrl}
+                        onNewExercise={exam ? continueExam : newExercise}
+                        primaryLabel={exam
+                          ? exam.index === exam.variantIds.length - 1
+                            ? exam.isPractice ? "See practice results" : "See exam results"
+                            : exam.isPractice ? "Next practice line" : "Next line"
+                          : "New exercise"}
+                      />
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -589,10 +822,29 @@ export function OpeningTrainer() {
         <aside className={`panel ${pickerMode ? "picker-panel" : ""}`}>
           <div className="panel-head">
             <div>
-              <span className="eyebrow">{selectedVariant ? "GUIDED TRAINING" : "NEW TRAINING SESSION"}</span>
-              <h1>{!opening ? "Choose your repertoire" : selectedVariant ? keepCompoundWordsTogether(selectedVariantConfig?.label ?? "") : `Choose a variation · ${keepCompoundWordsTogether(opening.shortName)}`}</h1>
+              <span className="eyebrow">{exam ? (exam.isPractice ? "FOCUSED PRACTICE" : "REPERTOIRE EXAM") : selectedVariant ? "GUIDED TRAINING" : "NEW TRAINING SESSION"}</span>
+              <h1>
+                {!opening
+                  ? "Choose your repertoire"
+                  : exam
+                    ? exam.resultsVisible
+                      ? exam.isPractice ? "Practice results" : "Exam results"
+                      : `${exam.isPractice ? "Practice line " : "Line "}${exam.index + 1} of ${exam.variantIds.length}`
+                    : selectedVariant
+                      ? keepCompoundWordsTogether(selectedVariantConfig?.label ?? "")
+                      : `Choose a variation · ${keepCompoundWordsTogether(opening.shortName)}`}
+              </h1>
             </div>
-            {selectedVariant && <button className="icon-button" onClick={newExercise} title="Change variation" aria-label="Change variation">↻</button>}
+            {selectedVariant && (
+              <button
+                className="icon-button"
+                onClick={exam ? exitExam : newExercise}
+                title={exam ? (exam.isPractice ? "Stop practice" : "Exit exam") : "Change variation"}
+                aria-label={exam ? (exam.isPractice ? "Stop practice" : "Exit exam") : "Change variation"}
+              >
+                {exam ? "×" : "↻"}
+              </button>
+            )}
           </div>
 
           {!opening ? (
@@ -602,7 +854,7 @@ export function OpeningTrainer() {
                 {openings.map((item) => (
                   <button key={item.id} onClick={() => chooseOpening(item.id)}>
                     <span className="opening-piece" aria-hidden="true">{item.playerColor === "w" ? "♙" : "♟"}</span>
-                    <span><strong>{keepCompoundWordsTogether(item.name)}</strong><small>{keepCompoundWordsTogether(item.description)}</small><b>You always play {colorName(item.playerColor)}</b></span>
+                    <span><strong>{keepCompoundWordsTogether(item.name)}</strong><small>{keepCompoundWordsTogether(item.description)}</small></span>
                     <i>→</i>
                   </button>
                 ))}
@@ -611,9 +863,16 @@ export function OpeningTrainer() {
           ) : !selectedVariant ? (
             <section className="variant-picker">
               <div className="picker-intro"><button onClick={changeOpening}>← Change repertoire</button></div>
-              <button className="random-variant" onClick={() => startVariant(pickUniformVariant(opening.variants).id)}>
+              <button className="exam-launch" aria-label="Repertoire Exam" onClick={() => startExam()}>
+                <span aria-hidden="true">✓</span>
+                <span>
+                  <strong>Repertoire Exam</strong>
+                </span>
+                <i>→</i>
+              </button>
+              <button className="random-variant" aria-label="Random variation" onClick={() => startVariant(pickUniformVariant(opening.variants).id)}>
                 <span aria-hidden="true">⚄</span>
-                <span><strong>Random variation</strong><small>Every variation has the same chance</small></span>
+                <span><strong>Random variation</strong></span>
                 <b>→</b>
               </button>
               <div className="variant-list">
@@ -627,34 +886,51 @@ export function OpeningTrainer() {
               </div>
             </section>
           ) : <div className="training-content">
-            <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
-            <div className="progress-copy"><span>On the way to the middlegame</span><strong>{progress}%</strong></div>
+            {exam?.resultsVisible ? (
+              <ExamResults
+                exam={exam}
+                opening={opening}
+                onRetry={startFocusedPractice}
+                onRestart={() => startExam()}
+                onExit={exitExam}
+              />
+            ) : (
+              <>
+                <div className="progress-track"><span style={{ width: `${progress}%` }} /></div>
+                <div className="progress-copy"><span>{progressLabel}</span><strong>{progress}%</strong></div>
 
-            <div className={`feedback ${feedback.kind}`} role="status">
-              <span className="feedback-icon">{feedback.kind === "success" ? "✓" : feedback.kind === "hint" ? "✦" : feedback.kind === "error" ? "!" : playerColor === "w" ? "♙" : "♟"}</span>
-              <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong><p>{keepCompoundWordsTogether(feedback.message)}</p></div>
-            </div>
+                <div className={`feedback ${feedback.kind}`} role="status">
+                  <span className="feedback-icon">{feedback.kind === "success" ? "✓" : feedback.kind === "hint" ? "✦" : feedback.kind === "error" ? "!" : playerColor === "w" ? "♙" : "♟"}</span>
+                  <div><strong>{keepCompoundWordsTogether(feedback.title)}</strong>{feedback.message && <p>{keepCompoundWordsTogether(feedback.message)}</p>}</div>
+                </div>
 
-            {opening.evaluation && positionEvaluation !== null && (
-              <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
+                {opening.evaluation && positionEvaluation !== null && (
+                  <StaticEvaluation centipawns={positionEvaluation} meta={opening.evaluation} />
+                )}
+
+                {takeback && takeback.alternatives.length > 0 && !thinking && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
+
+                {completed && finalGoalContent && (
+                  <div className="goal-card">
+                    <span className="eyebrow">{exam && currentExamResult ? `${examStatusLabel[currentExamResult.status].toUpperCase()} · ${selectedVariantConfig?.label ?? ""}` : "TARGET POSITION"}</span>
+                    <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
+                    <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
+                    <CompletionActions
+                      analysisUrl={completedAnalysisUrl}
+                      onNewExercise={exam ? continueExam : newExercise}
+                      primaryLabel={exam
+                        ? exam.index === exam.variantIds.length - 1
+                          ? exam.isPractice ? "See practice results" : "See exam results"
+                          : exam.isPractice ? "Next practice line" : "Next line"
+                        : "New exercise"}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
-            {takeback && takeback.alternatives.length > 0 && !thinking && !completed && <button className="secondary-action" onClick={tryAlternative}>↶ Go back and try an alternative</button>}
-
-            {completed && finalGoalContent && (
-              <div className="goal-card">
-                <span className="eyebrow">TARGET POSITION</span>
-                <h2>{keepCompoundWordsTogether(finalGoalContent.title)}</h2>
-                <ul>{finalGoalContent.plans.map((plan) => <li key={plan}>{keepCompoundWordsTogether(plan)}</li>)}</ul>
-                <CompletionActions
-                  analysisUrl={completedAnalysisUrl}
-                  onNewExercise={newExercise}
-                />
-              </div>
-            )}
-
-            <section className="moves-section">
-              <div className="section-title"><h2>Move history</h2><span>{Math.ceil(history.length / 2)} moves</span></div>
+            {!exam?.resultsVisible && (!exam || moveHistory.length > 0) && <section className="moves-section">
+              <div className="section-title"><h2>Move history</h2></div>
               <div className="move-list">
                 {!moveHistory.length && <p className="empty-moves">{playerColor === "w" ? `Your move: play ${acceptedSans[0]?.san ?? "the opening move"}.` : "The game will begin in a moment…"}</p>}
                 {Array.from({ length: Math.ceil(moveHistory.length / 2) }, (_, index) => (
@@ -675,11 +951,11 @@ export function OpeningTrainer() {
                   </div>
                 ))}
               </div>
-            </section>
+            </section>}
 
           </div>}
 
-          <section className="stats-section">
+          {!exam && <section className="stats-section">
             <div className="section-title">
               <h2>Your progress</h2>
               <div className="stats-title-actions">
@@ -689,10 +965,10 @@ export function OpeningTrainer() {
             </div>
             <div className="stats-grid">
               <div><strong>{stats.completed}</strong><span>Lines completed</span></div>
-              <div><strong>{accuracy}%</strong><span>Accuracy</span></div>
-              <div><strong>{stats.errors}</strong><span>Theory errors</span></div>
+              <div><strong>{accuracy === null ? "-" : `${accuracy}%`}</strong><span>Accuracy</span></div>
+              <div><strong>{stats.errors}</strong><span>Mistakes</span></div>
             </div>
-          </section>
+          </section>}
         </aside>
       </section>
     </main>
